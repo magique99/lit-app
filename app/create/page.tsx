@@ -124,7 +124,7 @@ export default function CreatePost() {
     if (file?.name.endsWith(".docx")) {
       try {
         const uploaded = await uploadDocx(
-          uploadedFile,
+          file,
           user.id
         );
 
@@ -135,7 +135,7 @@ export default function CreatePost() {
           docx_url: uploaded.signedUrl,
           docx_path: uploaded.path,
         });
-        docUrl = uploaded.url;
+        docUrl = uploaded.signedUrl;
       } catch (err) {
         console.error("Upload error:", err);
         alert("Eroare upload DOCX");
