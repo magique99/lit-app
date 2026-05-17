@@ -123,7 +123,18 @@ export default function CreatePost() {
     // ======================
     if (file?.name.endsWith(".docx")) {
       try {
-        const uploaded = await uploadDocx(file, user.id);
+        const uploaded = await uploadDocx(
+          uploadedFile,
+          user.id
+        );
+
+        await supabase.from("posts").insert({
+          title,
+          content,
+          user_id: user.id,
+          docx_url: uploaded.signedUrl,
+          docx_path: uploaded.path,
+        });
         docUrl = uploaded.url;
       } catch (err) {
         console.error("Upload error:", err);
