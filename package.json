@@ -29,6 +29,7 @@
     "yjs": "^13.6.30"
   },
   "devDependencies": {
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

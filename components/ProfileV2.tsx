@@ -155,9 +155,9 @@ export default function ProfilePostsV2() {
             </button>
           </div>
 
-          <p className="text-sm text-gray-600 mt-2 line-clamp-3">
-            {post.content}
-          </p>
+            <p className="text-sm text-gray-600 mt-2 line-clamp-4">
+                {post.content}
+            </p>
 
           <p className="text-xs text-gray-400 mt-3">
             {new Date(post.created_at).toLocaleString()}
