@@ -9,7 +9,7 @@ export default function ProfilePage() {
         Profilul meu
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
 
         <section className="border rounded-xl p-5">
           <ProfilePageV4 />
