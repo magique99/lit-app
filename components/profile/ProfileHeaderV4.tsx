@@ -34,7 +34,7 @@ export default function ProfileHeaderV4() {
   return (
     <div className="space-y-4 bg-white rounded-xl p-4 min-h-[320px] shadow-sm">
 
-      {/* COVER */}
+      {/* COVER 
       <div
         className="
           h-24 rounded-2xl
@@ -42,7 +42,7 @@ export default function ProfileHeaderV4() {
           from-gray-900 to-gray-600
         "
       />
-
+      */}
       {/* HEADER ROW */}
       <div className="flex items-end gap-4 -mt-10 px-4">
 
