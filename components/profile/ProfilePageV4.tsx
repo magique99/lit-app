@@ -4,7 +4,7 @@ import ProfilePostsV2 from "@/components/profile/ProfilePostsV2";
 
 export default function ProfilePage() {
   return (
-    <main className="max-w-5xl mx-auto p-6 space-y-6">
+    <main className="max-w-screen-2xl mx-auto p-6 space-y-6">
 
       <ProfileHeaderV4 />
 

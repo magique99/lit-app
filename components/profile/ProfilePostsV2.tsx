@@ -120,7 +120,7 @@ export default function ProfilePostsV2() {
             </div>
           ) : (
             <div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-4 overflow-hidden">
                 {post.content}
               </p>
 
