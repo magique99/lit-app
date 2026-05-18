@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 export default function ProfileHeaderV4() {
   const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [edit, setEdit] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -55,37 +56,122 @@ export default function ProfileHeaderV4() {
 
         {/* INFO */}
         <div className="flex-1">
-          <h2 className="text-xl font-bold">
-            {profile.username}
-          </h2>
 
-          <p className="text-sm text-gray-600">
-            {profile.bio || "No bio"}
-          </p>
-        </div>
+          {!edit ? (
+            <>
+              <h2 className="text-2xl font-bold">
+                {profile.username}
+              </h2>
 
-        {/* STATS */}
-        <div className="flex gap-4 text-sm text-gray-600">
+              <p className="text-sm text-gray-600 mt-2">
+                {profile.bio || "No bio"}
+              </p>
 
-          <div>
-            <div className="font-bold">0</div>
-            Posts
-          </div>
+              <button
+                onClick={() => setEdit(true)}
+                className="
+                  mt-4 px-4 py-2
+                  rounded-xl border
+                  hover:bg-gray-100
+                  transition text-sm
+                "
+              >
+                Edit profile
+              </button>
+            </>
+          ) : (
+            <ProfileEditorInline
+              profile={profile}
+              onClose={() => setEdit(false)}
+              onSaved={(newProfile: any) =>
+                setProfile(newProfile)
+              }
+            />
+          )}
 
-          <div>
-            <div className="font-bold">0</div>
-            Likes
-          </div>
-
-          <div>
-            <div className="font-bold">0</div>
-            Comments
-          </div>
-
-        </div>
-
+        </div>      
       </div>
 
+    </div>
+  );
+}
+
+function ProfileEditorInline({
+  profile,
+  onClose,
+  onSaved,
+}: any) {
+  const [username, setUsername] =
+    useState(profile.username || "");
+
+  const [bio, setBio] =
+    useState(profile.bio || "");
+
+  async function save() {
+    await supabase
+      .from("profiles")
+      .update({
+        username,
+        bio,
+      })
+      .eq("id", profile.id);
+
+    onSaved({
+      ...profile,
+      username,
+      bio,
+    });
+
+    onClose();
+  }
+
+  return (
+    <div className="space-y-3 mt-3">
+
+      <input
+        value={username}
+        onChange={(e) =>
+          setUsername(e.target.value)
+        }
+        className="
+          w-full border
+          rounded-xl p-3
+        "
+        placeholder="username"
+      />
+
+      <textarea
+        value={bio}
+        onChange={(e) =>
+          setBio(e.target.value)
+        }
+        className="
+          w-full border
+          rounded-xl p-3
+        "
+        placeholder="bio"
+      />
+
+      <div className="flex gap-3">
+
+        <button
+          onClick={save}
+          className="
+            bg-black text-white
+            px-4 py-2 rounded-xl
+          "
+        >
+          Save
+        </button>
+
+        <button
+          onClick={onClose}
+          className="text-gray-500"
+        >
+          Cancel
+        </button>
+
+      </div>
     </div>
   );
 }
