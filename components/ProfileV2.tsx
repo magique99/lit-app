@@ -3,226 +3,167 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-type Profile = {
-  id: string;
-  user_id: string;
-  username: string;
-  bio: string;
-  avatar_url?: string;
-};
-
 type Post = {
   id: string;
   title: string;
   content: string;
   created_at: string;
+  user_id: string;
 };
 
-export default function ProfileV2() {
+export default function ProfilePostsV2() {
   const [userId, setUserId] = useState<string | null>(null);
-
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
-
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
-  const [editMode, setEditMode] = useState(false);
-
-  // form
-  const [username, setUsername] = useState("");
-  const [bio, setBio] = useState("");
-
-  // =====================
-  // INIT USER
-  // =====================
+  // =========================
+  // GET USER
+  // =========================
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUserId(data.user?.id ?? null);
     });
   }, []);
 
-  // =====================
-  // LOAD PROFILE + POSTS
-  // =====================
+  // =========================
+  // LOAD POSTS (SAFE)
+  // =========================
+  async function loadPosts(uid: string) {
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("user_id", uid)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("LOAD POSTS ERROR:", error);
+    }
+
+    setPosts(data ?? []);
+    setLoading(false);
+  }
+
+  // =========================
+  // INIT LOAD (FIX ASYNC BUG)
+  // =========================
   useEffect(() => {
     if (!userId) return;
 
-    async function load() {
-      setLoading(true);
-
-      const [{ data: profileData }, { data: postsData }] =
-        await Promise.all([
-          supabase
-            .from("profiles")
-            .select("*")
-            .eq("user_id", userId)
-            .single(),
-
-          supabase
-            .from("posts")
-            .select("*")
-            .eq("user_id", userId)
-            .order("created_at", { ascending: false }),
-        ]);
-
-      setProfile(profileData);
-      setPosts(postsData || []);
-
-      setUsername(profileData?.username || "");
-      setBio(profileData?.bio || "");
-
-      setLoading(false);
-    }
-
-    load();
+    loadPosts(userId);
   }, [userId]);
 
-  // =====================
-  // SAVE PROFILE
-  // =====================
-  async function saveProfile() {
+  // =========================
+  // REALTIME POSTS
+  // =========================
+  useEffect(() => {
     if (!userId) return;
 
-    setSaving(true);
+    const channel = supabase
+      .channel(`posts-${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "posts",
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setPosts((prev) => [payload.new as Post, ...prev]);
+          }
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .upsert({
-        user_id: userId,
-        username,
-        bio,
-        updated_at: new Date().toISOString(),
-      })
-      .select("*")
-      .single();
+          if (payload.eventType === "DELETE") {
+            setPosts((prev) =>
+              prev.filter((p) => p.id !== (payload.old as Post).id)
+            );
+          }
 
-    setSaving(false);
+          if (payload.eventType === "UPDATE") {
+            setPosts((prev) =>
+              prev.map((p) =>
+                p.id === (payload.new as Post).id
+                  ? (payload.new as Post)
+                  : p
+              )
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId]);
+
+  // =========================
+  // DELETE POST
+  // =========================
+  async function deletePost(id: string) {
+    setPosts((prev) => prev.filter((p) => p.id !== id));
+
+    const { error } = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", id);
 
     if (error) {
-      console.error(error);
-      alert("Eroare la salvare profil");
-      return;
+      console.error("DELETE ERROR:", error);
     }
-
-    setProfile(data);
-    setEditMode(false);
   }
 
-  // =====================
-  // DELETE POST
-  // =====================
-  async function deletePost(id: string) {
-    setPosts((p) => p.filter((x) => x.id !== id));
-
-    await supabase.from("posts").delete().eq("id", id);
-  }
-
+  // =========================
+  // UI STATES
+  // =========================
   if (!userId) {
+    return <div className="text-sm text-gray-500">Trebuie să fii logat.</div>;
+  }
+
+  if (loading) {
+    return <div className="text-sm text-gray-500">Se încarcă textele...</div>;
+  }
+
+  if (posts.length === 0) {
     return (
-      <div className="p-6">
-        Trebuie să fii logat.
+      <div className="text-sm text-gray-500">
+        Nu ai încă niciun text.
       </div>
     );
   }
 
-  if (loading) {
-    return <div className="p-6">Se încarcă...</div>;
-  }
-
+  // =========================
+  // UI
+  // =========================
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
-
-      {/* ================= PROFILE CARD ================= */}
-      <div className="border rounded-xl p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-bold">
-            Profilul meu
-          </h1>
-
-          <button
-            onClick={() => setEditMode(!editMode)}
-            className="text-sm underline"
-          >
-            {editMode ? "Anulează" : "Editează"}
-          </button>
-        </div>
-
-        {!editMode ? (
-          <div>
-            <p className="text-lg font-semibold">
-              {profile?.username || "Fără username"}
-            </p>
-
-            <p className="text-gray-600 mt-2">
-              {profile?.bio || "Fără bio"}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
-              className="w-full border p-2 rounded"
-            />
-
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              placeholder="Bio"
-              className="w-full border p-2 rounded"
-            />
+    <div className="space-y-4">
+      {posts.map((post) => (
+        <div
+          key={post.id}
+          className="border rounded-lg p-4 hover:shadow-sm transition"
+        >
+          <div className="flex justify-between items-start">
+            <h3 className="font-semibold">{post.title}</h3>
 
             <button
-              onClick={saveProfile}
-              disabled={saving}
-              className="bg-black text-white px-4 py-2 rounded"
+              onClick={() => deletePost(post.id)}
+              className="text-red-500 text-sm"
             >
-              {saving ? "Se salvează..." : "Salvează"}
+              Șterge
             </button>
           </div>
-        )}
-      </div>
 
-      {/* ================= POSTS ================= */}
-      <div className="border rounded-xl p-6">
-        <h2 className="text-lg font-bold mb-4">
-          Textele mele
-        </h2>
-
-        {posts.length === 0 && (
-          <p className="text-gray-500">
-            Nu ai postări încă.
+          <p className="text-sm text-gray-600 mt-2 line-clamp-3">
+            {post.content}
           </p>
-        )}
 
-        <div className="space-y-4">
-          {posts.map((p) => (
-            <div
-              key={p.id}
-              className="border rounded p-4"
-            >
-              <div className="flex justify-between">
-                <h3 className="font-semibold">
-                  {p.title}
-                </h3>
-
-                <button
-                  onClick={() => deletePost(p.id)}
-                  className="text-red-500 text-sm"
-                >
-                  Șterge
-                </button>
-              </div>
-
-              <p className="text-sm text-gray-600 mt-2">
-                {p.content.slice(0, 120)}...
-              </p>
-            </div>
-          ))}
+          <p className="text-xs text-gray-400 mt-3">
+            {new Date(post.created_at).toLocaleString()}
+          </p>
         </div>
-      </div>
+      ))}
     </div>
   );
 }
