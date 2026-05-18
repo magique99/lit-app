@@ -1,5 +1,5 @@
-import ProfileCardV3 from "@/components/ProfileCardV3";
-import ProfilePostsV2 from "@/components/ProfilePostsV2";
+import ProfilePageV4 from "@/components/profile/ProfilePageV4";
+import ProfilePostsV2 from "@/components/profile/ProfilePostsV2";
 
 export default function ProfilePage() {
   return (
@@ -13,7 +13,7 @@ export default function ProfilePage() {
 
         {/* LEFT */}
         <section className="border rounded-xl p-5">
-          <ProfileCardV3 />
+          <ProfilePageV4 />
         </section>
 
         {/* RIGHT */}

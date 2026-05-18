@@ -1,5 +1,5 @@
 import ProfileEditorV2 from "@/components/ProfileEditorV2";
-import ProfilePostsV2 from "@/components/ProfilePostsV2";
+import ProfilePostsV2 from "@/components/profile/ProfilePostsV2";
 
 export default function ProfilePage() {
   return (
