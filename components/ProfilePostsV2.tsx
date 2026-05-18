@@ -82,9 +82,10 @@ export default function ProfilePostsV2() {
           </h3>
 
           {/* CONTENT (TRUNCATED) */}
-          <p className="text-sm text-gray-600 mt-2 line-clamp-4">
-            {post.content}
-          </p>
+            <div
+            className="text-sm text-gray-700 mt-2 line-clamp-4 prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+            />
 
           {/* FOOTER */}
           <div className="flex justify-between items-center mt-3">
