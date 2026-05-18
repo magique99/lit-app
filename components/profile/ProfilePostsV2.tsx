@@ -165,12 +165,14 @@ export default function ProfilePostsV2() {
               <div
                 className="
                   text-gray-800
-                  whitespace-pre-wrap
                   line-clamp-4
+                  overflow-hidden
+                  prose prose-sm max-w-none
                 "
-              >
-                {post.content}
-              </div>
+                dangerouslySetInnerHTML={{
+                  __html: post.content,
+                }}
+              />
 
               {/* ACTIONS */}
               <div className="flex gap-5 mt-5 text-sm">
