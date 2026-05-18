@@ -1,4 +1,4 @@
-import ProfileCard from "@/components/ProfileCard";
+import ProfileCardV3 from "@/components/ProfileCardV3";
 import ProfilePostsV2 from "@/components/ProfilePostsV2";
 
 export default function ProfilePage() {
@@ -11,12 +11,12 @@ export default function ProfilePage() {
 
       <div className="grid md:grid-cols-2 gap-6">
 
-        {/* LEFT: PROFILE CARD */}
+        {/* LEFT */}
         <section className="border rounded-xl p-5">
-          <ProfileCard />
+          <ProfileCardV3 />
         </section>
 
-        {/* RIGHT: POSTS */}
+        {/* RIGHT */}
         <section className="border rounded-xl p-5">
           <h2 className="text-lg font-semibold mb-4">
             Textele mele

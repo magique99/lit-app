@@ -6,25 +6,29 @@ import { supabase } from "@/lib/supabaseClient";
 export default function ProfileCard() {
   const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
 
-  const [creating, setCreating] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
 
+  // =========================
   // GET USER
+  // =========================
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUserId(data.user?.id ?? null);
     });
   }, []);
 
+  // =========================
   // LOAD PROFILE
+  // =========================
   useEffect(() => {
     if (!userId) return;
 
-    async function loadProfile() {
+    async function load() {
       setLoading(true);
 
       const { data } = await supabase
@@ -43,38 +47,16 @@ export default function ProfileCard() {
       setLoading(false);
     }
 
-    loadProfile();
+    load();
   }, [userId]);
 
-  // CREATE PROFILE (NEW)
-  async function createProfile() {
+  // =========================
+  // SAVE PROFILE (EDIT MODE)
+  // =========================
+  async function saveProfile() {
     if (!userId) return;
 
-    setCreating(true);
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .insert({
-        user_id: userId,
-        username,
-        bio,
-      })
-      .select("*")
-      .single();
-
-    if (error) {
-      console.error("CREATE PROFILE ERROR:", error);
-      setCreating(false);
-      return;
-    }
-
-    setProfile(data);
-    setCreating(false);
-  }
-
-  // UPDATE PROFILE
-  async function saveProfile() {
-    await supabase
+    const { error } = await supabase
       .from("profiles")
       .update({
         username,
@@ -83,48 +65,114 @@ export default function ProfileCard() {
       })
       .eq("user_id", userId);
 
+    if (error) {
+      console.error(error);
+      return;
+    }
+
     setProfile((p: any) => ({
       ...p,
       username,
       bio,
     }));
-  }
 
-  if (loading) {
-    return <div className="text-sm text-gray-500">Loading...</div>;
+    setEdit(false);
   }
 
   // =========================
-  // NO PROFILE → CREATE FLOW
+  // UPLOAD AVATAR
   // =========================
-  if (!profile) {
+  async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!userId) return;
+
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const path = `${userId}/avatar-${Date.now()}`;
+
+    const { error } = await supabase.storage
+      .from("avatars")
+      .upload(path, file, { upsert: true });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(path);
+
+    await supabase
+      .from("profiles")
+      .update({ avatar_url: data.publicUrl })
+      .eq("user_id", userId);
+
+    setProfile((p: any) => ({
+      ...p,
+      avatar_url: data.publicUrl,
+    }));
+  }
+
+  // =========================
+  // UI STATES
+  // =========================
+  if (loading) return <div>Loading...</div>;
+
+  if (!profile) return <div>No profile found</div>;
+
+  // =========================
+  // VIEW MODE
+  // =========================
+  if (!edit) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-4">
 
-        <h2 className="font-semibold">
-          Creează profilul tău
-        </h2>
+        {/* AVATAR */}
+        <div className="flex items-center gap-4">
 
-        <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="w-full border p-2 rounded"
-          placeholder="username"
-        />
+          <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
+            {profile.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center font-bold">
+                {profile.username?.[0]?.toUpperCase() || "U"}
+              </div>
+            )}
+          </div>
 
-        <textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          className="w-full border p-2 rounded"
-          placeholder="bio"
-        />
+          {/* UPLOAD BUTTON */}
+          <label className="text-sm text-blue-600 cursor-pointer">
+            Change avatar
+            <input
+              type="file"
+              className="hidden"
+              onChange={uploadAvatar}
+            />
+          </label>
 
+        </div>
+
+        {/* INFO */}
+        <div>
+          <h3 className="font-semibold text-lg">
+            {profile.username}
+          </h3>
+
+          <p className="text-sm text-gray-600">
+            {profile.bio}
+          </p>
+        </div>
+
+        {/* EDIT BUTTON */}
         <button
-          onClick={createProfile}
-          disabled={creating}
-          className="bg-black text-white px-3 py-1 rounded"
+          onClick={() => setEdit(true)}
+          className="text-sm text-blue-600"
         >
-          {creating ? "Creating..." : "Create profile"}
+          Edit profile
         </button>
 
       </div>
@@ -132,25 +180,42 @@ export default function ProfileCard() {
   }
 
   // =========================
-  // EXISTING PROFILE
+  // EDIT MODE
   // =========================
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
 
-      <h3 className="font-semibold text-lg">
-        {profile.username}
-      </h3>
+      <input
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        className="w-full border p-2 rounded"
+        placeholder="username"
+      />
 
-      <p className="text-sm text-gray-600">
-        {profile.bio}
-      </p>
+      <textarea
+        value={bio}
+        onChange={(e) => setBio(e.target.value)}
+        className="w-full border p-2 rounded"
+        placeholder="bio"
+      />
 
-      <button
-        onClick={saveProfile}
-        className="text-blue-600 text-sm"
-      >
-        Save changes
-      </button>
+      <div className="flex gap-2">
+
+        <button
+          onClick={saveProfile}
+          className="bg-black text-white px-3 py-1 rounded"
+        >
+          Save
+        </button>
+
+        <button
+          onClick={() => setEdit(false)}
+          className="text-gray-500 text-sm"
+        >
+          Cancel
+        </button>
+
+      </div>
 
     </div>
   );
