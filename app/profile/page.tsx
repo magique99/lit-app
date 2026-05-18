@@ -11,18 +11,8 @@ export default function ProfilePage() {
 
       <div className="grid md:grid-cols-2 gap-6">
 
-        {/* LEFT */}
         <section className="border rounded-xl p-5">
           <ProfilePageV4 />
-        </section>
-
-        {/* RIGHT */}
-        <section className="border rounded-xl p-5">
-          <h2 className="text-lg font-semibold mb-4">
-            Textele mele
-          </h2>
-
-          <ProfilePostsV2 />
         </section>
 
       </div>
