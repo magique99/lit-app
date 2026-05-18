@@ -7,86 +7,48 @@ type Post = {
   id: string;
   title: string;
   content: string;
-  user_id: string;
 };
 
 export default function ProfilePosts() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const [userId, setUserId] = useState<string | null>(null);
 
   // =========================
-  // LOAD USER + POSTS
+  // LOAD POSTS
   // =========================
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      const id = data.user?.id || null;
-      setUserId(id);
+    supabase.auth.getUser().then(async ({ data }) => {
+      const id = data.user?.id;
+      if (!id) return;
 
-      if (id) loadPosts(id);
+      const { data: postsData } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("user_id", id)
+        .order("created_at", { ascending: false });
+
+      setPosts(postsData || []);
     });
   }, []);
 
-  async function loadPosts(id: string) {
-    const { data } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("user_id", id)
-      .order("created_at", { ascending: false });
-
-    setPosts(data || []);
-  }
-
   // =========================
-  // DELETE POST
+  // DELETE
   // =========================
   async function deletePost(id: string) {
-    const confirm = window.confirm("Ștergi acest text?");
-    if (!confirm) return;
+    const ok = confirm("Delete this post?");
+    if (!ok) return;
 
     setPosts((p) => p.filter((x) => x.id !== id));
 
-    const { error } = await supabase
-      .from("posts")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      alert("Eroare la ștergere");
-      console.error(error);
-      return;
-    }
-  }
-
-  // =========================
-  // START EDIT
-  // =========================
-  function startEdit(post: Post) {
-    setEditingId(post.id);
-    setEditText(post.content);
+    await supabase.from("posts").delete().eq("id", id);
   }
 
   // =========================
   // SAVE EDIT
   // =========================
   async function saveEdit(id: string) {
-    setLoading(true);
-
-    const old = [...posts];
-
-    // optimistic update
-    setPosts((p) =>
-      p.map((x) =>
-        x.id === id ? { ...x, content: editText } : x
-      )
-    );
-
-    setEditingId(null);
-
-    const { error } = await supabase
+    await supabase
       .from("posts")
       .update({
         content: editText,
@@ -94,13 +56,13 @@ export default function ProfilePosts() {
       })
       .eq("id", id);
 
-    setLoading(false);
+    setPosts((p) =>
+      p.map((x) =>
+        x.id === id ? { ...x, content: editText } : x
+      )
+    );
 
-    if (error) {
-      alert("Eroare la update");
-      console.error(error);
-      setPosts(old); // rollback
-    }
+    setEditingId(null);
   }
 
   // =========================
@@ -110,42 +72,70 @@ export default function ProfilePosts() {
     <div className="space-y-4">
 
       {posts.map((p) => (
-        <div key={p.id} className="border p-4 rounded">
+        <div
+          key={p.id}
+          className="
+            bg-white border border-gray-100
+            rounded-xl p-4
+          "
+        >
 
-          <h3 className="font-bold mb-2">{p.title}</h3>
+          {/* TITLE */}
+          <h3 className="font-semibold text-sm mb-2">
+            {p.title}
+          </h3>
 
+          {/* CONTENT */}
           {editingId === p.id ? (
-            <>
+            <div className="space-y-2">
+
               <textarea
-                className="w-full border p-2 rounded"
                 value={editText}
-                onChange={(e) => setEditText(e.target.value)}
+                onChange={(e) =>
+                  setEditText(e.target.value)
+                }
+                className="w-full border rounded-xl p-2 min-h-[120px]"
               />
 
-              <div className="flex gap-2 mt-2">
+              <div className="flex gap-2">
+
                 <button
                   onClick={() => saveEdit(p.id)}
-                  disabled={loading}
-                  className="bg-green-600 text-white px-3 py-1 rounded"
+                  className="bg-black text-white px-3 py-1 rounded-xl"
                 >
                   Save
                 </button>
 
                 <button
                   onClick={() => setEditingId(null)}
-                  className="bg-gray-400 text-white px-3 py-1 rounded"
+                  className="text-gray-500 text-sm"
                 >
                   Cancel
                 </button>
+
               </div>
-            </>
+
+            </div>
           ) : (
             <>
-              <p className="text-sm">{p.content}</p>
+              <p
+                className="
+                  text-sm text-gray-700
+                  line-clamp-4
+                  leading-relaxed
+                "
+              >
+                {p.content}
+              </p>
 
-              <div className="flex gap-2 mt-3">
+              {/* ACTIONS */}
+              <div className="flex gap-4 mt-3 text-xs">
+
                 <button
-                  onClick={() => startEdit(p)}
+                  onClick={() => {
+                    setEditingId(p.id);
+                    setEditText(p.content);
+                  }}
                   className="text-blue-600"
                 >
                   Edit
@@ -153,10 +143,11 @@ export default function ProfilePosts() {
 
                 <button
                   onClick={() => deletePost(p.id)}
-                  className="text-red-600"
+                  className="text-red-500"
                 >
                   Delete
                 </button>
+
               </div>
             </>
           )}

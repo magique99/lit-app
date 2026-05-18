@@ -6,35 +6,22 @@ import { supabase } from "@/lib/supabaseClient";
 
 export default function ProfilePostsV2() {
   const [posts, setPosts] = useState<any[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
 
-  const [editingId, setEditingId] =
-    useState<string | null>(null);
-
-  const [editText, setEditText] =
-    useState("");
-
-  // =========================
-  // LOAD POSTS
-  // =========================
   useEffect(() => {
     async function load() {
       const { data: userData } =
         await supabase.auth.getUser();
 
       const uid = userData.user?.id;
-
       if (!uid) return;
-
-      setUserId(uid);
 
       const { data } = await supabase
         .from("posts")
         .select("*")
         .eq("user_id", uid)
-        .order("created_at", {
-          ascending: false,
-        });
+        .order("created_at", { ascending: false });
 
       setPosts(data || []);
     }
@@ -42,14 +29,8 @@ export default function ProfilePostsV2() {
     load();
   }, []);
 
-  // =========================
-  // DELETE
-  // =========================
   async function deletePost(id: string) {
-    const ok = confirm(
-      "Delete this text?"
-    );
-
+    const ok = confirm("Delete this post?");
     if (!ok) return;
 
     await supabase
@@ -57,32 +38,22 @@ export default function ProfilePostsV2() {
       .delete()
       .eq("id", id);
 
-    setPosts((prev) =>
-      prev.filter((p) => p.id !== id)
+    setPosts((p) =>
+      p.filter((x) => x.id !== id)
     );
   }
 
-  // =========================
-  // SAVE EDIT
-  // =========================
-  async function saveEdit(
-    postId: string
-  ) {
+  async function saveEdit(postId: string) {
     await supabase
       .from("posts")
-      .update({
-        content: editText,
-      })
+      .update({ content: editText })
       .eq("id", postId);
 
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === postId
-          ? {
-              ...p,
-              content: editText,
-            }
-          : p
+    setPosts((p) =>
+      p.map((x) =>
+        x.id === postId
+          ? { ...x, content: editText }
+          : x
       )
     );
 
@@ -90,29 +61,26 @@ export default function ProfilePostsV2() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3">
 
       {posts.map((post) => (
         <article
           key={post.id}
           className="
-            bg-white rounded-2xl
-            border border-gray-200
-            p-6
-            hover:shadow-md
+            bg-white
+            border border-gray-100
+            rounded-xl
+            p-4 sm:p-5
             transition
+            hover:shadow-sm
           "
         >
 
           {/* META */}
-          <div className="flex justify-between text-xs text-gray-500 mb-3">
-
-            <span>
-              {new Date(
-                post.created_at
-              ).toLocaleDateString()}
-            </span>
-
+          <div className="text-xs text-gray-400 mb-2">
+            {new Date(
+              post.created_at
+            ).toLocaleDateString()}
           </div>
 
           {/* CONTENT */}
@@ -122,14 +90,13 @@ export default function ProfilePostsV2() {
               <textarea
                 value={editText}
                 onChange={(e) =>
-                  setEditText(
-                    e.target.value
-                  )
+                  setEditText(e.target.value)
                 }
                 className="
                   w-full border
                   rounded-xl p-3
-                  min-h-[180px]
+                  text-sm
+                  min-h-[140px]
                 "
               />
 
@@ -141,7 +108,8 @@ export default function ProfilePostsV2() {
                   }
                   className="
                     bg-black text-white
-                    px-4 py-2 rounded-xl
+                    px-4 py-2
+                    rounded-xl text-sm
                   "
                 >
                   Save
@@ -151,54 +119,44 @@ export default function ProfilePostsV2() {
                   onClick={() =>
                     setEditingId(null)
                   }
-                  className="
-                    text-gray-500
-                  "
+                  className="text-sm text-gray-500"
                 >
                   Cancel
                 </button>
 
               </div>
+
             </div>
           ) : (
             <>
+              {/* TEXT (Instagram-like clamp) */}
               <div
                 className="
-                  text-gray-800
+                  text-sm text-gray-800
                   line-clamp-4
-                  overflow-hidden
-                  prose prose-sm max-w-none
+                  whitespace-pre-wrap
                 "
                 dangerouslySetInnerHTML={{
                   __html: post.content,
                 }}
               />
 
-              {/* ACTIONS */}
-              <div className="flex gap-5 mt-5 text-sm">
+              {/* ACTIONS (Instagram-like simple row) */}
+              <div className="flex gap-6 mt-3 text-sm">
 
                 <Link
                   href={`/post/${post.id}`}
-                  className="
-                    text-gray-700
-                    hover:text-black
-                  "
+                  className="text-gray-600 hover:text-black"
                 >
                   View
                 </Link>
 
                 <button
                   onClick={() => {
-                    setEditingId(
-                      post.id
-                    );
-                    setEditText(
-                      post.content
-                    );
+                    setEditingId(post.id);
+                    setEditText(post.content);
                   }}
-                  className="
-                    text-blue-600
-                  "
+                  className="text-blue-600"
                 >
                   Edit
                 </button>
@@ -207,9 +165,7 @@ export default function ProfilePostsV2() {
                   onClick={() =>
                     deletePost(post.id)
                   }
-                  className="
-                    text-red-600
-                  "
+                  className="text-red-500"
                 >
                   Delete
                 </button>

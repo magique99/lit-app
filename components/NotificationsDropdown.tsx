@@ -8,8 +8,6 @@ type Notification = {
   user_id: string;
   actor_id: string;
   type: "like_post" | "like_comment" | "comment" | "reply";
-  post_id?: string;
-  comment_id?: string;
   read: boolean;
   created_at: string;
   actor?: {
@@ -26,30 +24,24 @@ export default function NotificationsDropdown({
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  // =========================
-  // LOAD NOTIFICATIONS
-  // =========================
-  async function loadNotifications() {
-    const { data } = await supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-
-    setNotifications(data || []);
-  }
-
-  // =========================
-  // INIT
-  // =========================
+  // LOAD
   useEffect(() => {
     if (!userId) return;
-    loadNotifications();
+
+    async function load() {
+      const { data } = await supabase
+        .from("notifications")
+        .select("*, actor:profiles(username, avatar_url)")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      setNotifications(data || []);
+    }
+
+    load();
   }, [userId]);
 
-  // =========================
   // REALTIME
-  // =========================
   useEffect(() => {
     if (!userId) return;
 
@@ -77,9 +69,6 @@ export default function NotificationsDropdown({
     };
   }, [userId]);
 
-  // =========================
-  // MARK AS READ
-  // =========================
   async function markAsRead(id: string) {
     await supabase
       .from("notifications")
@@ -93,41 +82,56 @@ export default function NotificationsDropdown({
     );
   }
 
-  // =========================
-  // UNREAD COUNT
-  // =========================
-  const unreadCount = notifications.filter(
-    (n) => !n.read
-  ).length;
+  const unread = notifications.filter(n => !n.read).length;
 
-  // =========================
-  // UI
-  // =========================
   return (
     <div className="relative">
 
-      {/* BELL BUTTON */}
+      {/* BELL */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative text-xl"
+        className="
+          relative w-9 h-9
+          flex items-center justify-center
+          rounded-full hover:bg-gray-100
+          transition
+        "
       >
         🔔
 
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1.5 rounded-full">
-            {unreadCount}
+        {unread > 0 && (
+          <span className="
+            absolute -top-1 -right-1
+            bg-red-500 text-white
+            text-[10px]
+            min-w-[16px] h-[16px]
+            flex items-center justify-center
+            rounded-full
+          ">
+            {unread}
           </span>
         )}
       </button>
 
       {/* DROPDOWN */}
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white border rounded-xl shadow-lg z-50">
+        <div className="
+          absolute right-0 mt-2
+          w-80 sm:w-96
+          bg-white
+          border border-gray-100
+          rounded-xl
+          shadow-lg
+          overflow-hidden
+          z-50
+        ">
 
-          <div className="p-3 border-b font-semibold text-sm">
+          {/* HEADER */}
+          <div className="px-4 py-3 border-b text-sm font-medium">
             Notifications
           </div>
 
+          {/* LIST */}
           <div className="max-h-96 overflow-y-auto">
 
             {notifications.length === 0 && (
@@ -140,29 +144,50 @@ export default function NotificationsDropdown({
               <div
                 key={n.id}
                 onClick={() => markAsRead(n.id)}
-                className={`p-3 text-sm border-b cursor-pointer hover:bg-gray-50 ${
-                  !n.read ? "bg-gray-50" : ""
-                }`}
+                className={`
+                  flex items-start gap-3
+                  px-4 py-3
+                  cursor-pointer
+                  hover:bg-gray-50
+                  transition
+                  ${!n.read ? "bg-gray-50" : ""}
+                `}
               >
 
-                <div className="flex justify-between items-center">
+                {/* AVATAR */}
+                <div className="w-9 h-9 rounded-full bg-gray-200 overflow-hidden shrink-0">
+                  {n.actor?.avatar_url ? (
+                    <img
+                      src={n.actor.avatar_url}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : null}
+                </div>
 
-                  <div>
-                    {n.type === "like_post" && "❤️ liked your post"}
-                    {n.type === "like_comment" && "❤️ liked your comment"}
-                    {n.type === "comment" && "💬 commented on your post"}
-                    {n.type === "reply" && "↩️ replied to your comment"}
+                {/* TEXT */}
+                <div className="flex-1">
+
+                  <div className="text-sm text-gray-800 leading-snug">
+                    <span className="font-medium">
+                      {n.actor?.username || "Someone"}
+                    </span>{" "}
+
+                    {n.type === "like_post" && "liked your post ❤️"}
+                    {n.type === "like_comment" && "liked your comment ❤️"}
+                    {n.type === "comment" && "commented on your post 💬"}
+                    {n.type === "reply" && "replied to your comment ↩️"}
                   </div>
 
-                  {!n.read && (
-                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                  )}
+                  <div className="text-xs text-gray-400 mt-1">
+                    {new Date(n.created_at).toLocaleString()}
+                  </div>
 
                 </div>
 
-                <div className="text-xs text-gray-400 mt-1">
-                  {new Date(n.created_at).toLocaleString()}
-                </div>
+                {/* UNREAD DOT */}
+                {!n.read && (
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
+                )}
 
               </div>
             ))}
@@ -170,7 +195,6 @@ export default function NotificationsDropdown({
           </div>
         </div>
       )}
-
     </div>
   );
 }

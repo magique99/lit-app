@@ -13,18 +13,12 @@ export default function ProfileCard() {
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
 
-  // =========================
-  // GET USER
-  // =========================
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUserId(data.user?.id ?? null);
     });
   }, []);
 
-  // =========================
-  // LOAD PROFILE
-  // =========================
   useEffect(() => {
     if (!userId) return;
 
@@ -50,25 +44,16 @@ export default function ProfileCard() {
     load();
   }, [userId]);
 
-  // =========================
-  // SAVE PROFILE (EDIT MODE)
-  // =========================
   async function saveProfile() {
     if (!userId) return;
 
-    const { error } = await supabase
+    await supabase
       .from("profiles")
       .update({
         username,
         bio,
-        updated_at: new Date().toISOString(),
       })
       .eq("user_id", userId);
-
-    if (error) {
-      console.error(error);
-      return;
-    }
 
     setProfile((p: any) => ({
       ...p,
@@ -79,10 +64,9 @@ export default function ProfileCard() {
     setEdit(false);
   }
 
-  // =========================
-  // UPLOAD AVATAR
-  // =========================
-  async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
+  async function uploadAvatar(
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
     if (!userId) return;
 
     const file = e.target.files?.[0];
@@ -94,10 +78,7 @@ export default function ProfileCard() {
       .from("avatars")
       .upload(path, file, { upsert: true });
 
-    if (error) {
-      console.error(error);
-      return;
-    }
+    if (error) return;
 
     const { data } = supabase.storage
       .from("avatars")
@@ -114,39 +95,42 @@ export default function ProfileCard() {
     }));
   }
 
-  // =========================
-  // UI STATES
-  // =========================
-  if (loading) return <div>Loading...</div>;
-
-  if (!profile) return <div>No profile found</div>;
-
-  // =========================
-  // VIEW MODE
-  // =========================
-  if (!edit) {
+  if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="animate-pulse h-40 bg-gray-100 rounded-xl" />
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="text-sm text-gray-500">
+        No profile found
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white border border-gray-100 rounded-xl p-5 space-y-4">
+
+      {/* HEADER */}
+      <div className="flex items-center gap-4">
 
         {/* AVATAR */}
-        <div className="flex items-center gap-4">
+        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-200 overflow-hidden border border-gray-100">
 
-          <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
-            {profile.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center font-bold">
-                {profile.username?.[0]?.toUpperCase() || "U"}
-              </div>
-            )}
-          </div>
+          {profile.avatar_url ? (
+            <img
+              src={profile.avatar_url}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full font-bold text-gray-500">
+              {profile.username?.[0]?.toUpperCase() || "U"}
+            </div>
+          )}
 
-          {/* UPLOAD BUTTON */}
-          <label className="text-sm text-blue-600 cursor-pointer">
-            Change avatar
+          {/* upload overlay (Instagram style) */}
+          <label className="absolute inset-0 bg-black/0 hover:bg-black/20 flex items-center justify-center cursor-pointer transition">
             <input
               type="file"
               className="hidden"
@@ -157,63 +141,77 @@ export default function ProfileCard() {
         </div>
 
         {/* INFO */}
-        <div>
-          <h3 className="font-semibold text-lg">
-            {profile.username}
-          </h3>
+        <div className="flex-1">
 
-          <p className="text-sm text-gray-600">
-            {profile.bio}
-          </p>
+          {!edit ? (
+            <>
+              <h2 className="text-lg font-semibold">
+                {profile.username}
+              </h2>
+
+              <p className="text-sm text-gray-600 mt-1">
+                {profile.bio || "No bio yet"}
+              </p>
+
+              <button
+                onClick={() => setEdit(true)}
+                className="text-sm text-blue-600 mt-2"
+              >
+                Edit profile
+              </button>
+            </>
+          ) : (
+            <div className="space-y-2">
+
+              <input
+                value={username}
+                onChange={(e) =>
+                  setUsername(e.target.value)
+                }
+                className="
+                  w-full border
+                  rounded-xl p-2 text-sm
+                "
+                placeholder="username"
+              />
+
+              <textarea
+                value={bio}
+                onChange={(e) =>
+                  setBio(e.target.value)
+                }
+                className="
+                  w-full border
+                  rounded-xl p-2 text-sm
+                "
+                placeholder="bio"
+              />
+
+              <div className="flex gap-2">
+
+                <button
+                  onClick={saveProfile}
+                  className="
+                    bg-black text-white
+                    px-3 py-1.5 rounded-xl text-sm
+                  "
+                >
+                  Save
+                </button>
+
+                <button
+                  onClick={() => setEdit(false)}
+                  className="text-sm text-gray-500"
+                >
+                  Cancel
+                </button>
+
+              </div>
+
+            </div>
+          )}
+
         </div>
-
-        {/* EDIT BUTTON */}
-        <button
-          onClick={() => setEdit(true)}
-          className="text-sm text-blue-600"
-        >
-          Edit profile
-        </button>
-
-      </div>
-    );
-  }
-
-  // =========================
-  // EDIT MODE
-  // =========================
-  return (
-    <div className="space-y-3">
-
-      <input
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="w-full border p-2 rounded"
-        placeholder="username"
-      />
-
-      <textarea
-        value={bio}
-        onChange={(e) => setBio(e.target.value)}
-        className="w-full border p-2 rounded"
-        placeholder="bio"
-      />
-
-      <div className="flex gap-2">
-
-        <button
-          onClick={saveProfile}
-          className="bg-black text-white px-3 py-1 rounded"
-        >
-          Save
-        </button>
-
-        <button
-          onClick={() => setEdit(false)}
-          className="text-gray-500 text-sm"
-        >
-          Cancel
-        </button>
 
       </div>
 

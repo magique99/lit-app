@@ -27,77 +27,78 @@ export default function ProfileHeaderV4() {
 
   if (!profile) {
     return (
-      <div className="h-40 bg-gray-100 animate-pulse rounded-xl" />
+      <div className="h-32 bg-gray-100 animate-pulse rounded-xl" />
     );
   }
 
   return (
-    <div className="space-y-4 bg-white rounded-xl p-4 min-h-[320px] shadow-sm">
+    <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
 
-      {/* COVER 
-      <div
-        className="
-          h-24 rounded-2xl
-          bg-gradient-to-r
-          from-gray-900 to-gray-600
-        "
-      />
-      */}
-      {/* HEADER ROW */}
-      <div className="flex items-end gap-4 -mt-10 px-4">
+      {/* COVER (Instagram-like small banner) */}
+      <div className="h-20 sm:h-24 bg-gradient-to-r from-gray-900 to-gray-600" />
 
-        {/* AVATAR */}
-        <div className="w-20 h-20 rounded-full border-4 border-white bg-gray-200 overflow-hidden">
-          {profile.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full font-bold">
-              U
-            </div>
-          )}
+      {/* CONTENT */}
+      <div className="px-4 sm:px-6 pb-5">
+
+        {/* AVATAR + INFO */}
+        <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-10 sm:-mt-12">
+
+          {/* AVATAR */}
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white bg-gray-200 overflow-hidden shrink-0">
+            {profile.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full font-bold">
+                U
+              </div>
+            )}
+          </div>
+
+          {/* INFO */}
+          <div className="flex-1 text-center sm:text-left">
+
+            {!edit ? (
+              <>
+                <h2 className="text-xl sm:text-2xl font-bold">
+                  {profile.username}
+                </h2>
+
+                <p className="text-sm text-gray-600 mt-1">
+                  {profile.bio || "No bio yet"}
+                </p>
+
+                <button
+                  onClick={() => setEdit(true)}
+                  className="
+                    mt-3 sm:mt-4
+                    w-full sm:w-auto
+                    px-4 py-2
+                    rounded-xl border
+                    text-sm
+                    hover:bg-gray-50
+                    transition
+                  "
+                >
+                  Edit profile
+                </button>
+              </>
+            ) : (
+              <ProfileEditorInline
+                profile={profile}
+                onClose={() => setEdit(false)}
+                onSaved={(newProfile: any) =>
+                  setProfile(newProfile)
+                }
+              />
+            )}
+
+          </div>
         </div>
 
-        {/* INFO */}
-        <div className="flex-1">
-
-          {!edit ? (
-            <>
-              <h2 className="text-2xl font-bold">
-                {profile.username}
-              </h2>
-
-              <p className="text-sm text-gray-600 mt-2">
-                {profile.bio || "No bio"}
-              </p>
-
-              <button
-                onClick={() => setEdit(true)}
-                className="
-                  mt-4 px-4 py-2
-                  rounded-xl border
-                  hover:bg-gray-100
-                  transition text-sm
-                "
-              >
-                Edit profile
-              </button>
-            </>
-          ) : (
-            <ProfileEditorInline
-              profile={profile}
-              onClose={() => setEdit(false)}
-              onSaved={(newProfile: any) =>
-                setProfile(newProfile)
-              }
-            />
-          )}
-
-        </div>      
       </div>
-
     </div>
   );
 }
@@ -132,7 +133,7 @@ function ProfileEditorInline({
   }
 
   return (
-    <div className="space-y-3 mt-3">
+    <div className="space-y-3 mt-4">
 
       <input
         value={username}
@@ -140,8 +141,7 @@ function ProfileEditorInline({
           setUsername(e.target.value)
         }
         className="
-          w-full border
-          rounded-xl p-3
+          w-full border rounded-xl p-3 text-sm
         "
         placeholder="username"
       />
@@ -152,19 +152,19 @@ function ProfileEditorInline({
           setBio(e.target.value)
         }
         className="
-          w-full border
-          rounded-xl p-3
+          w-full border rounded-xl p-3 text-sm
         "
         placeholder="bio"
       />
 
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-2">
 
         <button
           onClick={save}
           className="
             bg-black text-white
             px-4 py-2 rounded-xl
+            text-sm
           "
         >
           Save
@@ -172,7 +172,9 @@ function ProfileEditorInline({
 
         <button
           onClick={onClose}
-          className="text-gray-500"
+          className="
+            text-gray-500 text-sm
+          "
         >
           Cancel
         </button>
