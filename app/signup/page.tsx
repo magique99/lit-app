@@ -4,36 +4,40 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  async function login() {
-    setLoading(true);
-
-    const { error } = await supabase.auth.signInWithPassword({
+  async function signup() {
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
-
-    setLoading(false);
 
     if (error) {
       alert(error.message);
       return;
     }
 
-    router.push("/");
-    router.refresh();
+    const userId = data.user?.id;
+
+    if (userId) {
+      await supabase.from("profiles").insert({
+        user_id: userId,
+        username: email.split("@")[0],
+        bio: "",
+      });
+    }
+
+    router.push("/profile");
   }
 
   return (
     <main className="max-w-md mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">
-        Login
+        Sign up
       </h1>
 
       <div className="space-y-4">
@@ -55,11 +59,10 @@ export default function LoginPage() {
         />
 
         <button
-          onClick={login}
-          disabled={loading}
+          onClick={signup}
           className="bg-black text-white px-4 py-3 rounded-xl w-full"
         >
-          {loading ? "Loading..." : "Login"}
+          Create account
         </button>
 
       </div>
