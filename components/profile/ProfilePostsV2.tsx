@@ -1,173 +1,222 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function ProfilePostsV2() {
-  const [userId, setUserId] = useState<string | null>(null);
   const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editText, setEditText] = useState("");
-  // =========================
-  // GET USER
-  // =========================
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUserId(data.user?.id ?? null);
-    });
-  }, []);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const [editingId, setEditingId] =
+    useState<string | null>(null);
+
+  const [editText, setEditText] =
+    useState("");
 
   // =========================
   // LOAD POSTS
   // =========================
   useEffect(() => {
-    if (!userId) return;
+    async function load() {
+      const { data: userData } =
+        await supabase.auth.getUser();
 
-    async function loadPosts() {
-      setLoading(true);
+      const uid = userData.user?.id;
 
-      const { data, error } = await supabase
+      if (!uid) return;
+
+      setUserId(uid);
+
+      const { data } = await supabase
         .from("posts")
         .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("LOAD POSTS ERROR:", error);
-      }
+        .eq("user_id", uid)
+        .order("created_at", {
+          ascending: false,
+        });
 
       setPosts(data || []);
-      setLoading(false);
     }
 
-    loadPosts();
-  }, [userId]);
+    load();
+  }, []);
 
   // =========================
-  // DELETE POST (optional)
+  // DELETE
   // =========================
   async function deletePost(id: string) {
-    await supabase.from("posts").delete().eq("id", id);
+    const ok = confirm(
+      "Delete this text?"
+    );
 
-    setPosts((prev) => prev.filter((p) => p.id !== id));
-  }
+    if (!ok) return;
 
-  // =========================
-  // UI
-  // =========================
-  if (loading) {
-    return <div className="text-sm text-gray-500">Loading...</div>;
-  }
+    await supabase
+      .from("posts")
+      .delete()
+      .eq("id", id);
 
-  if (!posts.length) {
-    return (
-      <div className="text-sm text-gray-500">
-        Nu ai încă niciun text.
-      </div>
+    setPosts((prev) =>
+      prev.filter((p) => p.id !== id)
     );
   }
 
+  // =========================
+  // SAVE EDIT
+  // =========================
+  async function saveEdit(
+    postId: string
+  ) {
+    await supabase
+      .from("posts")
+      .update({
+        content: editText,
+      })
+      .eq("id", postId);
+
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId
+          ? {
+              ...p,
+              content: editText,
+            }
+          : p
+      )
+    );
+
+    setEditingId(null);
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
 
       {posts.map((post) => (
-        <div
+        <article
           key={post.id}
-          className="border rounded-lg p-3 hover:shadow-sm transition"
+          className="
+            bg-white rounded-2xl
+            border border-gray-200
+            p-6
+            hover:shadow-md
+            transition
+          "
         >
 
-          {/* TITLE */}
-          <h3 className="font-semibold text-sm">
-            {post.title}
-          </h3>
+          {/* META */}
+          <div className="flex justify-between text-xs text-gray-500 mb-3">
 
-          {/* CONTENT (TRUNCATED) */}
+            <span>
+              {new Date(
+                post.created_at
+              ).toLocaleDateString()}
+            </span>
+
+          </div>
+
+          {/* CONTENT */}
           {editingId === post.id ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
 
               <textarea
                 value={editText}
-                onChange={(e) => setEditText(e.target.value)}
-                className="w-full border p-2 rounded"
+                onChange={(e) =>
+                  setEditText(
+                    e.target.value
+                  )
+                }
+                className="
+                  w-full border
+                  rounded-xl p-3
+                  min-h-[180px]
+                "
               />
 
               <div className="flex gap-2">
 
                 <button
-                  onClick={async () => {
-                    await supabase
-                      .from("posts")
-                      .update({ content: editText })
-                      .eq("id", post.id);
-
-                    setEditingId(null);
-                  }}
-                  className="bg-black text-white px-3 py-1 rounded text-sm"
+                  onClick={() =>
+                    saveEdit(post.id)
+                  }
+                  className="
+                    bg-black text-white
+                    px-4 py-2 rounded-xl
+                  "
                 >
                   Save
                 </button>
 
                 <button
-                  onClick={() => setEditingId(null)}
-                  className="text-gray-500 text-sm"
+                  onClick={() =>
+                    setEditingId(null)
+                  }
+                  className="
+                    text-gray-500
+                  "
                 >
                   Cancel
                 </button>
 
               </div>
-
             </div>
           ) : (
-            <div>
-              <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-4 overflow-hidden">
+            <>
+              <div
+                className="
+                  text-gray-800
+                  whitespace-pre-wrap
+                  line-clamp-4
+                "
+              >
                 {post.content}
-              </p>
+              </div>
 
-              <button
-                onClick={() => {
-                  setEditingId(post.id);
-                  setEditText(post.content);
-                }}
-                className="text-xs text-blue-600 mt-2"
-              >
-                Edit
-              </button>
-            </div>
+              {/* ACTIONS */}
+              <div className="flex gap-5 mt-5 text-sm">
+
+                <Link
+                  href={`/post/${post.id}`}
+                  className="
+                    text-gray-700
+                    hover:text-black
+                  "
+                >
+                  View
+                </Link>
+
+                <button
+                  onClick={() => {
+                    setEditingId(
+                      post.id
+                    );
+                    setEditText(
+                      post.content
+                    );
+                  }}
+                  className="
+                    text-blue-600
+                  "
+                >
+                  Edit
+                </button>
+
+                <button
+                  onClick={() =>
+                    deletePost(post.id)
+                  }
+                  className="
+                    text-red-600
+                  "
+                >
+                  Delete
+                </button>
+
+              </div>
+            </>
           )}
-
-          {/* FOOTER */}
-          <div className="flex justify-between items-center mt-3">
-
-            <span className="text-xs text-gray-400">
-              {new Date(post.created_at).toLocaleDateString()}
-            </span>
-
-            <div className="flex gap-3">
-
-              <button
-                className="text-xs text-blue-600"
-                onClick={() => {
-                  window.location.href = `/post/${post.id}`;
-                }}
-              >
-                View
-              </button>
-
-              <button
-                className="text-xs text-red-500"
-                onClick={() => deletePost(post.id)}
-              >
-                Delete
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
+        </article>
       ))}
-
     </div>
   );
 }
