@@ -1,5 +1,5 @@
-import ProfileHeaderV4 from "@/components/ProfileHeaderV4";
-import ProfileTabsV4 from "@/components/ProfileTabsV4";
+import ProfileHeaderV4 from "@/components/profile/ProfileHeaderV4";
+import ProfileTabsV4 from "@/components/profile/ProfileTabsV4";
 import ProfilePostsV2 from "@/components/profile/ProfilePostsV2";
 
 export default function ProfilePage() {
