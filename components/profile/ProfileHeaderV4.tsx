@@ -31,7 +31,7 @@ export default function ProfileHeaderV4() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 bg-white rounded-xl p-4 min-h-[320px] shadow-sm">
 
       {/* COVER */}
       <div className="h-32 rounded-xl bg-gradient-to-r from-gray-900 to-gray-600" />

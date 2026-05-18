@@ -7,7 +7,8 @@ export default function ProfilePostsV2() {
   const [userId, setUserId] = useState<string | null>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
   // =========================
   // GET USER
   // =========================
@@ -82,10 +83,58 @@ export default function ProfilePostsV2() {
           </h3>
 
           {/* CONTENT (TRUNCATED) */}
-            <div
-            className="text-sm text-gray-700 mt-2 line-clamp-4 prose prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+          {editingId === post.id ? (
+            <div className="space-y-2">
+
+              <textarea
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                className="w-full border p-2 rounded"
+              />
+
+              <div className="flex gap-2">
+
+                <button
+                  onClick={async () => {
+                    await supabase
+                      .from("posts")
+                      .update({ content: editText })
+                      .eq("id", post.id);
+
+                    setEditingId(null);
+                  }}
+                  className="bg-black text-white px-3 py-1 rounded text-sm"
+                >
+                  Save
+                </button>
+
+                <button
+                  onClick={() => setEditingId(null)}
+                  className="text-gray-500 text-sm"
+                >
+                  Cancel
+                </button>
+
+              </div>
+
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm text-gray-700">
+                {post.content}
+              </p>
+
+              <button
+                onClick={() => {
+                  setEditingId(post.id);
+                  setEditText(post.content);
+                }}
+                className="text-xs text-blue-600 mt-2"
+              >
+                Edit
+              </button>
+            </div>
+          )}
 
           {/* FOOTER */}
           <div className="flex justify-between items-center mt-3">
