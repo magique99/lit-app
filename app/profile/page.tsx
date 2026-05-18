@@ -1,123 +1,32 @@
-"use client";
+import ProfileCard from "@/components/ProfileCard";
+import ProfilePostsV2 from "@/components/ProfilePostsV2";
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-
-export default function ProfilePostsV2() {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // =========================
-  // GET USER
-  // =========================
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUserId(data.user?.id ?? null);
-    });
-  }, []);
-
-  // =========================
-  // LOAD POSTS
-  // =========================
-  useEffect(() => {
-    if (!userId) return;
-
-    async function loadPosts() {
-      setLoading(true);
-
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("LOAD POSTS ERROR:", error);
-      }
-
-      setPosts(data || []);
-      setLoading(false);
-    }
-
-    loadPosts();
-  }, [userId]);
-
-  // =========================
-  // DELETE POST (optional)
-  // =========================
-  async function deletePost(id: string) {
-    await supabase.from("posts").delete().eq("id", id);
-
-    setPosts((prev) => prev.filter((p) => p.id !== id));
-  }
-
-  // =========================
-  // UI
-  // =========================
-  if (loading) {
-    return <div className="text-sm text-gray-500">Loading...</div>;
-  }
-
-  if (!posts.length) {
-    return (
-      <div className="text-sm text-gray-500">
-        Nu ai încă niciun text.
-      </div>
-    );
-  }
-
+export default function ProfilePage() {
   return (
-    <div className="space-y-4">
+    <main className="max-w-5xl mx-auto p-6">
 
-      {posts.map((post) => (
-        <div
-          key={post.id}
-          className="border rounded-lg p-3 hover:shadow-sm transition"
-        >
+      <h1 className="text-3xl font-bold mb-8">
+        Profilul meu
+      </h1>
 
-          {/* TITLE */}
-          <h3 className="font-semibold text-sm">
-            {post.title}
-          </h3>
+      <div className="grid md:grid-cols-2 gap-6">
 
-          {/* CONTENT (TRUNCATED) */}
-          <p className="text-sm text-gray-600 mt-2 line-clamp-4">
-            {post.content}
-          </p>
+        {/* LEFT - PROFILE CARD */}
+        <section className="border rounded-xl p-5 h-fit">
+          <ProfileCard />
+        </section>
 
-          {/* FOOTER */}
-          <div className="flex justify-between items-center mt-3">
+        {/* RIGHT - POSTS */}
+        <section className="border rounded-xl p-5">
+          <h2 className="text-lg font-semibold mb-4">
+            Textele mele
+          </h2>
 
-            <span className="text-xs text-gray-400">
-              {new Date(post.created_at).toLocaleDateString()}
-            </span>
+          <ProfilePostsV2 />
+        </section>
 
-            <div className="flex gap-3">
+      </div>
 
-              <button
-                className="text-xs text-blue-600"
-                onClick={() => {
-                  window.location.href = `/post/${post.id}`;
-                }}
-              >
-                View
-              </button>
-
-              <button
-                className="text-xs text-red-500"
-                onClick={() => deletePost(post.id)}
-              >
-                Delete
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-      ))}
-
-    </div>
+    </main>
   );
 }
