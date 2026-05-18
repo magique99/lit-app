@@ -11,12 +11,12 @@ export default function ProfilePage() {
 
       <div className="grid md:grid-cols-2 gap-6">
 
-        {/* LEFT - PROFILE CARD */}
-        <section className="border rounded-xl p-5 h-fit">
+        {/* LEFT: PROFILE CARD */}
+        <section className="border rounded-xl p-5">
           <ProfileCard />
         </section>
 
-        {/* RIGHT - POSTS */}
+        {/* RIGHT: POSTS */}
         <section className="border rounded-xl p-5">
           <h2 className="text-lg font-semibold mb-4">
             Textele mele
