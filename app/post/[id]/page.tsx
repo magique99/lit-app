@@ -30,7 +30,7 @@ export default async function PostPage({ params }: Props) {
     console.log("POST PAGE ERROR:", error);
     notFound();
   }
-
+console.log("POST ID:", id);
   const authorName = "anonim";
 
   const publishedAt = new Date(post.created_at).toLocaleDateString(
