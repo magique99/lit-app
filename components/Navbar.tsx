@@ -86,7 +86,7 @@ export default function Navbar() {
         {/* LOGO */}
         <Link
           href="/"
-          className="font-serif text-sm uppercase tracking-[0.35em] text-slate-800 transition hover:text-slate-950"
+          className="font-serif text-sm tracking-[0.35em] text-slate-800 transition hover:text-slate-950"
         >
           Literatura9
         </Link>
