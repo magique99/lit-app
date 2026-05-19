@@ -340,16 +340,13 @@ export default function HomePage() {
     <main className="relative min-h-screen bg-[#f6f4f1] text-[#111827] pt-28 lg:pt-32">
       <div className="max-w-6xl mx-auto px-6 py-16 lg:py-20">
         <section className="max-w-3xl space-y-6">
-          <span className="inline-flex items-center rounded-full border border-black/10 bg-white/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-gray-600 shadow-sm">
-            cinema literar
-          </span>
 
           <h1 className="text-5xl sm:text-6xl font-semibold leading-[0.95] tracking-tight text-[#0f172a]">
-            Un spațiu elegant pentru proză, cinema și gânduri lente.
+            Un spațiu elegant pentru proză, poezie și visare.
           </h1>
 
           <p className="max-w-2xl text-lg leading-9 text-slate-600">
-            O pagină calmă, cu tipografie rafinată și povestiri care lasă impresie. Mai puține elemente, fiecare atent gândit.
+            Un loc liniștit în care cuvintele par să lumineze dinăuntru, iar poveștile lasă pe piele urme pe care memoria nu știe dacă le-a trăit sau doar le-a visat. Puține obiecte, fiecare cu tăcerea lui atent construită.
           </p>
         </section>
 
@@ -357,7 +354,7 @@ export default function HomePage() {
           <section className="space-y-8">
             <div className="rounded-[2rem] border border-black/5 bg-white/90 p-8 shadow-[0_20px_80px_rgba(15,23,42,0.06)]">
               <div className="mb-4 text-sm uppercase tracking-[0.2em] text-gray-500">
-                Selețiuni recente
+                Ultimile postari
               </div>
 
               {error && (
@@ -445,7 +442,7 @@ export default function HomePage() {
           <aside className="space-y-6">
             <div className="rounded-[2rem] border border-black/5 bg-white/90 p-8 shadow-[0_20px_80px_rgba(15,23,42,0.06)]">
               <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-500 mb-5">
-                Latest comments
+                Ultimele comentarii
               </h2>
 
               <div className="space-y-4">

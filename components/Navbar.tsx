@@ -61,9 +61,9 @@ export default function Navbar() {
         {/* LOGO */}
         <Link
           href="/"
-          className="font-semibold text-sm uppercase tracking-[0.35em] text-slate-700"
+          className="font-serif text-sm uppercase tracking-[0.35em] text-slate-700 transition hover:text-slate-900"
         >
-          lit
+          Lit
         </Link>
 
         <div className="hidden md:block relative w-[300px]">
@@ -127,7 +127,7 @@ export default function Navbar() {
             </>
           ) : (
             <div className="flex items-center gap-4 text-sm text-slate-600">
-              <Link href="/login" className="hover:text-slate-900">
+              <Link href="/login" className="transition hover:text-slate-900">
                 Login
               </Link>
 
@@ -135,8 +135,8 @@ export default function Navbar() {
                 href="/signup"
                 className="
                   rounded-full border border-slate-200 bg-slate-950 px-4 py-1.5
-                  text-sm text-white
-                  transition hover:bg-slate-800
+                  text-sm text-white transition duration-200
+                  hover:-translate-y-0.5 hover:bg-slate-800
                 "
               >
                 Sign up
@@ -172,19 +172,19 @@ export default function Navbar() {
             "
           />
 
-          <Link href="/create" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 hover:bg-slate-50">
+          <Link href="/create" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
             ✍️ Write
           </Link>
-          <Link href="/profile" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 hover:bg-slate-50">
+          <Link href="/profile" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
             👤 Profile
           </Link>
 
           {!user && (
             <>
-              <Link href="/login" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 hover:bg-slate-50">
+              <Link href="/login" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
                 Login
               </Link>
-              <Link href="/signup" className="block rounded-2xl border border-slate-200 px-3 py-3 text-sm text-slate-700 hover:bg-slate-50">
+              <Link href="/signup" className="block rounded-2xl border border-slate-200 px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
                 Sign up
               </Link>
             </>
