@@ -9,6 +9,8 @@ import type { Comment, Post, Profile } from "@/lib/types";
 
 type PostWithProfile = Post & {
   profile?: Pick<Profile, "username" | "avatar_url"> | null;
+  likesCount?: number;
+  commentsCount?: number;
 };
 
 const PAGE_SIZE = 12;
@@ -20,6 +22,8 @@ export default function HomePage() {
     {}
   );
   const [latestComments, setLatestComments] = useState<Comment[]>([]);
+  const [topVotedPosts, setTopVotedPosts] = useState<PostWithProfile[]>([]);
+  const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
 
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -165,6 +169,47 @@ export default function HomePage() {
     supabase.auth.getUser().then(({ data }) => {
       setCurrentUserId(data.user?.id ?? null);
     });
+  }, []);
+
+  async function loadTopPosts() {
+    const { data, error } = await supabase
+      .from("posts")
+      .select(
+        "*, profiles(username, avatar_url), likes(id), comments(id)"
+      );
+
+    if (error) {
+      console.error("LOAD TOP POSTS ERROR:", error);
+      return;
+    }
+
+    if (!data) return;
+
+    const postsWithCounts: PostWithProfile[] = data.map((post: any) => ({
+      ...post,
+      profile: post.profiles
+        ? {
+            username: post.profiles.username,
+            avatar_url: post.profiles.avatar_url,
+          }
+        : null,
+      likesCount: Array.isArray(post.likes) ? post.likes.length : 0,
+      commentsCount: Array.isArray(post.comments) ? post.comments.length : 0,
+    }));
+
+    const sortedByLikes = [...postsWithCounts].sort(
+      (a, b) => (b.likesCount ?? 0) - (a.likesCount ?? 0)
+    );
+    const sortedByComments = [...postsWithCounts].sort(
+      (a, b) => (b.commentsCount ?? 0) - (a.commentsCount ?? 0)
+    );
+
+    setTopVotedPosts(sortedByLikes.slice(0, 3));
+    setTopViewedPosts(sortedByComments.slice(0, 3));
+  }
+
+  useEffect(() => {
+    void loadTopPosts();
   }, []);
 
   // =========================
@@ -337,6 +382,7 @@ export default function HomePage() {
   const getComments = (postId: string) =>
     commentCounts[postId] ?? 0;
 
+
   return (
     <main className="relative min-h-screen bg-[#f6f4f1] text-[#111827] pt-8 lg:pt-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -460,11 +506,73 @@ export default function HomePage() {
                         {toPlainText(comment.content)}
                       </p>
                       <span className="mt-3 block text-xs uppercase tracking-[0.24em] text-gray-400">
-                        View discussion →
+                        Vezi comentariul →
                       </span>
                     </div>
                   </Link>
                 ))}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-black/5 bg-white/90 p-8 shadow-[0_20px_80px_rgba(15,23,42,0.06)]">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-500 mb-5">
+                Top texte
+              </h2>
+
+              <div className="space-y-8">
+                <div>
+                  <div className="mb-4 text-sm uppercase tracking-[0.2em] text-gray-500">
+                    Cele mai votate
+                  </div>
+
+                  <div className="space-y-3">
+                    {topVotedPosts.length === 0 ? (
+                      <div className="text-sm text-gray-400">
+                        Nu sunt încă date.
+                      </div>
+                    ) : (
+                      topVotedPosts.map((post) => (
+                        <Link key={post.id} href={`/post/${post.id}`}>
+                          <div className="cursor-pointer rounded-3xl border border-black/5 bg-[#faf8f5] p-4 transition hover:border-black/10 hover:bg-white">
+                            <div className="text-sm font-semibold text-slate-900">
+                              {post.title}
+                            </div>
+                            <div className="mt-1 text-xs text-gray-500">
+                              {post.likesCount ?? getLikes(post.id)} voturi
+                            </div>
+                          </div>
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="mb-4 text-sm uppercase tracking-[0.2em] text-gray-500">
+                    Cele mai vizualizate
+                  </div>
+
+                  <div className="space-y-3">
+                    {topViewedPosts.length === 0 ? (
+                      <div className="text-sm text-gray-400">
+                        Nu sunt încă date.
+                      </div>
+                    ) : (
+                      topViewedPosts.map((post) => (
+                        <Link key={post.id} href={`/post/${post.id}`}>
+                          <div className="cursor-pointer rounded-3xl border border-black/5 bg-[#faf8f5] p-4 transition hover:border-black/10 hover:bg-white">
+                            <div className="text-sm font-semibold text-slate-900">
+                              {post.title}
+                            </div>
+                            <div className="mt-1 text-xs text-gray-500">
+                              {post.commentsCount ?? getComments(post.id)} vizualizări
+                            </div>
+                          </div>
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </aside>
