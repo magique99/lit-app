@@ -26,7 +26,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       .from("annotations")
       .select("*")
       .eq("post_id", postId);
-    setAnnotations(data || []);
+    setAnnotations((data as Annotation[]) || []);
   }, [postId]);
 
   const handleMouseUp = useCallback(() => {
@@ -78,7 +78,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
         content: newAnnotation,
         start_offset: selectedText.start,
         end_offset: selectedText.end,
-      })
+      } as any)
       .select("*")
       .single();
     
