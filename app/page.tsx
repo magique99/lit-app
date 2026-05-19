@@ -454,7 +454,7 @@ export default function HomePage() {
            <section className="mt-12 flex h-64 flex-col justify-between rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
              <div>
                <span className="inline-flex rounded-full border border-slate-200 bg-[#f9f2e9] px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-700">
-                 Alegerea curatorului
+                 Textul zilei
                </span>
                <h2 className="mt-3 text-xl font-semibold leading-tight text-slate-950">
                  {featuredPost.title}
@@ -470,9 +470,6 @@ export default function HomePage() {
                <div className="flex gap-2">
                  <Link href={`/post/${featuredPost.id}`} className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300">
                    Citește acum
-                 </Link>
-                 <Link href="/create" className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-slate-100">
-                   Adaugă text
                  </Link>
                </div>
              </div>
@@ -520,9 +517,9 @@ export default function HomePage() {
                             </div>
                           </div>
 
-                          <span className="text-xs uppercase tracking-[0.3em] text-slate-400 opacity-0 transition group-hover:opacity-100">
-                            Read
-                          </span>
+                          <Link href={`/post/${featuredPost.id}`} className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300">
+                            Citește acum
+                          </Link>
                         </div>
 
                         <h2 className="text-2xl font-semibold leading-tight text-slate-950">
