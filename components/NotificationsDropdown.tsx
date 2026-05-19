@@ -154,7 +154,8 @@ export default function NotificationsDropdown({
         className="
           relative w-9 h-9
           flex items-center justify-center
-          rounded-full hover:bg-gray-100
+          rounded-full bg-[#f5ece1]
+          hover:bg-[#fff4e5]
           transition
         "
       >
@@ -180,15 +181,15 @@ export default function NotificationsDropdown({
           absolute right-0 mt-2
           w-80 sm:w-96
           bg-white
-          border border-gray-100
+          border border-slate-200
           rounded-xl
-          shadow-lg
+          shadow-[0_20px_80px_rgba(15,23,42,0.08)]
           overflow-hidden
           z-50
         ">
 
           {/* HEADER */}
-          <div className="px-4 py-3 border-b text-sm font-medium">
+          <div className="px-4 py-3 border-b border-slate-100 text-sm font-medium text-slate-700">
             Notifications
           </div>
 
@@ -196,7 +197,7 @@ export default function NotificationsDropdown({
           <div className="max-h-96 overflow-y-auto">
 
             {notifications.length === 0 && (
-              <div className="p-4 text-sm text-gray-500">
+              <div className="p-4 text-sm text-slate-500">
                 No notifications yet
               </div>
             )}
@@ -209,14 +210,13 @@ export default function NotificationsDropdown({
                   flex items-start gap-3
                   px-4 py-3
                   cursor-pointer
-                  hover:bg-gray-50
                   transition
-                  ${!n.read ? "bg-gray-50" : ""}
+                  ${!n.read ? "bg-[#fff7ec]" : ""}
                 `}
               >
 
                 {/* AVATAR */}
-                <div className="relative w-9 h-9 rounded-full bg-gray-200 overflow-hidden shrink-0">
+                <div className="relative w-9 h-9 rounded-full bg-[#f5ece1] overflow-hidden shrink-0">
                   <Image
                     src={n.actor?.avatar_url ?? "/user.jpg"}
                     alt={n.actor?.username || "Avatar"}
@@ -229,7 +229,7 @@ export default function NotificationsDropdown({
                 {/* TEXT */}
                 <div className="flex-1">
 
-                  <div className="text-sm text-gray-800 leading-snug">
+                  <div className="text-sm text-slate-800 leading-snug">
                     <span className="font-medium">
                       {n.actor?.username || "Someone"}
                     </span>{" "}
@@ -240,7 +240,7 @@ export default function NotificationsDropdown({
                     {n.type === "reply" && "replied to your comment ↩️"}
                   </div>
 
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="text-xs text-slate-400 mt-1">
                     {new Date(n.created_at).toLocaleString()}
                   </div>
 
@@ -248,7 +248,7 @@ export default function NotificationsDropdown({
 
                 {/* UNREAD DOT */}
                 {!n.read && (
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
+                  <div className="w-2 h-2 bg-amber-400 rounded-full mt-2" />
                 )}
 
               </div>
