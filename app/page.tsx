@@ -4,12 +4,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { toPlainText } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
-import type { Comment, Post } from "@/lib/types";
+import type { Comment, Post, Profile } from "@/lib/types";
+
+type PostWithProfile = Post & {
+  profiles?: Pick<Profile, "username" | "avatar_url"> | null;
+};
 
 const PAGE_SIZE = 12;
 
 export default function HomePage() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<PostWithProfile[]>([]);
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>(
     {}
@@ -76,7 +80,7 @@ export default function HomePage() {
 
     const { data, error } = await supabase
       .from("posts")
-      .select("*")
+      .select("*, profiles(username, avatar_url)")
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -278,7 +282,7 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-[#f4f4f2] text-[#1f1f1f]">
-      <div className="max-w-7xl mx-auto px-6 py-10 flex gap-8">
+      <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col lg:flex-row gap-8">
 
         {/* LEFT FEED */}
         <section className="flex-1 min-w-0">
@@ -306,7 +310,7 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-4 sm:space-y-5">
             {posts.map((post) => (
               <Link
                 key={post.id}
@@ -317,6 +321,7 @@ export default function HomePage() {
                     group bg-white/90
                     rounded-3xl
                     border border-black/5
+                    shadow-sm
                     p-6
                     hover:shadow-lg
                     hover:-translate-y-[2px]
@@ -324,10 +329,24 @@ export default function HomePage() {
                     cursor-pointer
                   "
                 >
-                  <div className="flex justify-between mb-3">
-                    <span className="text-xs text-gray-400">
-                      @author
-                    </span>
+                  <div className="flex items-center justify-between mb-3 gap-3">
+                    <div className="flex items-center gap-3">
+                      {post.profiles?.avatar_url ? (
+                        <img
+                          src={post.profiles.avatar_url}
+                          alt={post.profiles.username ?? "Author avatar"}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+                          ?
+                        </div>
+                      )}
+
+                      <span className="text-xs text-gray-400">
+                        @{post.profiles?.username ?? "anonim"}
+                      </span>
+                    </div>
 
                     <span
                       className="
@@ -349,20 +368,24 @@ export default function HomePage() {
                     {toPlainText(post.content)}
                   </p>
 
-                  <div className="mt-5 flex gap-5 text-sm text-gray-500">
+                  <div className="mt-5 flex flex-wrap items-center gap-4 text-sm text-gray-500">
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         void handleLike(post.id);
                       }}
                       disabled={likingIds.has(post.id)}
-                      className="hover:scale-105 active:scale-95 transition disabled:cursor-wait disabled:opacity-60"
+                      className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-3 py-2 text-sm text-gray-700 hover:bg-black/[0.04] active:scale-95 transition disabled:cursor-wait disabled:opacity-60"
                     >
-                      ❤️ {getLikes(post.id)}
+                      ❤️
+                      <span>{getLikes(post.id)}</span>
                     </button>
 
-                    <span>
-                      💬 {getComments(post.id)}
+                    <span className="inline-flex items-center gap-2">
+                      💬
+                      <span>{getComments(post.id)}</span>
                     </span>
                   </div>
                 </article>
@@ -383,7 +406,7 @@ export default function HomePage() {
         </section>
 
         {/* RIGHT SIDEBAR */}
-        <aside className="hidden lg:block w-[320px] shrink-0">
+        <aside className="w-full md:w-[320px] shrink-0">
           <div
             className="
               sticky top-24
@@ -399,7 +422,7 @@ export default function HomePage() {
               💬 Latest comments
             </h2>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {latestComments.map((comment) => (
                 <Link
                   key={comment.id}
@@ -407,13 +430,14 @@ export default function HomePage() {
                 >
                   <div
                     className="
-                      p-3 rounded-2xl
+                      p-4 rounded-2xl
+                      border border-black/5
                       hover:bg-black/[0.03]
                       transition
                       cursor-pointer
                     "
                   >
-                    <p className="text-sm text-gray-700 line-clamp-3">
+                    <p className="text-sm text-gray-700 line-clamp-2">
                       {toPlainText(comment.content)}
                     </p>
 
