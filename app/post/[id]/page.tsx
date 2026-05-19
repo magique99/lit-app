@@ -74,11 +74,9 @@ export default async function PostPage({ params }: Props) {
         </section>
 
         {/* CONTENT */}
-        <article className="mt-10 overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-10 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
-          <div className="prose max-w-none text-slate-700 whitespace-pre-wrap">
-            {toPlainText(post.content)}
-          </div>
-        </article>
+<article className="mt-10 overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-10 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
+           <div className="prose max-w-none text-slate-700" dangerouslySetInnerHTML={{ __html: post.content }} />
+         </article>
 
         {/* COMMENTS */}
         <PostClient postId={id} />
