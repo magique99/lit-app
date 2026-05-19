@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import PostClient from "./PostClient";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 type PostPageData = {
@@ -20,42 +20,15 @@ type PostPageData = {
 };
 
 export default async function PostPage({ params }: Props) {
-  const { id } = params;
+  const { id } = await params;
 
-  // Try relational select first (includes author profile). If that fails,
-  // fall back to a simple select to avoid returning 404 when the relation
-  // isn't available or the DB relationship name differs.
-  let post: PostPageData | null = null;
-  let error: any = null;
+  const { data: post, error } = await supabase
+    .from("posts")
+    .select("*, profiles(username, avatar_url)")
+    .eq("id", id)
+    .single<PostPageData>();
 
-  try {
-    const res = await supabase
-      .from("posts")
-      .select("*, profiles(username, avatar_url)")
-      .eq("id", id)
-      .single();
-
-    post = res.data as PostPageData | null;
-    error = res.error;
-  } catch (err) {
-    error = err;
-  }
-
-  if ((error || !post) && !post) {
-    // fallback: fetch without relational join
-    try {
-      const res2 = await supabase.from("posts").select("*").eq("id", id).single();
-      post = res2.data as PostPageData | null;
-      error = res2.error;
-    } catch (err) {
-      error = err;
-    }
-  }
-
-  if (error || !post) {
-    console.error("Post fetch error:", error);
-    notFound();
-  }
+  if (error || !post) notFound();
 
   const authorName = post.profiles?.username ?? "anonim";
   const publishedAt = new Date(post.created_at).toLocaleDateString("ro-RO", {

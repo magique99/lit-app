@@ -179,11 +179,11 @@ export default function HomePage() {
   }, []);
 
   async function loadTopPosts() {
+    // Fetch posts with aggregated likes/comments arrays, but don't rely on a
+    // DB relationship to `profiles` because the foreign-key may not exist.
     const { data, error } = await supabase
       .from("posts")
-      .select(
-        "*, profiles(username, avatar_url), likes(id), comments(id)"
-      );
+      .select("*, likes(id), comments(id)");
 
     if (error) {
       console.error("LOAD TOP POSTS ERROR:", error);
@@ -192,14 +192,35 @@ export default function HomePage() {
 
     if (!data) return;
 
+    // Collect user_ids to fetch profile info in a second query
+    const userIds = Array.from(
+      new Set(
+        data.map((p: any) => p.user_id).filter(Boolean) as string[]
+      )
+    );
+
+    let profileMap: Record<string, Pick<Profile, "username" | "avatar_url">> = {};
+
+    if (userIds.length > 0) {
+      const { data: profilesData, error: profilesError } = await supabase
+        .from("profiles")
+        .select("user_id, username, avatar_url")
+        .in("user_id", userIds);
+
+      if (!profilesError && profilesData) {
+        profileMap = profilesData.reduce(
+          (map: any, p: any) => ({
+            ...map,
+            [p.user_id]: { username: p.username, avatar_url: p.avatar_url },
+          }),
+          {}
+        );
+      }
+    }
+
     const postsWithCounts: PostWithProfile[] = data.map((post: any) => ({
       ...post,
-      profile: post.profiles
-        ? {
-            username: post.profiles.username,
-            avatar_url: post.profiles.avatar_url,
-          }
-        : null,
+      profile: post.user_id ? profileMap[post.user_id] ?? null : null,
       likesCount: Array.isArray(post.likes) ? post.likes.length : 0,
       commentsCount: Array.isArray(post.comments) ? post.comments.length : 0,
     }));
