@@ -576,7 +576,7 @@ export default function HomePage() {
                 </div>
               )}
 
-<div className="space-y-5 py-[10px]">
+<div className="space-y-[10px] py-[10px]">
                   {posts.map((post) => (
                   <Link key={post.id} href={`/post/${post.id}`}>
                     <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
