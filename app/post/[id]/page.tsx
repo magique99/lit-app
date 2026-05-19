@@ -3,6 +3,7 @@ import { toPlainText } from "@/lib/content";
 import { notFound } from "next/navigation";
 import PostClient from "./PostClient";
 import LikeButton from "@/components/LikeButton";
+import TextAnnotations from "@/components/TextAnnotations";
 
 type Props = {
   params: {
@@ -77,10 +78,13 @@ export default async function PostPage({ params }: Props) {
           </div>
         </section>
 
-        {/* CONTENT */}
-<article className="mt-10 overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-10 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
-           <div className="prose max-w-none text-slate-700" dangerouslySetInnerHTML={{ __html: post.content }} />
-         </article>
+{/* CONTENT */}
+        <article className="mt-10 overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-10 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
+          <div className="prose max-w-none text-slate-700" dangerouslySetInnerHTML={{ __html: post.content }} />
+        </article>
+
+        {/* ANNOTATIONS */}
+        <TextAnnotations postId={id} />
 
         {/* COMMENTS */}
         <PostClient postId={id} />

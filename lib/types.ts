@@ -22,6 +22,30 @@ export type CommentWithProfile = Comment & {
   profiles?: Pick<Profile, "username" | "avatar_url"> | null;
 };
 
+export type AnnotationType = "comment" | "note";
+
+export type Annotation = {
+  id: string;
+  post_id: string;
+  user_id: string;
+  content_type: AnnotationType;
+  content: string;
+  start_offset: number;
+  end_offset: number;
+  created_at: string;
+  updated_at: string;
+  profiles?: Pick<Profile, "username" | "avatar_url"> | null;
+};
+
+export type AnnotationInsert = {
+  post_id: string;
+  user_id: string;
+  content_type: AnnotationType;
+  content: string;
+  start_offset: number;
+  end_offset: number;
+};
+
 export type SearchResult =
   | {
       type: "post";
