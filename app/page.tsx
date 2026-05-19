@@ -26,6 +26,7 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [likeError, setLikeError] = useState<string | null>(null);
   const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
@@ -159,6 +160,12 @@ export default function HomePage() {
     });
   }, [loadPosts]);
 
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setCurrentUserId(data.user?.id ?? null);
+    });
+  }, []);
+
   // =========================
   // INITIAL LOAD
   // =========================
@@ -277,6 +284,11 @@ export default function HomePage() {
   // OPTIMISTIC LIKE
   // =========================
   async function handleLike(postId: string) {
+    if (!currentUserId) {
+      setLikeError("Trebuie să fii conectat pentru a da like.");
+      return;
+    }
+
     if (likingIds.has(postId)) return;
 
     setLikeError(null);
@@ -288,6 +300,7 @@ export default function HomePage() {
 
     const { error } = await supabase.from("likes").insert({
       post_id: postId,
+      user_id: currentUserId,
     });
 
     if (error) {
@@ -415,8 +428,8 @@ export default function HomePage() {
                         e.stopPropagation();
                         void handleLike(post.id);
                       }}
-                      disabled={likingIds.has(post.id)}
-                      className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-3 py-2 text-sm text-gray-700 hover:bg-black/[0.04] active:scale-95 transition disabled:cursor-wait disabled:opacity-60"
+                      disabled={likingIds.has(post.id) || !currentUserId}
+                      className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-3 py-2 text-sm text-gray-700 hover:bg-black/[0.04] active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       ❤️
                       <span>{getLikes(post.id)}</span>
