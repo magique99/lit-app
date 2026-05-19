@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { toPlainText } from "@/lib/content";
@@ -24,6 +24,13 @@ export default function HomePage() {
   const [latestComments, setLatestComments] = useState<Comment[]>([]);
   const [topVotedPosts, setTopVotedPosts] = useState<PostWithProfile[]>([]);
   const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
+
+  const totalLikes = useMemo(
+    () => Object.values(likeCounts).reduce((sum, count) => sum + count, 0),
+    [likeCounts]
+  );
+
+  const featuredPost = topVotedPosts[0] ?? null;
 
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -384,46 +391,109 @@ export default function HomePage() {
 
 
   return (
-    <main className="relative min-h-screen bg-[#f6f4f1] text-[#111827] pt-8 lg:pt-10">
+    <main className="relative min-h-screen bg-[#080b12] text-slate-100 pt-8 lg:pt-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <section className="relative overflow-hidden rounded-[2.5rem] bg-[#111827] text-white shadow-[0_40px_120px_rgba(15,23,42,0.14)]">
-          <div className="relative h-[360px] sm:h-[460px] lg:h-[560px]">
+        <section className="relative overflow-hidden rounded-[3rem] bg-slate-950 text-white shadow-[0_60px_120px_rgba(15,23,42,0.24)] ring-1 ring-white/10">
+          <div className="relative h-[420px] sm:h-[520px] lg:h-[620px]">
             <Image
               src="/Literatura9.png"
               alt="Literatura banner"
               fill
               priority
-              className="object-cover object-center"
+              className="object-cover object-center opacity-90"
             />
 
-            <div className="absolute inset-0 bg-slate-950/50" />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/30 to-slate-950/80" />
             <div className="absolute inset-0 flex items-center">
-              <div className="max-w-3xl px-6 py-10 sm:px-10 lg:px-16">
+              <div className="max-w-4xl px-6 py-10 sm:px-10 lg:px-16">
+                <span className="inline-flex rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/70">
+                  Editură digitală</span>
 
-                <h1 className="mt-6 text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[0.95] tracking-tight text-white">
-                  Un spațiu elegant pentru proză, poezie și visare.
+                <h1 className="mt-8 text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[0.95] tracking-[-0.03em] text-white">
+                  O poveste vizuală, o experiență literară premium.
                 </h1>
 
+                <p className="mt-6 max-w-2xl text-base leading-8 text-slate-200/90 sm:text-lg">
+                  Descoperă texte selectate, sugestii poetice și ritmuri cinematice într-un spațiu calm, modern și rafinat.
+                </p>
+
+                <div className="mt-10 grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-amber-300/40 hover:bg-white/10 hover:shadow-[0_25px_60px_rgba(251,191,36,0.16)]">
+                    <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Colecții active</p>
+                    <p className="mt-3 text-3xl font-semibold text-white">{posts.length}</p>
+                  </div>
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-white/10 hover:shadow-[0_25px_60px_rgba(56,189,248,0.14)]">
+                    <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Comentarii recente</p>
+                    <p className="mt-3 text-3xl font-semibold text-white">{latestComments.length}</p>
+                  </div>
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-emerald-300/40 hover:bg-white/10 hover:shadow-[0_25px_60px_rgba(16,185,129,0.14)]">
+                    <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Reacții</p>
+                    <p className="mt-3 text-3xl font-semibold text-white">{totalLikes}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <div className="mt-16 grid gap-10 xl:grid-cols-[minmax(0,1fr)_320px]">
+        {featuredPost && (
+          <section className="mt-12 rounded-[2.5rem] border border-white/10 bg-slate-950/95 p-8 shadow-[0_40px_120px_rgba(15,23,42,0.2)] backdrop-blur-xl">
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-3xl space-y-4">
+                <span className="inline-flex rounded-full border border-slate-700/50 bg-slate-900/80 px-4 py-2 text-xs uppercase tracking-[0.28em] text-slate-300">
+                  Alegerea curatorului</span>
+                <div>
+                  <h2 className="text-4xl font-semibold leading-tight text-white sm:text-5xl">
+                    {featuredPost.title}
+                  </h2>
+                  <p className="mt-4 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
+                    {toPlainText(featuredPost.content)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5 text-center">
+                  <p className="text-sm uppercase tracking-[0.25em] text-slate-500">Autor</p>
+                  <p className="mt-3 text-xl font-semibold text-white">@{featuredPost.profile?.username ?? "anonim"}</p>
+                </div>
+                <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5 text-center">
+                  <p className="text-sm uppercase tracking-[0.25em] text-slate-500">Voturi</p>
+                  <p className="mt-3 text-xl font-semibold text-white">{featuredPost.likesCount ?? getLikes(featuredPost.id)}</p>
+                </div>
+                <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5 text-center">
+                  <p className="text-sm uppercase tracking-[0.25em] text-slate-500">Vizualizări</p>
+                  <p className="mt-3 text-xl font-semibold text-white">{featuredPost.commentsCount ?? getComments(featuredPost.id)}</p>
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-4 lg:mt-0 lg:justify-end">
+                <Link href={`/post/${featuredPost.id}`} className="inline-flex items-center justify-center rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_20px_60px_rgba(251,191,36,0.24)] transition hover:bg-amber-300">
+                  Citește acum
+                </Link>
+                <Link href="/create" className="inline-flex items-center justify-center rounded-full border border-amber-400/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+                  Adaugă un text
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+        <div className="mt-16 grid gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="space-y-8">
-            <div className="rounded-[2rem] border border-black/5 bg-white/90 p-8 shadow-[0_20px_80px_rgba(15,23,42,0.06)]">
-              <div className="mb-4 text-sm uppercase tracking-[0.2em] text-gray-500">
-                Ultimile postari
+            <div className="rounded-[2.5rem] border border-white/10 bg-white/95 p-8 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur-xl">
+              <div className="mb-4 text-sm uppercase tracking-[0.22em] text-slate-500">
+                Ultimele postări
               </div>
 
               {error && (
-                <div className="mb-6 rounded-3xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-700">
+                <div className="mb-6 rounded-3xl border border-rose-200/60 bg-rose-50/80 px-5 py-4 text-sm text-rose-700">
                   {error}
                 </div>
               )}
 
               {likeError && (
-                <div className="mb-6 rounded-3xl border border-amber-100 bg-amber-50 px-5 py-4 text-sm text-amber-700">
+                <div className="mb-6 rounded-3xl border border-amber-200/70 bg-amber-50/80 px-5 py-4 text-sm text-amber-700">
                   {likeError}
                 </div>
               )}
@@ -431,51 +501,58 @@ export default function HomePage() {
               <div className="space-y-6">
                 {posts.map((post) => (
                   <Link key={post.id} href={`/post/${post.id}`}>
-                    <article className="group cursor-pointer rounded-[1.75rem] border border-black/5 bg-[#fcfbf9] p-7 transition duration-300 hover:border-black/10 hover:bg-white">
-                      <div className="flex items-center justify-between gap-4 mb-4">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={post.profile?.avatar_url ?? "/user.jpg"}
-                            alt={post.profile?.username ?? "Author avatar"}
-                            className="h-10 w-10 rounded-full object-cover"
-                          />
-                          <span className="text-sm text-gray-500">
-                            @{post.profile?.username ?? "anonim"}
+                    <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
+                      <div className="p-7">
+                        <div className="flex items-center justify-between gap-4 mb-4">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={post.profile?.avatar_url ?? "/user.jpg"}
+                              alt={post.profile?.username ?? "Author avatar"}
+                              className="h-10 w-10 rounded-full object-cover"
+                            />
+                            <div>
+                              <p className="text-sm font-medium text-slate-900">
+                                @{post.profile?.username ?? "anonim"}
+                              </p>
+                              <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                                Autor
+                              </p>
+                            </div>
+                          </div>
+
+                          <span className="text-xs uppercase tracking-[0.3em] text-slate-400 opacity-0 transition group-hover:opacity-100">
+                            Read
                           </span>
                         </div>
 
-                        <span className="text-xs uppercase tracking-[0.25em] text-gray-400 opacity-0 transition group-hover:opacity-100">
-                          read
-                        </span>
-                      </div>
+                        <h2 className="text-2xl font-semibold leading-tight text-slate-950">
+                          {post.title}
+                        </h2>
 
-                      <h2 className="text-2xl font-semibold leading-tight text-[#111827]">
-                        {post.title}
-                      </h2>
+                        <p className="mt-4 text-base leading-8 text-slate-600 line-clamp-3">
+                          {toPlainText(post.content)}
+                        </p>
 
-                      <p className="mt-4 text-base leading-8 text-slate-600 line-clamp-3">
-                        {toPlainText(post.content)}
-                      </p>
+                        <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              void handleLike(post.id);
+                            }}
+                            disabled={likingIds.has(post.id) || !currentUserId}
+                            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            ❤️
+                            <span>{getLikes(post.id)}</span>
+                          </button>
 
-                      <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-gray-500">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            void handleLike(post.id);
-                          }}
-                          disabled={likingIds.has(post.id) || !currentUserId}
-                          className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-3 py-2 text-sm text-gray-700 hover:bg-black/[0.04] active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          ❤️
-                          <span>{getLikes(post.id)}</span>
-                        </button>
-
-                        <span className="inline-flex items-center gap-2">
-                          💬
-                          <span>{getComments(post.id)}</span>
-                        </span>
+                          <span className="inline-flex items-center gap-2">
+                            💬
+                            <span>{getComments(post.id)}</span>
+                          </span>
+                        </div>
                       </div>
                     </article>
                   </Link>
@@ -485,27 +562,27 @@ export default function HomePage() {
               <div ref={observerRef} className="h-10" />
 
               {loading && (
-                <p className="mt-6 text-center text-sm text-gray-400">
+                <p className="mt-6 text-center text-sm text-slate-500">
                   Loading...
                 </p>
               )}
             </div>
           </section>
 
-          <aside className="space-y-6">
-            <div className="rounded-[2rem] border border-black/5 bg-white/90 p-8 shadow-[0_20px_80px_rgba(15,23,42,0.06)]">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-500 mb-5">
+          <aside className="space-y-8">
+            <div className="rounded-[2.5rem] border border-slate-800/60 bg-slate-950/95 p-8 shadow-[0_30px_80px_rgba(15,23,42,0.16)]">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400 mb-5">
                 Ultimele comentarii
               </h2>
 
               <div className="space-y-4">
                 {latestComments.map((comment) => (
                   <Link key={comment.id} href={`/post/${comment.post_id}`}>
-                    <div className="cursor-pointer rounded-3xl border border-black/5 bg-[#faf8f5] p-5 transition hover:border-black/10 hover:bg-white">
-                      <p className="text-sm leading-7 text-slate-700 line-clamp-2">
+                    <div className="cursor-pointer rounded-3xl border border-slate-800/50 bg-slate-900/80 p-5 transition duration-300 hover:-translate-y-1 hover:border-slate-600/60 hover:bg-slate-900/95 hover:shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
+                      <p className="text-sm leading-7 text-slate-200 line-clamp-2">
                         {toPlainText(comment.content)}
                       </p>
-                      <span className="mt-3 block text-xs uppercase tracking-[0.24em] text-gray-400">
+                      <span className="mt-3 block text-xs uppercase tracking-[0.24em] text-slate-500">
                         Vezi comentariul →
                       </span>
                     </div>
@@ -514,14 +591,14 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-black/5 bg-white/90 p-8 shadow-[0_20px_80px_rgba(15,23,42,0.06)]">
+            <div className="rounded-[2.5rem] border border-white/10 bg-white/95 p-8 shadow-[0_30px_80px_rgba(15,23,42,0.16)]">
               <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-500 mb-5">
                 Top texte
               </h2>
 
               <div className="space-y-8">
                 <div>
-                  <div className="mb-4 text-sm uppercase tracking-[0.2em] text-gray-500">
+                  <div className="mb-4 text-sm uppercase tracking-[0.2em] text-slate-500">
                     Cele mai votate
                   </div>
 
@@ -533,11 +610,11 @@ export default function HomePage() {
                     ) : (
                       topVotedPosts.map((post) => (
                         <Link key={post.id} href={`/post/${post.id}`}>
-                          <div className="cursor-pointer rounded-3xl border border-black/5 bg-[#faf8f5] p-4 transition hover:border-black/10 hover:bg-white">
+                          <div className="cursor-pointer rounded-3xl border border-slate-200/80 bg-slate-50 p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300/80 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
                             <div className="text-sm font-semibold text-slate-900">
                               {post.title}
                             </div>
-                            <div className="mt-1 text-xs text-gray-500">
+                            <div className="mt-1 text-xs text-slate-500">
                               {post.likesCount ?? getLikes(post.id)} voturi
                             </div>
                           </div>
@@ -560,11 +637,11 @@ export default function HomePage() {
                     ) : (
                       topViewedPosts.map((post) => (
                         <Link key={post.id} href={`/post/${post.id}`}>
-                          <div className="cursor-pointer rounded-3xl border border-black/5 bg-[#faf8f5] p-4 transition hover:border-black/10 hover:bg-white">
+                          <div className="cursor-pointer rounded-3xl border border-slate-200/80 bg-slate-50 p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300/80 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
                             <div className="text-sm font-semibold text-slate-900">
                               {post.title}
                             </div>
-                            <div className="mt-1 text-xs text-gray-500">
+                            <div className="mt-1 text-xs text-slate-500">
                               {post.commentsCount ?? getComments(post.id)} vizualizări
                             </div>
                           </div>
