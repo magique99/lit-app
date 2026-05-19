@@ -122,7 +122,7 @@ export default function HomePage() {
       return;
     }
 
-    const nextPosts = data ?? [];
+    const nextPosts = (data ?? []) as PostWithProfile[];
 
     const userIds = Array.from(
       new Set(nextPosts.map((post) => post.user_id).filter(Boolean) as string[])
