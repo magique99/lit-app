@@ -1,53 +1,76 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 
 type Props = {
   content: string;
   wordsPerPage?: number;
 };
 
-export default function PaginatedContent({ content, wordsPerPage = 350 }: Props) {
+export default function PaginatedContent({
+  content,
+  wordsPerPage = 350,
+}: Props) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pages, setPages] = useState<string[]>([]);
 
-  useEffect(() => {
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = content;
-    const text = tempDiv.textContent || tempDiv.innerText || "";
-    
-    const words = text.split(/\s+/).filter(w => w.length > 0);
-    const pages: string[] = [];
-    
-    for (let i = 0; i < words.length; i += wordsPerPage) {
-      const pageWords = words.slice(i, i + wordsPerPage);
-      pages.push(pageWords.join(" "));
+  const pages = useMemo(() => {
+    const paraRegex = /<p[\s>][\s\S]*?<\/p>|<p[\s>][\s\S]*?(?=<p|\/body|$)/gi;
+    const paragraphs: string[] = [];
+    let m: RegExpExecArray | null;
+    while ((m = paraRegex.exec(content)) !== null) {
+      paragraphs.push(m[0] || "");
     }
-    
-    setPages(pages.length > 0 ? pages : [""]);
-    setCurrentPage(1);
+    if (paragraphs.length === 0) {
+      const plain = content.replace(/<[^>]+>/g, "").trim();
+      if (plain) {
+        paragraphs.push(`<p>${plain}</p>`);
+      }
+    }
+
+    const result: string[] = [];
+    let currentWords = 0;
+    let buffer: string = "";
+
+    const flush = () => {
+      if (buffer.trim()) result.push(buffer.trim());
+    };
+
+    for (const para of paragraphs) {
+      const wc = (para.replace(/<[^>]+>/g, "").match(/\S+/g) || []).length;
+      if (currentWords > 0 && currentWords + wc > wordsPerPage) {
+        flush();
+        currentWords = 0;
+        buffer = "";
+      }
+      buffer += para;
+      currentWords += wc;
+    }
+    flush();
+
+    return result.length > 0 ? result : [""];
   }, [content, wordsPerPage]);
 
   const totalPages = pages.length;
-  const currentText = pages[currentPage - 1] || "";
 
   if (totalPages === 0) return null;
 
   return (
     <div className="font-serif">
-      <div className="max-w-3xl mx-auto px-8 py-12">
-        <div className="text-lg leading-relaxed text-slate-800 text-justify hyphens-auto">
-          {currentText.split("\n").map((para, i) => (
-            <p key={i} className={i > 0 ? "mt-6" : ""}>
-              {para}
-            </p>
-          ))}
-        </div>
+      {totalPages === 1 ? (
+        <div
+          className="max-w-3xl mx-auto px-8 py-12 text-lg leading-relaxed text-slate-800 text-justify hyphens-auto"
+          dangerouslySetInnerHTML={{ __html: pages[0] }}
+        />
+      ) : (
+        <>
+          <div
+            className="max-w-3xl mx-auto px-8 py-12 text-lg leading-relaxed text-slate-800 text-justify hyphens-auto"
+            dangerouslySetInnerHTML={{ __html: pages[currentPage - 1] }}
+          />
 
-        {totalPages > 1 && (
-          <div className="mt-12 pt-8 border-t border-slate-200 flex items-center justify-between">
+          <div className="mx-auto max-w-3xl mt-12 pt-8 border-t border-slate-200 flex items-center justify-between px-8">
             <button
-              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
               className="px-6 py-3 rounded-full text-sm font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
             >
@@ -59,15 +82,15 @@ export default function PaginatedContent({ content, wordsPerPage = 350 }: Props)
             </span>
 
             <button
-              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
               disabled={currentPage === totalPages}
               className="px-6 py-3 rounded-full text-sm font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
             >
               Înainte →
             </button>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
