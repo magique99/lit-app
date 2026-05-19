@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { toPlainText } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
@@ -338,16 +339,33 @@ export default function HomePage() {
 
   return (
     <main className="relative min-h-screen bg-[#f6f4f1] text-[#111827] pt-28 lg:pt-32">
-      <div className="max-w-6xl mx-auto px-6 py-16 lg:py-20">
-        <section className="max-w-3xl space-y-6">
+      <div className="max-w-6xl mx-auto px-6 py-10 lg:py-14">
+        <section className="relative overflow-hidden rounded-[2rem] border border-black/5 bg-white/90 shadow-[0_20px_80px_rgba(15,23,42,0.08)]">
+          <div className="relative h-[320px] sm:h-[400px] lg:h-[460px]">
+            <Image
+              src="/Literatura9.png"
+              alt="Literatura banner"
+              fill
+              priority
+              className="object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-white/50 backdrop-blur-sm" />
+            <div className="absolute inset-0 flex items-center">
+              <div className="max-w-3xl px-6 py-10 sm:px-8">
+                <span className="inline-flex items-center rounded-full border border-black/10 bg-white/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-gray-600 shadow-sm">
+                  cinema literar
+                </span>
 
-          <h1 className="text-5xl sm:text-6xl font-semibold leading-[0.95] tracking-tight text-[#0f172a]">
-            Un spațiu elegant pentru proză, poezie și visare.
-          </h1>
+                <h1 className="mt-6 text-5xl sm:text-6xl font-semibold leading-[0.95] tracking-tight text-[#0f172a]">
+                  Un spațiu elegant pentru proză, poezie și visare.
+                </h1>
 
-          <p className="max-w-2xl text-lg leading-9 text-slate-600">
-            Un loc liniștit în care cuvintele par să lumineze dinăuntru, iar poveștile lasă pe piele urme pe care memoria nu știe dacă le-a trăit sau doar le-a visat. Puține obiecte, fiecare cu tăcerea lui atent construită.
-          </p>
+                <p className="mt-4 max-w-2xl text-lg leading-9 text-slate-600">
+                  Un loc liniștit în care cuvintele par să lumineze dinăuntru, iar poveștile lasă pe piele urme pe care memoria nu știe dacă le-a trăit sau doar le-a visat. Puține obiecte, fiecare cu tăcerea lui atent construită.
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
 
         <div className="mt-16 grid gap-10 xl:grid-cols-[minmax(0,1fr)_320px]">
