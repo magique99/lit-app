@@ -488,16 +488,16 @@ export default function HomePage() {
                   {toPlainText(featuredPost.content)}
                 </p>
               </div>
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-slate-500">
-                  de <span className="font-semibold">@{featuredPost.profile?.username ?? "anonim"}</span>
-                </p>
-                <div className="flex gap-2">
-<Link href={`/post/${post.id}`} className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300">
-                             Citește acum
-                           </Link>
-                </div>
-              </div>
+<div className="flex items-center justify-between">
+                 <p className="text-xs text-slate-500">
+                   de <span className="font-semibold">@{featuredPost.profile?.username ?? "anonim"}</span>
+                 </p>
+                 <div className="flex gap-2">
+                   <Link href={`/post/${featuredPost.id}`} className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300">
+                     Citește acum
+                   </Link>
+                 </div>
+               </div>
             </section>
           )}
 
