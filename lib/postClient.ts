@@ -8,6 +8,9 @@ export type CreatePostInput = {
   file_hash?: string | null;
   version?: number;
   doc_url?: string | null;
+  text_type?: string | null;
+  genre?: string | null;
+  uses_ai?: boolean | null;
 };
 
 export async function createPost(input: CreatePostInput): Promise<Post> {
@@ -20,6 +23,9 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
       file_hash: input.file_hash ?? null,
       version: input.version ?? 1,
       doc_url: input.doc_url ?? null,
+      text_type: input.text_type ?? null,
+      genre: input.genre ?? null,
+      uses_ai: input.uses_ai ?? null,
       updated_at: new Date().toISOString(),
     })
     .select("*")

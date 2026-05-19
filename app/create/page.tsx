@@ -215,7 +215,7 @@ export default function CreatePost() {
         text_type: textType || null,
         genre: genre || null,
         uses_ai: usesAI,
-      } as any);
+      });
 
       setProgress(100);
       setStatus("Publicat.");

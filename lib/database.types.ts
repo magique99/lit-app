@@ -136,10 +136,13 @@ export type Database = {
           docx_path: string | null;
           docx_url: string | null;
           file_hash: string | null;
+          genre: string | null;
           id: string;
+          text_type: string | null;
           title: string;
           updated_at: string | null;
           user_id: string;
+          uses_ai: boolean | null;
           version: number | null;
         };
         Insert: {
@@ -149,10 +152,13 @@ export type Database = {
           docx_path?: string | null;
           docx_url?: string | null;
           file_hash?: string | null;
+          genre?: string | null;
           id?: string;
+          text_type?: string | null;
           title: string;
           updated_at?: string | null;
           user_id: string;
+          uses_ai?: boolean | null;
           version?: number | null;
         };
         Update: {
@@ -162,10 +168,13 @@ export type Database = {
           docx_path?: string | null;
           docx_url?: string | null;
           file_hash?: string | null;
+          genre?: string | null;
           id?: string;
+          text_type?: string | null;
           title?: string;
           updated_at?: string | null;
           user_id?: string;
+          uses_ai?: boolean | null;
           version?: number | null;
         };
         Relationships: [
