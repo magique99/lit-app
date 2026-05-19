@@ -16,7 +16,7 @@ type PostWithProfile = Post & {
   uses_ai?: boolean | null;
 };
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 5;
 
 const TEXT_TYPES = ["Toate", "Proză", "Poezie", "Teatru", "Jurnal"];
 const GENRES = ["Toate", "Ficțiune", "Non-ficțiune", "SF", "Thriller", "Polițist", "Romantic"];
