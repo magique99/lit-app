@@ -77,8 +77,8 @@ export default function Navbar() {
       ref={rootRef}
       className="
         sticky top-0 z-50
-        bg-white/90 backdrop-blur-xl
-        border-b border-gray-200/70
+        bg-[#fffaf3]/90 backdrop-blur-xl
+        border-b border-slate-200/70
       "
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
@@ -86,9 +86,7 @@ export default function Navbar() {
         {/* LOGO */}
         <Link
           href="/"
-          className="font-serif text-sm uppercase tracking-[0.35em] text-slate-700 transition hover:text-slate-900"
-        >
-          Lit
+            className="font-serif text-sm uppercase tracking-[0.35em] text-slate-800 transition hover:text-slate-950"
         </Link>
 
         <div className="hidden md:block relative w-[300px]">
@@ -99,8 +97,8 @@ export default function Navbar() {
             className="
               w-full px-3 py-2.5
               rounded-2xl
-              border border-gray-200/70
-              bg-white/80 text-sm text-slate-700
+              border border-slate-200
+              bg-white text-sm text-slate-700
               placeholder:text-slate-400
               shadow-sm
             "
@@ -116,14 +114,14 @@ export default function Navbar() {
           {searchOpen && query.length > 0 && results.length > 0 && (
             <div className="
               absolute top-12 left-0 w-full
-              bg-white border border-gray-100
-              rounded-xl shadow-lg
+              bg-white border border-slate-200
+              rounded-xl shadow-[0_20px_80px_rgba(15,23,42,0.08)]
               max-h-72 overflow-y-auto
             ">
               {results.map((r) => (
                 <div
                   key={r.id}
-                  className="p-2 hover:bg-gray-50 text-sm"
+                  className="p-2 transition hover:bg-[#f8f4ee] text-sm text-slate-700"
                 >
                   {r.type === "post" && (
                     <Link href={`/post/${r.id}`}>
@@ -153,17 +151,17 @@ export default function Navbar() {
               <UserMenu profile={profile} />
             </>
           ) : (
-            <div className="flex items-center gap-4 text-sm text-slate-600">
-              <Link href="/login" className="transition hover:text-slate-900">
+            <div className="flex items-center gap-4 text-sm text-slate-700">
+              <Link href="/login" className="transition hover:text-slate-950">
                 Login
               </Link>
 
               <Link
                 href="/signup"
                 className="
-                  rounded-full border border-slate-200 bg-slate-950 px-4 py-1.5
-                  text-sm text-white transition duration-200
-                  hover:-translate-y-0.5 hover:bg-slate-800
+                  rounded-full border border-amber-300 bg-amber-400 px-4 py-1.5
+                  text-sm font-semibold text-slate-950 transition duration-200
+                  hover:-translate-y-0.5 hover:bg-amber-300
                 "
               >
                 Sign up
@@ -188,30 +186,27 @@ export default function Navbar() {
           md:hidden
           px-4 pb-4 pt-3
           space-y-3
-          border-t border-gray-200/70
-          bg-white
+          border-t border-slate-200/70
+          bg-[#fcf5ec]
         ">
 
           <input
             placeholder="Caută"
             className="
-              w-full px-3 py-2 rounded-2xl border border-gray-200 bg-white text-sm text-slate-700 placeholder:text-slate-400 shadow-sm
-            "
-          />
-
-          <Link href="/create" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+                w-full px-3 py-2 rounded-2xl border border-slate-200 bg-white text-sm text-slate-700 placeholder:text-slate-400 shadow-sm
+          <Link href="/create" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-[#fff4e5]">
             ✍️ Write
           </Link>
-          <Link href="/profile" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+          <Link href="/profile" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-[#fff4e5]">
             👤 Profile
           </Link>
 
           {!user && (
             <>
-              <Link href="/login" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+              <Link href="/login" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-[#fff4e5]">
                 Login
               </Link>
-              <Link href="/signup" className="block rounded-2xl border border-slate-200 px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+              <Link href="/signup" className="block rounded-2xl border border-amber-300 bg-amber-400 px-3 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300">
                 Sign up
               </Link>
             </>
@@ -267,9 +262,9 @@ function UserMenu({ profile }: { profile: Profile | null }) {
           relative
           w-10 h-10 rounded-full
           overflow-hidden
-          bg-slate-100
+          bg-[#f5ece1]
           border border-slate-200
-          transition hover:ring-2 hover:ring-slate-200
+          transition hover:ring-2 hover:ring-slate-200/90
         "
       >
         <Image
@@ -288,17 +283,17 @@ function UserMenu({ profile }: { profile: Profile | null }) {
           text-sm overflow-hidden
         ">
 
-          <Link className="block px-4 py-3 text-slate-700 hover:bg-slate-50" href="/profile">
+          <Link className="block px-4 py-3 text-slate-700 transition hover:bg-[#f8f4ee]" href="/profile">
             Profile
           </Link>
 
-          <Link className="block px-4 py-3 text-slate-700 hover:bg-slate-50" href="/settings">
+          <Link className="block px-4 py-3 text-slate-700 transition hover:bg-[#f8f4ee]" href="/settings">
             Settings
           </Link>
 
           <button
             onClick={logout}
-            className="w-full text-left px-4 py-3 text-slate-700 hover:bg-slate-50"
+            className="w-full text-left px-4 py-3 text-slate-700 transition hover:bg-[#f8f4ee]"
           >
             Logout
           </button>
