@@ -338,7 +338,7 @@ export default function HomePage() {
     commentCounts[postId] ?? 0;
 
   return (
-    <main className="relative min-h-screen bg-[#f6f4f1] text-[#111827] pt-24 lg:pt-28">
+    <main className="relative min-h-screen bg-[#f6f4f1] text-[#111827] pt-8 lg:pt-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <section className="relative overflow-hidden rounded-[2.5rem] bg-[#111827] text-white shadow-[0_40px_120px_rgba(15,23,42,0.14)]">
           <div className="relative h-[360px] sm:h-[460px] lg:h-[560px]">
@@ -353,17 +353,11 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-slate-950/50" />
             <div className="absolute inset-0 flex items-center">
               <div className="max-w-3xl px-6 py-10 sm:px-10 lg:px-16">
-                <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-slate-200 shadow-sm backdrop-blur-sm">
-                  cinema literar
-                </span>
 
                 <h1 className="mt-6 text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[0.95] tracking-tight text-white">
                   Un spațiu elegant pentru proză, poezie și visare.
                 </h1>
 
-                <p className="mt-5 max-w-2xl text-lg sm:text-xl leading-9 text-slate-200/90">
-                  Un loc liniștit în care cuvintele par să lumineze dinăuntru, iar poveștile lasă pe piele urme pe care memoria nu știe dacă le-a trăit sau doar le-a visat.
-                </p>
               </div>
             </div>
           </div>
@@ -394,17 +388,11 @@ export default function HomePage() {
                     <article className="group cursor-pointer rounded-[1.75rem] border border-black/5 bg-[#fcfbf9] p-7 transition duration-300 hover:border-black/10 hover:bg-white">
                       <div className="flex items-center justify-between gap-4 mb-4">
                         <div className="flex items-center gap-3">
-                          {post.profile?.avatar_url ? (
-                            <img
-                              src={post.profile.avatar_url}
-                              alt={post.profile.username ?? "Author avatar"}
-                              className="h-10 w-10 rounded-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-xs text-gray-500">
-                              ?
-                            </div>
-                          )}
+                          <img
+                            src={post.profile?.avatar_url ?? "/user.jpg"}
+                            alt={post.profile?.username ?? "Author avatar"}
+                            className="h-10 w-10 rounded-full object-cover"
+                          />
                           <span className="text-sm text-gray-500">
                             @{post.profile?.username ?? "anonim"}
                           </span>

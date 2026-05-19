@@ -64,19 +64,13 @@ export default function ProfileHeaderV4() {
 
           {/* AVATAR */}
           <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white bg-gray-200 overflow-hidden shrink-0">
-            {profile.avatar_url ? (
-              <Image
-                src={profile.avatar_url}
-                alt={profile.username || "Avatar"}
-                fill
-                sizes="(min-width: 640px) 96px, 80px"
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full font-bold">
-                U
-              </div>
-            )}
+            <Image
+              src={profile.avatar_url ?? "/user.jpg"}
+              alt={profile.username || "Avatar"}
+              fill
+              sizes="(min-width: 640px) 96px, 80px"
+              className="object-cover"
+            />
           </div>
 
           {/* INFO */}

@@ -217,15 +217,13 @@ export default function NotificationsDropdown({
 
                 {/* AVATAR */}
                 <div className="relative w-9 h-9 rounded-full bg-gray-200 overflow-hidden shrink-0">
-                  {n.actor?.avatar_url ? (
-                    <Image
-                      src={n.actor.avatar_url}
-                      alt={n.actor?.username || "Avatar"}
-                      fill
-                      sizes="36px"
-                      className="object-cover"
-                    />
-                  ) : null}
+                  <Image
+                    src={n.actor?.avatar_url ?? "/user.jpg"}
+                    alt={n.actor?.username || "Avatar"}
+                    fill
+                    sizes="36px"
+                    className="object-cover"
+                  />
                 </div>
 
                 {/* TEXT */}
