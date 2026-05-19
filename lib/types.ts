@@ -12,9 +12,19 @@ export type LikeInsert = Tables["likes"]["Insert"];
 export type Comment = Tables["comments"]["Row"];
 export type CommentInsert = Tables["comments"]["Insert"];
 
-export type Profile = Tables["profiles"]["Row"];
-export type ProfileInsert = Tables["profiles"]["Insert"];
-export type ProfileUpdate = Tables["profiles"]["Update"];
+export type UserRole = "owner" | "administrator" | "user";
+
+type ProfileRow = Tables["profiles"]["Row"];
+
+export type Profile = Omit<ProfileRow, "role"> & {
+  role?: UserRole | null;
+};
+export type ProfileInsert = Omit<Tables["profiles"]["Insert"], "role"> & {
+  role?: UserRole | null;
+};
+export type ProfileUpdate = Omit<Tables["profiles"]["Update"], "role"> & {
+  role?: UserRole | null;
+};
 
 export type Notification = Tables["notifications"]["Row"];
 

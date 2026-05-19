@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
-import type { Post } from "@/lib/types";
+import type { Post, Profile, UserRole } from "@/lib/types";
 
 export type CreatePostInput = {
   title: string;
@@ -37,6 +37,39 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
   }
 
   return data;
+}
+
+export async function updateProfileRole(
+  userId: string,
+  role: UserRole
+): Promise<Profile | null> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({ role })
+    .eq("user_id", userId)
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("updateProfileRole error:", error);
+    return null;
+  }
+
+  return data;
+}
+
+export async function getAllUsers(): Promise<Profile[]> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("getAllUsers error:", error);
+    return [];
+  }
+
+  return data ?? [];
 }
 
 export async function getPostById(id: string): Promise<Post | null> {

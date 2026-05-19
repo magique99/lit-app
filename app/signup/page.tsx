@@ -34,6 +34,7 @@ export default function SignupPage() {
         user_id: userId,
         username: email.split("@")[0],
         bio: "",
+        role: "user",
       });
 
       if (error) {

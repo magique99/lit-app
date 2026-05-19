@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import PostClient from "./PostClient";
 import LikeButton from "@/components/LikeButton";
 import TextAnnotations from "@/components/TextAnnotations";
+import PaginatedContent from "./PaginatedContent";
 
 type Props = {
   params: {
@@ -80,7 +81,7 @@ export default async function PostPage({ params }: Props) {
 
 {/* CONTENT */}
         <article className="mt-10 overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-10 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
-          <div className="prose max-w-none text-slate-700" dangerouslySetInnerHTML={{ __html: post.content }} />
+          <PaginatedContent content={post.content} wordsPerPage={350} />
         </article>
 
         {/* ANNOTATIONS */}
