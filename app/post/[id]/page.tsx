@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { toPlainText } from "@/lib/content";
 import { notFound } from "next/navigation";
 import PostClient from "./PostClient";
+import LikeButton from "@/components/LikeButton";
 
 type Props = {
   params: {
@@ -64,12 +65,15 @@ export default async function PostPage({ params }: Props) {
             </div>
 
             {/* AUTHOR BOX (simplificat) */}
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-sm font-semibold">@{authorName}</p>
-              <p className="text-xs text-slate-500">
-                Publicat {publishedAt}
-              </p>
-            </div>
+<div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+               <p className="text-sm font-semibold">@{authorName}</p>
+               <p className="text-xs text-slate-500">
+                 Publicat {publishedAt}
+               </p>
+               <div className="mt-4">
+                 <LikeButton postId={id} />
+               </div>
+             </div>
           </div>
         </section>
 

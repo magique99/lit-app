@@ -253,9 +253,6 @@ export default function PostClient({ postId }: { postId: string }) {
           />
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-slate-500">
-              Fii respectuos și împărtășește o idee care inspiră.
-            </p>
             <button
               onClick={() => void addComment()}
               disabled={loading}
