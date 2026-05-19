@@ -9,6 +9,7 @@ export default function ProfileHeaderV4() {
   const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [edit, setEdit] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -24,8 +25,24 @@ export default function ProfileHeaderV4() {
       .select("*")
       .eq("user_id", userId)
       .maybeSingle()
-      .then(({ data }) => setProfile(data ?? null));
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("LOAD PROFILE ERROR:", error);
+          setLoadError("Nu am putut încărca profilul.");
+          return;
+        }
+
+        setProfile(data ?? null);
+      });
   }, [userId]);
+
+  if (loadError) {
+    return (
+      <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+        {loadError}
+      </div>
+    );
+  }
 
   if (!profile) {
     return (
@@ -120,11 +137,18 @@ function ProfileEditorInline({
 
   const [bio, setBio] =
     useState(profile.bio || "");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
 
   async function save() {
     if (!profile.id) return;
 
-    await supabase
+    setSaving(true);
+    setError(null);
+    setSaved(false);
+
+    const { error } = await supabase
       .from("profiles")
       .update({
         username,
@@ -132,12 +156,21 @@ function ProfileEditorInline({
       })
       .eq("id", profile.id);
 
+    if (error) {
+      console.error("SAVE PROFILE ERROR:", error);
+      setError("Nu am putut salva profilul.");
+      setSaving(false);
+      return;
+    }
+
     onSaved({
       ...profile,
       username,
       bio,
     });
 
+    setSaved(true);
+    setSaving(false);
     onClose();
   }
 
@@ -169,26 +202,44 @@ function ProfileEditorInline({
       <div className="flex flex-col sm:flex-row gap-2">
 
         <button
-          onClick={save}
+          onClick={() => void save()}
+          disabled={saving}
           className="
             bg-black text-white
             px-4 py-2 rounded-xl
             text-sm
+            disabled:cursor-wait
+            disabled:opacity-60
           "
         >
-          Save
+          {saving ? "Saving..." : "Save"}
         </button>
 
         <button
           onClick={onClose}
+          disabled={saving}
           className="
             text-gray-500 text-sm
+            disabled:cursor-wait
+            disabled:opacity-60
           "
         >
           Cancel
         </button>
 
       </div>
+
+      {error && (
+        <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {saved && (
+        <div className="rounded-xl border border-green-100 bg-green-50 px-3 py-2 text-sm text-green-700">
+          Saved
+        </div>
+      )}
     </div>
   );
 }

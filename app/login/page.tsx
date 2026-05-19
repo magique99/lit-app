@@ -10,8 +10,10 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function login() {
+    setErrorMessage(null);
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -22,7 +24,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (error) {
-      alert(error.message);
+      setErrorMessage(error.message);
       return;
     }
 
@@ -35,6 +37,12 @@ export default function LoginPage() {
       <h1 className="text-3xl font-bold mb-6">
         Login
       </h1>
+
+      {errorMessage && (
+        <div className="mb-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {errorMessage}
+        </div>
+      )}
 
       <div className="space-y-4">
 
@@ -57,7 +65,7 @@ export default function LoginPage() {
         <button
           onClick={login}
           disabled={loading}
-          className="bg-black text-white px-4 py-3 rounded-xl w-full"
+          className="bg-black text-white px-4 py-3 rounded-xl w-full disabled:cursor-wait disabled:opacity-60"
         >
           {loading ? "Loading..." : "Login"}
         </button>

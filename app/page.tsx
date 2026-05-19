@@ -19,6 +19,9 @@ export default function HomePage() {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [likeError, setLikeError] = useState<string | null>(null);
+  const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
@@ -26,10 +29,17 @@ export default function HomePage() {
   async function loadCounts(postIds: string[]) {
     if (postIds.length === 0) return;
 
-    const [{ data: likesData }, { data: commentsData }] = await Promise.all([
+    const [
+      { data: likesData, error: likesError },
+      { data: commentsData, error: commentsError },
+    ] = await Promise.all([
       supabase.from("likes").select("post_id").in("post_id", postIds),
       supabase.from("comments").select("post_id").in("post_id", postIds),
     ]);
+
+    if (likesError || commentsError) {
+      throw likesError ?? commentsError;
+    }
 
     const nextLikes: Record<string, number> = {};
     const nextComments: Record<string, number> = {};
@@ -59,6 +69,7 @@ export default function HomePage() {
 
     loadingRef.current = true;
     setLoading(true);
+    setError(null);
 
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
@@ -71,6 +82,7 @@ export default function HomePage() {
 
     if (error) {
       console.error("LOAD POSTS ERROR:", error);
+      setError("Nu am putut încărca postările. Încearcă din nou.");
       loadingRef.current = false;
       setLoading(false);
       return;
@@ -91,7 +103,12 @@ export default function HomePage() {
       return [...prev, ...filtered];
     });
 
-    await loadCounts(nextPosts.map((post) => post.id));
+    try {
+      await loadCounts(nextPosts.map((post) => post.id));
+    } catch (err) {
+      console.error("LOAD COUNTS ERROR:", err);
+      setError("Postările s-au încărcat, dar nu am putut actualiza statisticile.");
+    }
 
     loadingRef.current = false;
     setLoading(false);
@@ -116,6 +133,7 @@ export default function HomePage() {
 
       if (error) {
         console.error("LOAD LATEST COMMENTS ERROR:", error);
+        setError("Nu am putut încărca ultimele comentarii.");
         return;
       }
 
@@ -216,6 +234,10 @@ export default function HomePage() {
   // OPTIMISTIC LIKE
   // =========================
   async function handleLike(postId: string) {
+    if (likingIds.has(postId)) return;
+
+    setLikeError(null);
+    setLikingIds((prev) => new Set(prev).add(postId));
     setLikeCounts((prev) => ({
       ...prev,
       [postId]: (prev[postId] ?? 0) + 1,
@@ -227,6 +249,7 @@ export default function HomePage() {
 
     if (error) {
       console.error("LIKE ERROR:", error);
+      setLikeError("Like-ul nu a putut fi salvat.");
       setLikeCounts((prev) => ({
         ...prev,
         [postId]: Math.max(
@@ -235,6 +258,12 @@ export default function HomePage() {
         ),
       }));
     }
+
+    setLikingIds((prev) => {
+      const next = new Set(prev);
+      next.delete(postId);
+      return next;
+    });
   }
 
   // =========================
@@ -258,6 +287,24 @@ export default function HomePage() {
               Stories, thoughts, and ideas.
             </p>
           </header>
+
+          {error && (
+            <div className="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
+          {likeError && (
+            <div className="mb-4 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+              {likeError}
+            </div>
+          )}
+
+          {!loading && posts.length === 0 && !error && (
+            <div className="rounded-3xl border border-black/5 bg-white/80 p-8 text-sm text-gray-500">
+              Nu există postări încă.
+            </div>
+          )}
 
           <div className="space-y-4">
             {posts.map((post) => (
@@ -306,9 +353,10 @@ export default function HomePage() {
                     <button
                       onClick={(e) => {
                         e.preventDefault();
-                        handleLike(post.id);
+                        void handleLike(post.id);
                       }}
-                      className="hover:scale-105 active:scale-95 transition"
+                      disabled={likingIds.has(post.id)}
+                      className="hover:scale-105 active:scale-95 transition disabled:cursor-wait disabled:opacity-60"
                     >
                       ❤️ {getLikes(post.id)}
                     </button>

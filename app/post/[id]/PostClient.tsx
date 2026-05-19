@@ -11,6 +11,7 @@ export default function PostClient({ postId }: { postId: string }) {
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const typingChannel = useRef<RealtimeChannel | null>(null);
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -36,6 +37,7 @@ export default function PostClient({ postId }: { postId: string }) {
 
     if (error) {
       console.error("LOAD COMMENTS ERROR:", error);
+      setErrorMessage("Nu am putut încărca comentariile.");
       return;
     }
 
@@ -148,13 +150,14 @@ export default function PostClient({ postId }: { postId: string }) {
   // =========================
   async function addComment() {
     if (!currentUserId) {
-      alert("Trebuie să fii logat");
+      setErrorMessage("Trebuie să fii logat ca să comentezi.");
       return;
     }
 
     if (!text.trim()) return;
 
     setLoading(true);
+    setErrorMessage(null);
 
     const value = text;
 
@@ -193,7 +196,7 @@ export default function PostClient({ postId }: { postId: string }) {
       // rollback optimistic UI
       setComments((p) => p.filter((c) => c.id !== tempId));
 
-      alert("Nu s-a putut trimite comentariul");
+      setErrorMessage("Nu s-a putut trimite comentariul.");
       return;
     }
 
@@ -201,8 +204,8 @@ export default function PostClient({ postId }: { postId: string }) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("*")
-      .eq("id", currentUserId)
-      .single();
+      .eq("user_id", currentUserId)
+      .maybeSingle();
 
     setComments((prev) =>
       prev.map((c) =>
@@ -219,6 +222,12 @@ export default function PostClient({ postId }: { postId: string }) {
   return (
     <div className="mt-10 space-y-4">
 
+      {errorMessage && (
+        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {errorMessage}
+        </div>
+      )}
+
       <div className="flex gap-2">
         <textarea
           value={text}
@@ -232,9 +241,9 @@ export default function PostClient({ postId }: { postId: string }) {
         />
 
         <button
-          onClick={addComment}
+          onClick={() => void addComment()}
           disabled={loading}
-          className="bg-black text-white px-4 rounded"
+          className="bg-black text-white px-4 rounded disabled:cursor-wait disabled:opacity-60"
         >
           {loading ? "..." : "Send"}
         </button>

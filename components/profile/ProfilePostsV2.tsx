@@ -10,14 +10,25 @@ export default function ProfilePostsV2() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
+      setLoading(true);
+      setError(null);
+
       const { data: userData } =
         await supabase.auth.getUser();
 
       const uid = userData.user?.id;
-      if (!uid) return;
+      if (!uid) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from("posts")
@@ -27,18 +38,29 @@ export default function ProfilePostsV2() {
 
       if (error) {
         console.error("LOAD PROFILE POSTS ERROR:", error);
+        setError("Nu am putut încărca textele tale.");
+        setLoading(false);
         return;
       }
 
       setPosts(data || []);
+      setLoading(false);
     }
 
     load();
   }, []);
 
   async function deletePost(id: string) {
-    const ok = confirm("Delete this post?");
-    if (!ok) return;
+    if (confirmDeleteId !== id) {
+      setConfirmDeleteId(id);
+      setError(null);
+      return;
+    }
+
+    const previousPosts = posts;
+    setDeletingId(id);
+    setError(null);
+    setPosts((p) => p.filter((x) => x.id !== id));
 
     const { error } = await supabase
       .from("posts")
@@ -47,16 +69,25 @@ export default function ProfilePostsV2() {
 
     if (error) {
       console.error("DELETE POST ERROR:", error);
-      alert("Nu s-a putut șterge textul.");
+      setPosts(previousPosts);
+      setError("Nu s-a putut șterge textul.");
+      setDeletingId(null);
       return;
     }
 
-    setPosts((p) =>
-      p.filter((x) => x.id !== id)
-    );
+    setConfirmDeleteId(null);
+    setDeletingId(null);
   }
 
   async function saveEdit(postId: string) {
+    if (!editText.trim()) {
+      setError("Textul nu poate fi gol.");
+      return;
+    }
+
+    setSavingId(postId);
+    setError(null);
+
     const { error } = await supabase
       .from("posts")
       .update({ content: editText })
@@ -64,7 +95,8 @@ export default function ProfilePostsV2() {
 
     if (error) {
       console.error("UPDATE POST ERROR:", error);
-      alert("Nu s-a putut salva textul.");
+      setError("Nu s-a putut salva textul.");
+      setSavingId(null);
       return;
     }
 
@@ -77,10 +109,27 @@ export default function ProfilePostsV2() {
     );
 
     setEditingId(null);
+    setSavingId(null);
   }
 
   return (
     <div className="space-y-3">
+
+      {error && (
+        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {loading && (
+        <div className="h-24 animate-pulse rounded-xl bg-gray-100" />
+      )}
+
+      {!loading && posts.length === 0 && !error && (
+        <div className="rounded-xl border border-gray-100 bg-white p-5 text-sm text-gray-500">
+          Nu ai încă niciun text publicat.
+        </div>
+      )}
 
       {posts.map((post) => (
         <article
@@ -123,21 +172,25 @@ export default function ProfilePostsV2() {
 
                 <button
                   onClick={() =>
-                    saveEdit(post.id)
+                    void saveEdit(post.id)
                   }
+                  disabled={savingId === post.id}
                   className="
                     bg-black text-white
                     px-4 py-2
                     rounded-xl text-sm
+                    disabled:cursor-wait
+                    disabled:opacity-60
                   "
                 >
-                  Save
+                  {savingId === post.id ? "Saving..." : "Save"}
                 </button>
 
                 <button
                   onClick={() =>
                     setEditingId(null)
                   }
+                  disabled={savingId === post.id}
                   className="text-sm text-gray-500"
                 >
                   Cancel
@@ -181,11 +234,16 @@ export default function ProfilePostsV2() {
 
                 <button
                   onClick={() =>
-                    deletePost(post.id)
+                    void deletePost(post.id)
                   }
-                  className="text-red-500"
+                  disabled={deletingId === post.id}
+                  className="text-red-500 disabled:cursor-wait disabled:opacity-60"
                 >
-                  Delete
+                  {deletingId === post.id
+                    ? "Deleting..."
+                    : confirmDeleteId === post.id
+                      ? "Confirm delete"
+                      : "Delete"}
                 </button>
 
               </div>

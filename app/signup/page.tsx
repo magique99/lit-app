@@ -9,26 +9,39 @@ export default function SignupPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function signup() {
+    setLoading(true);
+    setErrorMessage(null);
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
     if (error) {
-      alert(error.message);
+      setErrorMessage(error.message);
+      setLoading(false);
       return;
     }
 
     const userId = data.user?.id;
 
     if (userId) {
-      await supabase.from("profiles").insert({
+      const { error } = await supabase.from("profiles").insert({
         user_id: userId,
         username: email.split("@")[0],
         bio: "",
       });
+
+      if (error) {
+        console.error("CREATE PROFILE ERROR:", error);
+        setErrorMessage("Contul a fost creat, dar profilul nu a putut fi inițializat.");
+        setLoading(false);
+        return;
+      }
     }
 
     router.push("/profile");
@@ -39,6 +52,12 @@ export default function SignupPage() {
       <h1 className="text-3xl font-bold mb-6">
         Sign up
       </h1>
+
+      {errorMessage && (
+        <div className="mb-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {errorMessage}
+        </div>
+      )}
 
       <div className="space-y-4">
 
@@ -59,10 +78,11 @@ export default function SignupPage() {
         />
 
         <button
-          onClick={signup}
-          className="bg-black text-white px-4 py-3 rounded-xl w-full"
+          onClick={() => void signup()}
+          disabled={loading}
+          className="bg-black text-white px-4 py-3 rounded-xl w-full disabled:cursor-wait disabled:opacity-60"
         >
-          Create account
+          {loading ? "Loading..." : "Create account"}
         </button>
 
       </div>
