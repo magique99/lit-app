@@ -86,7 +86,9 @@ export default function Navbar() {
         {/* LOGO */}
         <Link
           href="/"
-            className="font-serif text-sm uppercase tracking-[0.35em] text-slate-800 transition hover:text-slate-950"
+          className="font-serif text-sm uppercase tracking-[0.35em] text-slate-800 transition hover:text-slate-950"
+        >
+          Literatura9
         </Link>
 
         <div className="hidden md:block relative w-[300px]">
@@ -192,8 +194,9 @@ export default function Navbar() {
 
           <input
             placeholder="Caută"
-            className="
-                w-full px-3 py-2 rounded-2xl border border-slate-200 bg-white text-sm text-slate-700 placeholder:text-slate-400 shadow-sm
+            className="w-full px-3 py-2 rounded-2xl border border-slate-200 bg-white text-sm text-slate-700 placeholder:text-slate-400 shadow-sm"
+          />
+
           <Link href="/create" className="block rounded-2xl px-3 py-3 text-sm text-slate-700 transition hover:-translate-y-0.5 hover:bg-[#fff4e5]">
             ✍️ Write
           </Link>
