@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabaseClient";
 export async function uploadDocx(file: File, userId: string) {
   const path = `${userId}/${Date.now()}-${file.name}`;
 
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from("documents")
     .upload(path, file, {
       cacheControl: "3600",

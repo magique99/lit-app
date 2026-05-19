@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
+import { toPlainText } from "@/lib/content";
 import { notFound } from "next/navigation";
 import PostClient from "./PostClient";
 
@@ -9,13 +10,13 @@ type Props = {
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
 
-  const { data: post } = await supabase
+  const { data: post, error } = await supabase
     .from("posts")
     .select("*")
     .eq("id", id)
     .single();
 
-  if (!post) notFound();
+  if (error || !post) notFound();
 
   return (
     <main className="min-h-screen bg-[#f8f7fb]">
@@ -27,7 +28,7 @@ export default async function PostPage({ params }: Props) {
           </h1>
 
           <div className="text-lg leading-8 text-gray-700 whitespace-pre-wrap">
-            {post.content?.replace(/<[^>]*>/g, "")}
+            {toPlainText(post.content)}
           </div>
         </article>
 

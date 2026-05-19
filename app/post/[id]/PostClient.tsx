@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
+import type { Comment, CommentWithProfile, Profile } from "@/lib/types";
 
 export default function PostClient({ postId }: { postId: string }) {
-  const [comments, setComments] = useState<any[]>([]);
+  const [comments, setComments] = useState<CommentWithProfile[]>([]);
   const [text, setText] = useState("");
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const typingChannel = useRef<any>(null);
-  const typingTimeout = useRef<any>(null);
+  const typingChannel = useRef<RealtimeChannel | null>(null);
+  const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // =========================
   // USER
@@ -25,7 +27,7 @@ export default function PostClient({ postId }: { postId: string }) {
   // =========================
   // LOAD COMMENTS
   // =========================
-  async function loadComments() {
+  const loadComments = useCallback(async () => {
     const { data, error } = await supabase
       .from("comments")
       .select("*")
@@ -37,26 +39,32 @@ export default function PostClient({ postId }: { postId: string }) {
       return;
     }
 
-    const list = data || [];
+    const list = (data || []) as Comment[];
 
     const userIds = [...new Set(list.map((c) => c.user_id))];
 
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("*")
-      .in("id", userIds);
+    const { data: profiles } = userIds.length
+      ? await supabase
+          .from("profiles")
+          .select("user_id, username, avatar_url")
+          .in("user_id", userIds)
+      : { data: [] };
 
     const merged = list.map((c) => ({
       ...c,
-      profiles: profiles?.find((p) => p.id === c.user_id),
+      profiles: ((profiles ?? []) as Profile[]).find(
+        (p) => p.user_id === c.user_id
+      ),
     }));
 
     setComments(merged);
-  }
+  }, [postId]);
 
   useEffect(() => {
-    loadComments();
-  }, [postId]);
+    queueMicrotask(() => {
+      void loadComments();
+    });
+  }, [loadComments]);
 
   // =========================
   // REALTIME COMMENTS
@@ -73,7 +81,7 @@ export default function PostClient({ postId }: { postId: string }) {
           filter: `post_id=eq.${postId}`,
         },
         async (payload) => {
-          const c = payload.new as any;
+          const c = payload.new as Comment;
 
           setComments((prev) => {
             if (prev.some((x) => x.id === c.id)) return prev;
@@ -82,13 +90,15 @@ export default function PostClient({ postId }: { postId: string }) {
 
           const { data: profile } = await supabase
             .from("profiles")
-            .select("*")
-            .eq("id", c.user_id)
-            .single();
+            .select("user_id, username, avatar_url")
+            .eq("user_id", c.user_id)
+            .maybeSingle();
 
           setComments((prev) =>
             prev.map((x) =>
-              x.id === c.id ? { ...x, profiles: profile } : x
+              x.id === c.id
+                ? { ...x, profiles: (profile as Profile | null) ?? null }
+                : x
             )
           );
         }
@@ -108,7 +118,9 @@ export default function PostClient({ postId }: { postId: string }) {
 
     typingChannel.current.track({ typing: true });
 
-    clearTimeout(typingTimeout.current);
+    if (typingTimeout.current) {
+      clearTimeout(typingTimeout.current);
+    }
 
     typingTimeout.current = setTimeout(() => {
       typingChannel.current?.untrack();

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { toPlainText } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
 
 type Post = {
@@ -28,22 +29,32 @@ export default function ProfilePostsV2() {
   // =========================
   // LOAD POSTS
   // =========================
-  async function loadPosts(uid: string) {
+  const loadPosts = useCallback(async (uid: string) => {
     setLoading(true);
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("posts")
       .select("*")
       .eq("user_id", uid)
       .order("created_at", { ascending: false });
 
+    if (error) {
+      console.error("LOAD PROFILE POSTS ERROR:", error);
+      setLoading(false);
+      return;
+    }
+
     setPosts(data ?? []);
     setLoading(false);
-  }
+  }, []);
 
   useEffect(() => {
-    if (userId) loadPosts(userId);
-  }, [userId]);
+    if (userId) {
+      queueMicrotask(() => {
+        void loadPosts(userId);
+      });
+    }
+  }, [loadPosts, userId]);
 
   // =========================
   // REALTIME
@@ -94,9 +105,16 @@ export default function ProfilePostsV2() {
   // DELETE
   // =========================
   async function deletePost(id: string) {
+    const previousPosts = posts;
     setPosts((p) => p.filter((x) => x.id !== id));
 
-    await supabase.from("posts").delete().eq("id", id);
+    const { error } = await supabase.from("posts").delete().eq("id", id);
+
+    if (error) {
+      console.error("DELETE POST ERROR:", error);
+      setPosts(previousPosts);
+      alert("Nu s-a putut șterge textul.");
+    }
   }
 
   // =========================
@@ -147,7 +165,7 @@ export default function ProfilePostsV2() {
 
           {/* CONTENT */}
           <p className="text-sm text-gray-700 mt-2 line-clamp-4 leading-relaxed">
-            {post.content}
+            {toPlainText(post.content)}
           </p>
 
           {/* FOOTER */}

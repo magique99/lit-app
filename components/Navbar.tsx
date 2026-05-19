@@ -3,21 +3,21 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
 
 import NotificationsDropdown from "./NotificationsDropdown";
 import { useSearch } from "@/hooks/useSearch";
 import { supabase } from "@/lib/supabaseClient";
+import type { Profile } from "@/lib/types";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   const { results, search } = useSearch();
-
-  const router = useRouter();
 
   useEffect(() => {
     async function loadUser() {
@@ -32,7 +32,7 @@ export default function Navbar() {
           .eq("user_id", data.user.id)
           .maybeSingle();
 
-        setProfile(profileData);
+        setProfile((profileData as Profile | null) ?? null);
       }
     }
 
@@ -119,7 +119,7 @@ export default function Navbar() {
 
           {user ? (
             <>
-              <NotificationsDropdown />
+              <NotificationsDropdown userId={user.id} />
 
               <UserMenu profile={profile} />
             </>
@@ -191,7 +191,7 @@ export default function Navbar() {
 USER MENU (clean Instagram style)
 ========================= */
 
-function UserMenu({ profile }: { profile: any }) {
+function UserMenu({ profile }: { profile: Profile | null }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -215,6 +215,7 @@ function UserMenu({ profile }: { profile: any }) {
         {profile?.avatar_url ? (
           <img
             src={profile.avatar_url}
+            alt={profile.username || "Avatar"}
             className="w-full h-full object-cover"
           />
         ) : null}

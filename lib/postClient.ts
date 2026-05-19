@@ -1,16 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
-
-export type Post = {
-  id: string;
-  title: string;
-  content: string;
-  user_id: string;
-  created_at?: string;
-  updated_at?: string;
-  file_hash?: string | null;
-  version?: number;
-  doc_url?: string | null;
-};
+import type { Post } from "@/lib/types";
 
 export type CreatePostInput = {
   title: string;
@@ -41,7 +30,7 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
     throw error;
   }
 
-  return data;
+  return data as Post;
 }
 
 export async function getPostById(id: string): Promise<Post | null> {
@@ -56,7 +45,7 @@ export async function getPostById(id: string): Promise<Post | null> {
     return null;
   }
 
-  return data;
+  return data as Post;
 }
 
 export async function updatePost(
@@ -81,7 +70,7 @@ export async function updatePost(
     throw error;
   }
 
-  return data;
+  return data as Post;
 }
 
 export async function listPosts(limit = 20): Promise<Post[]> {
@@ -96,5 +85,5 @@ export async function listPosts(limit = 20): Promise<Post[]> {
     return [];
   }
 
-  return data ?? [];
+  return (data ?? []) as Post[];
 }

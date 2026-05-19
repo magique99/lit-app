@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
+import type { Profile } from "@/lib/types";
 
 export async function getProfile(userId: string) {
   return supabase
@@ -8,7 +9,10 @@ export async function getProfile(userId: string) {
     .single();
 }
 
-export async function updateProfile(userId: string, data: any) {
+export async function updateProfile(
+  userId: string,
+  data: Partial<Omit<Profile, "id" | "user_id">>
+) {
   return supabase
     .from("profiles")
     .update({

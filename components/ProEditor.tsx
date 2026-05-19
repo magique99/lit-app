@@ -2,9 +2,13 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useState, useEffect } from "react";
+import { type ReactNode, useState } from "react";
 
-export default function ProEditor({ onChange }: any) {
+type ProEditorProps = {
+  onChange: (html: string) => void;
+};
+
+export default function ProEditor({ onChange }: ProEditorProps) {
   const [isEmptySelection, setIsEmptySelection] =
     useState(true);
 
@@ -85,7 +89,11 @@ function ToolButton({
   children,
   onClick,
   active,
-}: any) {
+}: {
+  children: ReactNode;
+  onClick: () => void;
+  active: boolean;
+}) {
   return (
     <button
       onClick={onClick}

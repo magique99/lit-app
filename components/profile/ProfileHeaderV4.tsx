@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import type { Profile } from "@/lib/types";
 
 export default function ProfileHeaderV4() {
   const [userId, setUserId] = useState<string | null>(null);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [edit, setEdit] = useState(false);
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function ProfileHeaderV4() {
       .select("*")
       .eq("user_id", userId)
       .maybeSingle()
-      .then(({ data }) => setProfile(data));
+      .then(({ data }) => setProfile((data as Profile | null) ?? null));
   }, [userId]);
 
   if (!profile) {
@@ -48,6 +49,7 @@ export default function ProfileHeaderV4() {
             {profile.avatar_url ? (
               <img
                 src={profile.avatar_url}
+                alt={profile.username || "Avatar"}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -89,9 +91,7 @@ export default function ProfileHeaderV4() {
               <ProfileEditorInline
                 profile={profile}
                 onClose={() => setEdit(false)}
-                onSaved={(newProfile: any) =>
-                  setProfile(newProfile)
-                }
+                onSaved={setProfile}
               />
             )}
 
@@ -107,7 +107,11 @@ function ProfileEditorInline({
   profile,
   onClose,
   onSaved,
-}: any) {
+}: {
+  profile: Profile;
+  onClose: () => void;
+  onSaved: (profile: Profile) => void;
+}) {
   const [username, setUsername] =
     useState(profile.username || "");
 
@@ -115,6 +119,8 @@ function ProfileEditorInline({
     useState(profile.bio || "");
 
   async function save() {
+    if (!profile.id) return;
+
     await supabase
       .from("profiles")
       .update({

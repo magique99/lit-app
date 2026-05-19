@@ -1,29 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import type { Notification } from "@/lib/types";
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
   // =========================
   // LOAD INITIAL NOTIFICATIONS
   // =========================
-  async function loadNotifications() {
+  const loadNotifications = useCallback(async () => {
     setLoading(true);
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("notifications")
       .select("*")
       .order("created_at", { ascending: false });
 
-    setNotifications(data || []);
+    if (error) {
+      console.error("LOAD NOTIFICATIONS ERROR:", error);
+      setLoading(false);
+      return;
+    }
+
+    setNotifications((data || []) as Notification[]);
     setLoading(false);
-  }
+  }, []);
 
   useEffect(() => {
-    loadNotifications();
+    queueMicrotask(() => {
+      void loadNotifications();
+    });
 
     // =========================
     // REALTIME SUBSCRIPTION ⚡
@@ -38,10 +47,7 @@ export function useNotifications() {
           table: "notifications",
         },
         (payload) => {
-          setNotifications((prev) => [
-            payload.new,
-            ...prev,
-          ]);
+          setNotifications((prev) => [payload.new as Notification, ...prev]);
         }
       )
       .subscribe();
@@ -49,16 +55,21 @@ export function useNotifications() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [loadNotifications]);
 
   // =========================
   // MARK AS READ
   // =========================
   async function markAsRead(id: string) {
-    await supabase
+    const { error } = await supabase
       .from("notifications")
       .update({ read: true })
       .eq("id", id);
+
+    if (error) {
+      console.error("MARK NOTIFICATION READ ERROR:", error);
+      return;
+    }
 
     setNotifications((prev) =>
       prev.map((n) =>

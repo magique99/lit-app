@@ -159,6 +159,7 @@ export default function NotificationsDropdown({
                   {n.actor?.avatar_url ? (
                     <img
                       src={n.actor.avatar_url}
+                      alt={n.actor?.username || "Avatar"}
                       className="w-full h-full object-cover"
                     />
                   ) : null}

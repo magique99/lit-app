@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import type { Profile } from "@/lib/types";
 
 export default function ProfileCard() {
   const [userId, setUserId] = useState<string | null>(null);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   const [edit, setEdit] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ export default function ProfileCard() {
         .eq("user_id", userId)
         .maybeSingle();
 
-      setProfile(data);
+      setProfile((data as Profile | null) ?? null);
 
       if (data) {
         setUsername(data.username || "");
@@ -55,8 +56,8 @@ export default function ProfileCard() {
       })
       .eq("user_id", userId);
 
-    setProfile((p: any) => ({
-      ...p,
+    setProfile((p) => ({
+      ...(p ?? { user_id: userId }),
       username,
       bio,
     }));
@@ -89,8 +90,8 @@ export default function ProfileCard() {
       .update({ avatar_url: data.publicUrl })
       .eq("user_id", userId);
 
-    setProfile((p: any) => ({
-      ...p,
+    setProfile((p) => ({
+      ...(p ?? { user_id: userId, username: "" }),
       avatar_url: data.publicUrl,
     }));
   }
@@ -121,6 +122,7 @@ export default function ProfileCard() {
           {profile.avatar_url ? (
             <img
               src={profile.avatar_url}
+              alt={profile.username || "Avatar"}
               className="w-full h-full object-cover"
             />
           ) : (

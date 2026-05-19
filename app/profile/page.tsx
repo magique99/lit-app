@@ -1,5 +1,4 @@
 import ProfilePageV4 from "@/components/profile/ProfilePageV4";
-import ProfilePostsV2 from "@/components/profile/ProfilePostsV2";
 
 export default function ProfilePage() {
   return (

@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { toPlainText } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
+import type { Post } from "@/lib/types";
 
 export default function ProfilePostsV2() {
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
 
@@ -17,13 +19,18 @@ export default function ProfilePostsV2() {
       const uid = userData.user?.id;
       if (!uid) return;
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("posts")
         .select("*")
         .eq("user_id", uid)
         .order("created_at", { ascending: false });
 
-      setPosts(data || []);
+      if (error) {
+        console.error("LOAD PROFILE POSTS ERROR:", error);
+        return;
+      }
+
+      setPosts((data || []) as Post[]);
     }
 
     load();
@@ -33,10 +40,16 @@ export default function ProfilePostsV2() {
     const ok = confirm("Delete this post?");
     if (!ok) return;
 
-    await supabase
+    const { error } = await supabase
       .from("posts")
       .delete()
       .eq("id", id);
+
+    if (error) {
+      console.error("DELETE POST ERROR:", error);
+      alert("Nu s-a putut șterge textul.");
+      return;
+    }
 
     setPosts((p) =>
       p.filter((x) => x.id !== id)
@@ -44,10 +57,16 @@ export default function ProfilePostsV2() {
   }
 
   async function saveEdit(postId: string) {
-    await supabase
+    const { error } = await supabase
       .from("posts")
       .update({ content: editText })
       .eq("id", postId);
+
+    if (error) {
+      console.error("UPDATE POST ERROR:", error);
+      alert("Nu s-a putut salva textul.");
+      return;
+    }
 
     setPosts((p) =>
       p.map((x) =>
@@ -136,10 +155,9 @@ export default function ProfilePostsV2() {
                   line-clamp-4
                   whitespace-pre-wrap
                 "
-                dangerouslySetInnerHTML={{
-                  __html: post.content,
-                }}
-              />
+              >
+                {toPlainText(post.content)}
+              </div>
 
               {/* ACTIONS (Instagram-like simple row) */}
               <div className="flex gap-6 mt-3 text-sm">
@@ -154,7 +172,7 @@ export default function ProfilePostsV2() {
                 <button
                   onClick={() => {
                     setEditingId(post.id);
-                    setEditText(post.content);
+                    setEditText(post.content ?? "");
                   }}
                   className="text-blue-600"
                 >

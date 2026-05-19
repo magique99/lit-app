@@ -1,7 +1,10 @@
-export function debounce(fn: Function, delay = 800) {
-  let t: any;
+export function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  delay = 800
+) {
+  let t: ReturnType<typeof setTimeout>;
 
-  return (...args: any[]) => {
+  return (...args: TArgs) => {
     clearTimeout(t);
     t = setTimeout(() => fn(...args), delay);
   };

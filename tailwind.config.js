@@ -1,4 +1,7 @@
-module.exports = {
+import lineClamp from "@tailwindcss/line-clamp";
+import typography from "@tailwindcss/typography";
+
+const config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
@@ -7,7 +10,9 @@ module.exports = {
     extend: {},
   },
   plugins: [
-    require("@tailwindcss/line-clamp"),
-    require("@tailwindcss/typography"),
+    lineClamp,
+    typography,
   ],
 };
+
+export default config;

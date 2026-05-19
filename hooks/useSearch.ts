@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import type { SearchResult } from "@/lib/types";
 
 export function useSearch() {
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
 
   async function search(query: string) {
@@ -29,16 +30,17 @@ export function useSearch() {
       .select("id, username, avatar_url")
       .ilike("username", `%${q}%`);
 
-    console.log("SEARCH POSTS:", posts, postError);
-    console.log("SEARCH USERS:", users, userError);
+    if (postError || userError) {
+      console.error("SEARCH ERROR:", postError ?? userError);
+    }
 
-    const merged = [
+    const merged: SearchResult[] = [
       ...(posts || []).map((p) => ({
-        type: "post",
+        type: "post" as const,
         ...p,
       })),
       ...(users || []).map((u) => ({
-        type: "user",
+        type: "user" as const,
         ...u,
       })),
     ];
