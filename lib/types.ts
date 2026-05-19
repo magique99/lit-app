@@ -26,6 +26,14 @@ export type ProfileUpdate = Omit<Tables["profiles"]["Update"], "role"> & {
   role?: UserRole | null;
 };
 
+export function toProfile(dbProfile: ProfileRow | null): Profile | null {
+  if (!dbProfile) return null;
+  return {
+    ...dbProfile,
+    role: dbProfile.role as UserRole | null,
+  };
+}
+
 export type Notification = Tables["notifications"]["Row"];
 
 export type CommentWithProfile = Comment & {

@@ -10,6 +10,7 @@ import NotificationsDropdown from "./NotificationsDropdown";
 import { useSearch } from "@/hooks/useSearch";
 import { supabase } from "@/lib/supabaseClient";
 import type { Profile } from "@/lib/types";
+import { toProfile } from "@/lib/types";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,7 +36,7 @@ export default function Navbar() {
           .eq("user_id", data.user.id)
           .maybeSingle();
 
-        setProfile(profileData ?? null);
+        setProfile(toProfile(profileData));
       }
     }
 

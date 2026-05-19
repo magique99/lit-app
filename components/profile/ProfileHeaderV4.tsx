@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { Profile } from "@/lib/types";
+import { toProfile } from "@/lib/types";
 
 export default function ProfileHeaderV4() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -32,7 +33,7 @@ export default function ProfileHeaderV4() {
           return;
         }
 
-        setProfile(data ?? null);
+        setProfile(toProfile(data));
       });
   }, [userId]);
 

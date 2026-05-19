@@ -1,5 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
-import type { Post, Profile, UserRole } from "@/lib/types";
+import type { Post } from "@/lib/types";
+import { toProfile } from "@/lib/types";
+import type { Profile, UserRole } from "@/lib/types";
 
 export type CreatePostInput = {
   title: string;
@@ -36,7 +38,7 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
     throw error;
   }
 
-  return data;
+  return toProfile(data);
 }
 
 export async function updateProfileRole(
@@ -55,7 +57,7 @@ export async function updateProfileRole(
     return null;
   }
 
-  return data;
+  return toProfile(data);
 }
 
 export async function getAllUsers(): Promise<Profile[]> {
@@ -84,7 +86,7 @@ export async function getPostById(id: string): Promise<Post | null> {
     return null;
   }
 
-  return data;
+  return toProfile(data);
 }
 
 export async function updatePost(
@@ -109,7 +111,7 @@ export async function updatePost(
     throw error;
   }
 
-  return data;
+  return toProfile(data);
 }
 
 export async function listPosts(limit = 20): Promise<Post[]> {
