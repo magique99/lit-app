@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { toPlainText } from "@/lib/content";
+import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
 import type { Comment, Post, Profile } from "@/lib/types";
 
@@ -500,8 +500,8 @@ export default function HomePage() {
 							<h2 className="mt-3 text-xl font-semibold leading-tight text-slate-950">
 								{featuredPost.title}
 							</h2>
-							<p className="mt-2 text-sm text-slate-600 line-clamp-2">
-								{toPlainText(featuredPost.content)}
+							<p className="mt-2 text-sm text-slate-600 line-clamp-2" style={{ whiteSpace: "pre-line" }}>
+								{htmlToPlainTextWithNewlines(featuredPost.content)}
 							</p>
 						</div>
 						<div className="flex items-center justify-between">
@@ -636,8 +636,8 @@ export default function HomePage() {
 													{post.title}
 												</h2>
 
-												<p className="mt-4 text-base leading-8 text-slate-600 line-clamp-3">
-													{toPlainText(post.content)}
+												<p className="mt-4 text-base leading-8 text-slate-600 line-clamp-3" style={{ whiteSpace: "pre-line" }}>
+													{htmlToPlainTextWithNewlines(post.content)}
 												</p>
 
 												<div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
@@ -685,8 +685,8 @@ export default function HomePage() {
 								{latestComments.slice(0, 3).map((comment) => (
 									<Link key={comment.id} href={`/post/${comment.post_id}`}>
 										<div className="cursor-pointer rounded-3xl border border-slate-200 bg-[#fef8f1] p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-											<p className="text-sm leading-7 text-slate-700 line-clamp-2">
-												{toPlainText(comment.content)}
+											<p className="text-sm leading-7 text-slate-700 line-clamp-2" style={{ whiteSpace: "pre-line" }}>
+												{htmlToPlainTextWithNewlines(comment.content)}
 											</p>
 											<span className="mt-2 block text-xs uppercase tracking-[0.24em] text-slate-500">
 												Vezi comentariul →
