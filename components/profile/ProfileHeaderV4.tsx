@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { Profile } from "@/lib/types";
@@ -45,12 +46,14 @@ export default function ProfileHeaderV4() {
         <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-10 sm:-mt-12">
 
           {/* AVATAR */}
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white bg-gray-200 overflow-hidden shrink-0">
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white bg-gray-200 overflow-hidden shrink-0">
             {profile.avatar_url ? (
-              <img
+              <Image
                 src={profile.avatar_url}
                 alt={profile.username || "Avatar"}
-                className="w-full h-full object-cover"
+                fill
+                sizes="(min-width: 640px) 96px, 80px"
+                className="object-cover"
               />
             ) : (
               <div className="flex items-center justify-center h-full font-bold">

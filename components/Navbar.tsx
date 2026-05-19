@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
@@ -206,6 +207,7 @@ function UserMenu({ profile }: { profile: Profile | null }) {
       <button
         onClick={() => setOpen(!open)}
         className="
+          relative
           w-9 h-9 rounded-full
           overflow-hidden
           bg-gray-200
@@ -213,10 +215,12 @@ function UserMenu({ profile }: { profile: Profile | null }) {
         "
       >
         {profile?.avatar_url ? (
-          <img
+          <Image
             src={profile.avatar_url}
             alt={profile.username || "Avatar"}
-            className="w-full h-full object-cover"
+            fill
+            sizes="36px"
+            className="object-cover"
           />
         ) : null}
       </button>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -155,12 +156,14 @@ export default function NotificationsDropdown({
               >
 
                 {/* AVATAR */}
-                <div className="w-9 h-9 rounded-full bg-gray-200 overflow-hidden shrink-0">
+                <div className="relative w-9 h-9 rounded-full bg-gray-200 overflow-hidden shrink-0">
                   {n.actor?.avatar_url ? (
-                    <img
+                    <Image
                       src={n.actor.avatar_url}
                       alt={n.actor?.username || "Avatar"}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="36px"
+                      className="object-cover"
                     />
                   ) : null}
                 </div>
