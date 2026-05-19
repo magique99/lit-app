@@ -338,10 +338,10 @@ export default function HomePage() {
     commentCounts[postId] ?? 0;
 
   return (
-    <main className="relative min-h-screen bg-[#f6f4f1] text-[#111827] pt-28 lg:pt-32">
-      <div className="max-w-6xl mx-auto px-6 py-10 lg:py-14">
-        <section className="relative overflow-hidden rounded-[2rem] border border-black/5 bg-white/90 shadow-[0_20px_80px_rgba(15,23,42,0.08)]">
-          <div className="relative h-[320px] sm:h-[400px] lg:h-[460px]">
+    <main className="relative min-h-screen bg-[#f6f4f1] text-[#111827] pt-24 lg:pt-28">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden rounded-[2.5rem] bg-[#111827] text-white shadow-[0_40px_120px_rgba(15,23,42,0.14)]">
+          <div className="relative h-[360px] sm:h-[460px] lg:h-[560px]">
             <Image
               src="/Literatura9.png"
               alt="Literatura banner"
@@ -349,19 +349,20 @@ export default function HomePage() {
               priority
               className="object-cover object-center"
             />
-            <div className="absolute inset-0 bg-white/50 backdrop-blur-sm" />
+
+            <div className="absolute inset-0 bg-slate-950/50" />
             <div className="absolute inset-0 flex items-center">
-              <div className="max-w-3xl px-6 py-10 sm:px-8">
-                <span className="inline-flex items-center rounded-full border border-black/10 bg-white/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-gray-600 shadow-sm">
+              <div className="max-w-3xl px-6 py-10 sm:px-10 lg:px-16">
+                <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-slate-200 shadow-sm backdrop-blur-sm">
                   cinema literar
                 </span>
 
-                <h1 className="mt-6 text-5xl sm:text-6xl font-semibold leading-[0.95] tracking-tight text-[#0f172a]">
+                <h1 className="mt-6 text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[0.95] tracking-tight text-white">
                   Un spațiu elegant pentru proză, poezie și visare.
                 </h1>
 
-                <p className="mt-4 max-w-2xl text-lg leading-9 text-slate-600">
-                  Un loc liniștit în care cuvintele par să lumineze dinăuntru, iar poveștile lasă pe piele urme pe care memoria nu știe dacă le-a trăit sau doar le-a visat. Puține obiecte, fiecare cu tăcerea lui atent construită.
+                <p className="mt-5 max-w-2xl text-lg sm:text-xl leading-9 text-slate-200/90">
+                  Un loc liniștit în care cuvintele par să lumineze dinăuntru, iar poveștile lasă pe piele urme pe care memoria nu știe dacă le-a trăit sau doar le-a visat.
                 </p>
               </div>
             </div>
