@@ -305,7 +305,7 @@ export default function HomePage() {
 
     if (error) {
       console.error("LIKE ERROR:", error);
-      setLikeError("Like-ul nu a putut fi salvat.");
+
       setLikeCounts((prev) => ({
         ...prev,
         [postId]: Math.max(
@@ -313,6 +313,10 @@ export default function HomePage() {
           0
         ),
       }));
+
+      if (error.code !== "23505") {
+        setLikeError("Like-ul nu a putut fi salvat.");
+      }
     }
 
     setLikingIds((prev) => {
@@ -333,176 +337,134 @@ export default function HomePage() {
     commentCounts[postId] ?? 0;
 
   return (
-    <main className="min-h-screen bg-[#f4f4f2] text-[#1f1f1f]">
-      <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col lg:flex-row gap-8">
+    <main className="relative min-h-screen bg-[#f6f4f1] text-[#111827] pt-28 lg:pt-32">
+      <div className="max-w-6xl mx-auto px-6 py-16 lg:py-20">
+        <section className="max-w-3xl space-y-6">
+          <span className="inline-flex items-center rounded-full border border-black/10 bg-white/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-gray-600 shadow-sm">
+            cinema literar
+          </span>
 
-        {/* LEFT FEED */}
-        <section className="flex-1 min-w-0">
-          <header className="mb-8">
-            <p className="text-sm text-gray-500 mt-1">
-              Stories, thoughts, and ideas.
-            </p>
-          </header>
+          <h1 className="text-5xl sm:text-6xl font-semibold leading-[0.95] tracking-tight text-[#0f172a]">
+            Un spațiu elegant pentru proză, cinema și gânduri lente.
+          </h1>
 
-          {error && (
-            <div className="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {error}
-            </div>
-          )}
-
-          {likeError && (
-            <div className="mb-4 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-              {likeError}
-            </div>
-          )}
-
-          {!loading && posts.length === 0 && !error && (
-            <div className="rounded-3xl border border-black/5 bg-white/80 p-8 text-sm text-gray-500">
-              Nu există postări încă.
-            </div>
-          )}
-
-          <div className="space-y-4 sm:space-y-5">
-            {posts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/post/${post.id}`}
-              >
-                <article
-                  className="
-                    group bg-white/90
-                    rounded-3xl
-                    border border-black/5
-                    shadow-sm
-                    p-6
-                    hover:shadow-lg
-                    hover:-translate-y-[2px]
-                    transition-all duration-300
-                    cursor-pointer
-                  "
-                >
-                  <div className="flex items-center justify-between mb-3 gap-3">
-                    <div className="flex items-center gap-3">
-                      {post.profile?.avatar_url ? (
-                        <img
-                          src={post.profile.avatar_url}
-                          alt={post.profile.username ?? "Author avatar"}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">
-                          ?
-                        </div>
-                      )}
-
-                      <span className="text-xs text-gray-400">
-                        @{post.profile?.username ?? "anonim"}
-                      </span>
-                    </div>
-
-                    <span
-                      className="
-                        text-xs text-gray-300
-                        opacity-0
-                        group-hover:opacity-100
-                        transition
-                      "
-                    >
-                      read →
-                    </span>
-                  </div>
-
-                  <h2 className="text-lg font-semibold mb-2 leading-tight">
-                    {post.title}
-                  </h2>
-
-                  <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
-                    {toPlainText(post.content)}
-                  </p>
-
-                  <div className="mt-5 flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        void handleLike(post.id);
-                      }}
-                      disabled={likingIds.has(post.id) || !currentUserId}
-                      className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-3 py-2 text-sm text-gray-700 hover:bg-black/[0.04] active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      ❤️
-                      <span>{getLikes(post.id)}</span>
-                    </button>
-
-                    <span className="inline-flex items-center gap-2">
-                      💬
-                      <span>{getComments(post.id)}</span>
-                    </span>
-                  </div>
-                </article>
-              </Link>
-            ))}
-          </div>
-
-          <div
-            ref={observerRef}
-            className="h-10"
-          />
-
-          {loading && (
-            <p className="text-center text-sm text-gray-400 py-6">
-              Loading...
-            </p>
-          )}
+          <p className="max-w-2xl text-lg leading-9 text-slate-600">
+            O pagină calmă, cu tipografie rafinată și povestiri care lasă impresie. Mai puține elemente, fiecare atent gândit.
+          </p>
         </section>
 
-        {/* RIGHT SIDEBAR */}
-        <aside className="w-full md:w-[320px] shrink-0">
-          <div
-            className="
-              sticky top-24
-              bg-white/80
-              backdrop-blur-xl
-              rounded-3xl
-              border border-black/5
-              p-5
-              shadow-sm
-            "
-          >
-            <h2 className="font-semibold text-sm mb-4">
-              💬 Latest comments
-            </h2>
+        <div className="mt-16 grid gap-10 xl:grid-cols-[minmax(0,1fr)_320px]">
+          <section className="space-y-8">
+            <div className="rounded-[2rem] border border-black/5 bg-white/90 p-8 shadow-[0_20px_80px_rgba(15,23,42,0.06)]">
+              <div className="mb-4 text-sm uppercase tracking-[0.2em] text-gray-500">
+                Selețiuni recente
+              </div>
 
-            <div className="space-y-3">
-              {latestComments.map((comment) => (
-                <Link
-                  key={comment.id}
-                  href={`/post/${comment.post_id}`}
-                >
-                  <div
-                    className="
-                      p-4 rounded-2xl
-                      border border-black/5
-                      hover:bg-black/[0.03]
-                      transition
-                      cursor-pointer
-                    "
-                  >
-                    <p className="text-sm text-gray-700 line-clamp-2">
-                      {toPlainText(comment.content)}
-                    </p>
+              {error && (
+                <div className="mb-6 rounded-3xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-700">
+                  {error}
+                </div>
+              )}
 
-                    <span className="text-xs text-gray-400 mt-2 block">
-                      View discussion →
-                    </span>
-                  </div>
-                </Link>
-              ))}
+              {likeError && (
+                <div className="mb-6 rounded-3xl border border-amber-100 bg-amber-50 px-5 py-4 text-sm text-amber-700">
+                  {likeError}
+                </div>
+              )}
+
+              <div className="space-y-6">
+                {posts.map((post) => (
+                  <Link key={post.id} href={`/post/${post.id}`}>
+                    <article className="group cursor-pointer rounded-[1.75rem] border border-black/5 bg-[#fcfbf9] p-7 transition duration-300 hover:border-black/10 hover:bg-white">
+                      <div className="flex items-center justify-between gap-4 mb-4">
+                        <div className="flex items-center gap-3">
+                          {post.profile?.avatar_url ? (
+                            <img
+                              src={post.profile.avatar_url}
+                              alt={post.profile.username ?? "Author avatar"}
+                              className="h-10 w-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-xs text-gray-500">
+                              ?
+                            </div>
+                          )}
+                          <span className="text-sm text-gray-500">
+                            @{post.profile?.username ?? "anonim"}
+                          </span>
+                        </div>
+
+                        <span className="text-xs uppercase tracking-[0.25em] text-gray-400 opacity-0 transition group-hover:opacity-100">
+                          read
+                        </span>
+                      </div>
+
+                      <h2 className="text-2xl font-semibold leading-tight text-[#111827]">
+                        {post.title}
+                      </h2>
+
+                      <p className="mt-4 text-base leading-8 text-slate-600 line-clamp-3">
+                        {toPlainText(post.content)}
+                      </p>
+
+                      <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-gray-500">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            void handleLike(post.id);
+                          }}
+                          disabled={likingIds.has(post.id) || !currentUserId}
+                          className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-3 py-2 text-sm text-gray-700 hover:bg-black/[0.04] active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          ❤️
+                          <span>{getLikes(post.id)}</span>
+                        </button>
+
+                        <span className="inline-flex items-center gap-2">
+                          💬
+                          <span>{getComments(post.id)}</span>
+                        </span>
+                      </div>
+                    </article>
+                  </Link>
+                ))}
+              </div>
+
+              <div ref={observerRef} className="h-10" />
+
+              {loading && (
+                <p className="mt-6 text-center text-sm text-gray-400">
+                  Loading...
+                </p>
+              )}
             </div>
-          </div>
-        </aside>
+          </section>
 
+          <aside className="space-y-6">
+            <div className="rounded-[2rem] border border-black/5 bg-white/90 p-8 shadow-[0_20px_80px_rgba(15,23,42,0.06)]">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-500 mb-5">
+                Latest comments
+              </h2>
+
+              <div className="space-y-4">
+                {latestComments.map((comment) => (
+                  <Link key={comment.id} href={`/post/${comment.post_id}`}>
+                    <div className="cursor-pointer rounded-3xl border border-black/5 bg-[#faf8f5] p-5 transition hover:border-black/10 hover:bg-white">
+                      <p className="text-sm leading-7 text-slate-700 line-clamp-2">
+                        {toPlainText(comment.content)}
+                      </p>
+                      <span className="mt-3 block text-xs uppercase tracking-[0.24em] text-gray-400">
+                        View discussion →
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
     </main>
   );
