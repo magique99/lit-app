@@ -685,26 +685,31 @@ export default function HomePage() {
                     Cele mai vizualizate
                   </div>
 
-                  <div className="space-y-3">
-                    {topViewedPosts.length === 0 ? (
-                      <div className="text-sm text-gray-400">
-                        Nu sunt încă date.
-                      </div>
-                    ) : (
-                      topViewedPosts.map((post) => (
-                        <Link key={post.id} href={`/post/${post.id}`}>
-                          <div className="cursor-pointer rounded-3xl border border-slate-200/80 bg-slate-50 p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300/80 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-                            <div className="text-sm font-semibold text-slate-900">
-                              {post.title}
-                            </div>
-                            <div className="mt-1 text-xs text-slate-500">
-                              {post.commentsCount ?? getComments(post.id)} vizualizări
-                            </div>
-                          </div>
-                        </Link>
-                      ))
-                    )}
-                  </div>
+<div className="space-y-3 py-[10px]">
+                     {topViewedPosts.length === 0 ? (
+                       <div className="text-sm text-gray-400">
+                         Nu sunt încă date.
+                       </div>
+                     ) : (
+                       topViewedPosts.slice(0, 3).map((post) => (
+                         <Link key={post.id} href={`/post/${post.id}`}>
+                           <div className="cursor-pointer rounded-3xl border border-slate-200/80 bg-slate-50 p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300/80 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+                             <div className="text-sm font-semibold text-slate-900">
+                               {post.title}
+                             </div>
+                             <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500">
+                               {post.text_type && <span>{post.text_type}</span>}
+                               {post.genre && <span>• {post.genre}</span>}
+                               {post.uses_ai && <span>• AI</span>}
+                             </div>
+                             <div className="mt-1 text-xs text-slate-400">
+                               {post.commentsCount ?? getComments(post.id)} vizualizări
+                             </div>
+                           </div>
+                         </Link>
+                       ))
+                     )}
+                   </div>
                 </div>
               </div>
             </div>
