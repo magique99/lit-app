@@ -11,6 +11,9 @@ type PostWithProfile = Post & {
   profile?: Pick<Profile, "username" | "avatar_url"> | null;
   likesCount?: number;
   commentsCount?: number;
+  text_type?: string | null;
+  genre?: string | null;
+  uses_ai?: boolean | null;
 };
 
 const PAGE_SIZE = 12;
