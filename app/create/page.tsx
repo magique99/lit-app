@@ -26,12 +26,18 @@ function hashString(str: string) {
   return hash.toString();
 }
 
+const TEXT_TYPES = ["Proză", "Poezie", "Teatru", "Jurnal", "Altul"];
+const GENRES = ["Ficțiune", "Non-ficțiune", "SF", "Thriller", "Polițist", "Romantic", "Altul"];
+
 export default function CreatePost() {
   const router = useRouter();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [textType, setTextType] = useState("");
+  const [genre, setGenre] = useState("");
+  const [usesAI, setUsesAI] = useState(false);
 
   const [fileHash, setFileHash] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -52,9 +58,6 @@ export default function CreatePost() {
 
     const ext = f.name.split(".").pop()?.toLowerCase();
 
-    // ======================
-    // TXT
-    // ======================
     if (ext === "txt") {
       try {
         const text = await f.text();
@@ -84,14 +87,10 @@ export default function CreatePost() {
       return;
     }
 
-    // ======================
-    // DOCX
-    // ======================
     if (ext === "docx") {
       try {
         const buffer = await f.arrayBuffer();
 
-        // DOCX validity check (ZIP signature)
         const bytes = new Uint8Array(buffer);
         if (bytes[0] !== 0x50 || bytes[1] !== 0x4b) {
           setError("Fișierul DOCX pare invalid sau corupt.");
@@ -165,17 +164,10 @@ export default function CreatePost() {
 
     let docUrl: string | null = null;
 
-    // ======================
-    // SUPABASE STORAGE UPLOAD (DOCX)
-    // ======================
     if (file?.name.endsWith(".docx")) {
       try {
         setStatus("Se încarcă documentul...");
-        const uploaded = await uploadDocx(
-          file,
-          user.id
-        );
-
+        const uploaded = await uploadDocx(file, user.id);
         docUrl = uploaded.signedUrl;
       } catch (err) {
         console.error("Upload error:", err);
@@ -187,9 +179,6 @@ export default function CreatePost() {
 
     setProgress(50);
 
-    // ======================
-    // DUPLICATE CHECK
-    // ======================
     if (fileHash) {
       setStatus("Se verifică duplicatele...");
       const { data: existing, error } = await supabase
@@ -214,9 +203,6 @@ export default function CreatePost() {
 
     setProgress(70);
 
-    // ======================
-    // CREATE POST (SAFE LAYER)
-    // ======================
     try {
       setStatus("Se salvează postarea...");
       const post = await createPost({
@@ -226,7 +212,10 @@ export default function CreatePost() {
         file_hash: fileHash,
         version: 1,
         doc_url: docUrl,
-      });
+        text_type: textType || null,
+        genre: genre || null,
+        uses_ai: usesAI,
+      } as any);
 
       setProgress(100);
       setStatus("Publicat.");
@@ -241,72 +230,109 @@ export default function CreatePost() {
   }
 
   return (
-    <main className="max-w-3xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">
-        Creează postare
-      </h1>
+    <main className="relative min-h-screen bg-[#f7efe4] text-slate-950 pt-12">
+      <div className="mx-auto max-w-3xl px-6 py-10">
+        <h1 className="text-3xl font-bold mb-8 text-slate-950">
+          Adaugă un text
+        </h1>
 
-      {error && (
-        <div className="mb-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-
-      {status && !error && (
-        <div className="mb-4 rounded-xl border border-gray-100 bg-white px-4 py-3 text-sm text-gray-600">
-          {status}
-        </div>
-      )}
-
-      {/* TITLE */}
-      <input
-        className="w-full border p-3 rounded mb-4"
-        placeholder="Titlul postării"
-        value={title}
-        disabled={loading}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-
-      {/* FILE UPLOAD */}
-      <input
-        type="file"
-        accept=".txt,.docx"
-        onChange={handleFileUpload}
-        disabled={loading || processingFile}
-        className="mb-4"
-      />
-
-      {/* PROGRESS BAR */}
-      {progress > 0 && (
-        <div className="h-2 bg-gray-200 rounded mb-4">
-          <div
-            className="h-2 bg-green-500 transition-all"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      )}
-
-      {/* PREVIEW */}
-      {content && (
-        <div className="border rounded p-6 mb-6">
-          <h2 className="text-lg font-bold mb-3">
-            Preview
-          </h2>
-
-          <div className="whitespace-pre-wrap text-sm leading-7 text-gray-700">
-            {toPlainText(content)}
+        {error && (
+          <div className="mb-6 rounded-[1.5rem] border border-red-200/60 bg-red-50/80 px-5 py-4 text-sm text-red-700 shadow-sm">
+            {error}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* PUBLISH */}
-      <button
-        onClick={publish}
-        disabled={loading || processingFile}
-        className="bg-black text-white px-6 py-3 rounded disabled:cursor-wait disabled:opacity-60"
-      >
-        {loading ? "Se publică..." : processingFile ? "Se procesează..." : "Publică"}
-      </button>
+        {status && !error && (
+          <div className="mb-6 rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600 shadow-sm">
+            {status}
+          </div>
+        )}
+
+        <section className="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
+          <input
+            className="w-full rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4 text-lg text-slate-900 placeholder:text-slate-500 shadow-sm focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-100"
+            placeholder="Titlul textului"
+            value={title}
+            disabled={loading}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <select
+              className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-900 shadow-sm"
+              value={textType}
+              disabled={loading}
+              onChange={(e) => setTextType(e.target.value)}
+            >
+              <option value="">Tip text (alegere)</option>
+              {TEXT_TYPES.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+
+            <select
+              className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-900 shadow-sm"
+              value={genre}
+              disabled={loading}
+              onChange={(e) => setGenre(e.target.value)}
+            >
+              <option value="">Gen (alegere)</option>
+              {GENRES.map((g) => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+          </div>
+
+          <label className="mt-6 flex cursor-pointer items-center gap-3 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={usesAI}
+              disabled={loading}
+              onChange={(e) => setUsesAI(e.target.checked)}
+              className="h-4 w-4 rounded border-slate-300"
+            />
+            Acest text a fost generat cu AI
+          </label>
+
+          <div className="mt-6">
+            <input
+              type="file"
+              accept=".txt,.docx"
+              onChange={handleFileUpload}
+              disabled={loading || processingFile}
+              className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-amber-400 file:px-6 file:py-3 file:text-sm file:font-semibold file:text-slate-950 hover:file:bg-amber-300"
+            />
+          </div>
+
+          {progress > 0 && (
+            <div className="mt-6 h-2 overflow-hidden rounded-full bg-slate-200">
+              <div
+                className="h-2 bg-amber-400 transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          )}
+
+          {content && (
+            <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6">
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+                Preview
+              </h3>
+              <p className="text-sm leading-7 text-slate-700">
+                {toPlainText(content)}
+              </p>
+            </div>
+          )}
+
+          <button
+            onClick={publish}
+            disabled={loading || processingFile}
+            className="mt-8 inline-flex items-center justify-center rounded-full bg-amber-400 px-8 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? "Se publică..." : processingFile ? "Se procesează..." : "Publică"}
+          </button>
+        </section>
+      </div>
     </main>
   );
 }
