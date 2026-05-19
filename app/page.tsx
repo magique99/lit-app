@@ -477,18 +477,18 @@ export default function HomePage() {
 
 {featuredPost && (
             <section className="mt-12 flex h-64 flex-col justify-between rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
-              <div>
-                <span className="inline-flex rounded-full border border-slate-200 bg-[#f9f2e9] px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-700">
-                  Textul zilei
-                </span>
-                <h2 className="mt-3 text-xl font-semibold leading-tight text-slate-950">
-                  {featuredPost.title}
-                </h2>
-                <p className="mt-2 text-sm text-slate-600 line-clamp-2">
-                  {toPlainText(featuredPost.content)}
-                </p>
-              </div>
-<div className="flex items-center justify-between">
+<div>
+                 <span className="inline-flex rounded-full border border-slate-200 bg-[#f9f2e9] px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-700">
+                   Textul zilei
+                 </span>
+                 <h2 className="mt-3 text-xl font-semibold leading-tight text-slate-950">
+                   {featuredPost.title}
+                 </h2>
+                 <p className="mt-2 text-sm text-slate-600 line-clamp-2">
+                   {toPlainText(featuredPost.content)}
+                 </p>
+               </div>
+               <div className="flex items-center justify-between">
                  <p className="text-xs text-slate-500">
                    de <span className="font-semibold">@{featuredPost.profile?.username ?? "anonim"}</span>
                  </p>
@@ -498,39 +498,63 @@ export default function HomePage() {
                    </Link>
                  </div>
                </div>
-            </section>
+             </section>
           )}
 
           {/* FILTERS */}
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-            <select
-              className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
-              value={filterType}
-              onChange={(e) => {
-                setFilterType(e.target.value);
-                setPage(0);
-                setPosts([]);
-                setHasMore(true);
-              }}
-            >
-              {TEXT_TYPES.map((t) => (
-                <option key={t} value={t === "Toate" ? "" : t}>{t}</option>
-              ))}
-            </select>
-            <select
-              className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
-              value={filterGenre}
-              onChange={(e) => {
-                setFilterGenre(e.target.value);
-                setPage(0);
-                setPosts([]);
-                setHasMore(true);
-              }}
-            >
-              {GENRES.map((g) => (
-                <option key={g} value={g === "Toate" ? "" : g}>{g}</option>
-              ))}
-            </select>
+          <div className="mt-8 flex flex-col gap-6">
+            <div>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Tip text</p>
+              <div className="flex flex-wrap gap-2">
+                {TEXT_TYPES.map((t) => {
+                  const isActive = (filterType || "Toate") === t;
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => {
+                        setFilterType(t === "Toate" ? "" : t);
+                        setPage(0);
+                        setPosts([]);
+                        setHasMore(true);
+                      }}
+                      className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                        isActive
+                          ? "bg-amber-400 text-slate-950"
+                          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Gen</p>
+              <div className="flex flex-wrap gap-2">
+                {GENRES.map((g) => {
+                  const isActive = (filterGenre || "Toate") === g;
+                  return (
+                    <button
+                      key={g}
+                      onClick={() => {
+                        setFilterGenre(g === "Toate" ? "" : g);
+                        setPage(0);
+                        setPosts([]);
+                        setHasMore(true);
+                      }}
+                      className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                        isActive
+                          ? "bg-amber-400 text-slate-950"
+                          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      {g}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
         <div className="mt-16 grid gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
