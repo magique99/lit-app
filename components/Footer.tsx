@@ -8,22 +8,37 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-20">
         <div className="space-y-12">
           <div className="text-center">
-            <Link href="/" className="font-serif text-2xl tracking-[0.3em] text-amber-200 transition hover:text-amber-100">
+            <Link
+              href="/"
+              className="font-serif text-2xl tracking-[0.3em] text-amber-200 transition hover:text-amber-100"
+            >
               Literatura9
             </Link>
           </div>
 
           <nav className="flex flex-wrap justify-center gap-x-10 gap-y-4 text-sm">
-            <Link href="/" className="text-slate-400 transition hover:text-amber-200">
+            <Link
+              href="/"
+              className="text-slate-400 transition hover:text-amber-200"
+            >
               Acasă
             </Link>
-            <Link href="/create" className="text-slate-400 transition hover:text-amber-200">
+            <Link
+              href="/create"
+              className="text-slate-400 transition hover:text-amber-200"
+            >
               Adaugă text
             </Link>
-            <Link href="/profile" className="text-slate-400 transition hover:text-amber-200">
+            <Link
+              href="/profile"
+              className="text-slate-400 transition hover:text-amber-200"
+            >
               Profil
             </Link>
-            <Link href="/login" className="text-slate-400 transition hover:text-amber-200">
+            <Link
+              href="/login"
+              className="text-slate-400 transition hover:text-amber-200"
+            >
               Login
             </Link>
           </nav>
