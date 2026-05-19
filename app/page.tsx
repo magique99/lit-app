@@ -626,7 +626,7 @@ export default function HomePage() {
                 Ultimele comentarii
               </h2>
 
-<div className="space-y-3">
+<div className="space-y-3 py-[10px]">
                  {latestComments.slice(0, 3).map((comment) => (
                    <Link key={comment.id} href={`/post/${comment.post_id}`}>
                      <div className="cursor-pointer rounded-3xl border border-slate-200 bg-[#fef8f1] p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
@@ -653,13 +653,13 @@ export default function HomePage() {
                     Cele mai votate
                   </div>
 
-                  <div className="space-y-3">
-                    {topVotedPosts.length === 0 ? (
-                      <div className="text-sm text-gray-400">
-                        Nu sunt încă date.
-                      </div>
-                    ) : (
-                      topVotedPosts.map((post) => (
+<div className="space-y-3 py-[10px]">
+                     {topVotedPosts.length === 0 ? (
+                       <div className="text-sm text-gray-400">
+                         Nu sunt încă date.
+                       </div>
+                     ) : (
+                       topVotedPosts.map((post) => (
                         <Link key={post.id} href={`/post/${post.id}`}>
                           <div className="cursor-pointer rounded-3xl border border-slate-200/80 bg-slate-50 p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300/80 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
                             <div className="text-sm font-semibold text-slate-900">
