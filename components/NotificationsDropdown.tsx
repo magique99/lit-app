@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { Notification as NotificationRow } from "@/lib/types";
 
@@ -19,6 +19,7 @@ export default function NotificationsDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
   // LOAD
   useEffect(() => {
@@ -123,8 +124,29 @@ export default function NotificationsDropdown({
 
   const unread = notifications.filter(n => !n.read).length;
 
+  useEffect(() => {
+    function handleClickOutside(event: Event) {
+      if (
+        open &&
+        rootRef.current &&
+        event.target instanceof Node &&
+        !rootRef.current.contains(event.target)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    window.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("touchstart", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [open]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={rootRef}>
 
       {/* BELL */}
       <button

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,9 +14,11 @@ import type { Profile } from "@/lib/types";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
   const { results, search } = useSearch();
 
@@ -48,8 +50,31 @@ export default function Navbar() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    function handleClickOutside(event: Event) {
+      if (
+        (menuOpen || searchOpen) &&
+        rootRef.current &&
+        event.target instanceof Node &&
+        !rootRef.current.contains(event.target)
+      ) {
+        setMenuOpen(false);
+        setSearchOpen(false);
+      }
+    }
+
+    window.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("touchstart", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [menuOpen, searchOpen]);
+
   return (
     <header
+      ref={rootRef}
       className="
         absolute inset-x-0 top-0 z-50
         bg-white/20 backdrop-blur-2xl
@@ -79,14 +104,16 @@ export default function Navbar() {
               placeholder:text-slate-400
               shadow-sm
             "
+            onFocus={() => setSearchOpen(true)}
             onChange={(e) => {
               const value = e.target.value;
               setQuery(value);
+              setSearchOpen(value.length > 0);
               search(value);
             }}
           />
 
-          {query.length > 0 && results.length > 0 && (
+          {searchOpen && query.length > 0 && results.length > 0 && (
             <div className="
               absolute top-12 left-0 w-full
               bg-white border border-gray-100
@@ -203,14 +230,36 @@ USER MENU (clean Instagram style)
 function UserMenu({ profile }: { profile: Profile | null }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   async function logout() {
     await supabase.auth.signOut();
     router.push("/login");
   }
 
+  useEffect(() => {
+    function handleClickAway(event: Event) {
+      if (
+        open &&
+        menuRef.current &&
+        event.target instanceof Node &&
+        !menuRef.current.contains(event.target)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    window.addEventListener("mousedown", handleClickAway);
+    window.addEventListener("touchstart", handleClickAway);
+
+    return () => {
+      window.removeEventListener("mousedown", handleClickAway);
+      window.removeEventListener("touchstart", handleClickAway);
+    };
+  }, [open]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
 
       <button
         onClick={() => setOpen(!open)}
