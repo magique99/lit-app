@@ -3,18 +3,13 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import type { Notification as NotificationRow } from "@/lib/types";
 
-type Notification = {
-  id: string;
-  user_id: string;
-  actor_id: string;
-  type: "like_post" | "like_comment" | "comment" | "reply";
-  read: boolean;
-  created_at: string;
+type Notification = NotificationRow & {
   actor?: {
-    username?: string;
-    avatar_url?: string;
-  };
+    username: string | null;
+    avatar_url: string | null;
+  } | null;
 };
 
 export default function NotificationsDropdown({

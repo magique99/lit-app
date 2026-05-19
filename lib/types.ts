@@ -1,52 +1,25 @@
-export type Post = {
-  id: string;
-  title: string;
-  content: string | null;
-  user_id: string;
-  created_at: string;
-  updated_at?: string | null;
-  file_hash?: string | null;
-  version?: number | null;
-  doc_url?: string | null;
-};
+import type { Database } from "@/lib/database.types";
 
-export type Like = {
-  id: string;
-  post_id: string;
-  user_id?: string | null;
-  created_at?: string | null;
-};
+type Tables = Database["public"]["Tables"];
 
-export type Comment = {
-  id: string;
-  post_id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-};
+export type Post = Tables["posts"]["Row"];
+export type PostInsert = Tables["posts"]["Insert"];
+export type PostUpdate = Tables["posts"]["Update"];
 
-export type Profile = {
-  id?: string;
-  user_id: string;
-  username: string | null;
-  bio?: string | null;
-  avatar_url?: string | null;
-  updated_at?: string | null;
-};
+export type Like = Tables["likes"]["Row"];
+export type LikeInsert = Tables["likes"]["Insert"];
+
+export type Comment = Tables["comments"]["Row"];
+export type CommentInsert = Tables["comments"]["Insert"];
+
+export type Profile = Tables["profiles"]["Row"];
+export type ProfileInsert = Tables["profiles"]["Insert"];
+export type ProfileUpdate = Tables["profiles"]["Update"];
+
+export type Notification = Tables["notifications"]["Row"];
 
 export type CommentWithProfile = Comment & {
   profiles?: Pick<Profile, "username" | "avatar_url"> | null;
-};
-
-export type Notification = {
-  id: string;
-  read: boolean;
-  created_at: string;
-  message?: string | null;
-  type?: string | null;
-  post_id?: string | null;
-  actor_id?: string | null;
-  user_id?: string | null;
 };
 
 export type SearchResult =

@@ -25,7 +25,7 @@ export function useNotifications() {
       return;
     }
 
-    setNotifications((data || []) as Notification[]);
+    setNotifications(data || []);
     setLoading(false);
   }, []);
 

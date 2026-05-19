@@ -1,0 +1,217 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
+
+export type Database = {
+  public: {
+    Tables: {
+      comments: {
+        Row: {
+          content: string;
+          created_at: string;
+          id: string;
+          post_id: string;
+          user_id: string;
+        };
+        Insert: {
+          content: string;
+          created_at?: string;
+          id?: string;
+          post_id: string;
+          user_id: string;
+        };
+        Update: {
+          content?: string;
+          created_at?: string;
+          id?: string;
+          post_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "comments_post_id_fkey";
+            columns: ["post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "comments_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
+      likes: {
+        Row: {
+          created_at: string;
+          id: string;
+          post_id: string;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          post_id: string;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          post_id?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "likes_post_id_fkey";
+            columns: ["post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      notifications: {
+        Row: {
+          actor_id: string | null;
+          comment_id: string | null;
+          created_at: string;
+          id: string;
+          message: string | null;
+          post_id: string | null;
+          read: boolean;
+          type: "like_post" | "like_comment" | "comment" | "reply" | string;
+          user_id: string | null;
+        };
+        Insert: {
+          actor_id?: string | null;
+          comment_id?: string | null;
+          created_at?: string;
+          id?: string;
+          message?: string | null;
+          post_id?: string | null;
+          read?: boolean;
+          type: "like_post" | "like_comment" | "comment" | "reply" | string;
+          user_id?: string | null;
+        };
+        Update: {
+          actor_id?: string | null;
+          comment_id?: string | null;
+          created_at?: string;
+          id?: string;
+          message?: string | null;
+          post_id?: string | null;
+          read?: boolean;
+          type?: "like_post" | "like_comment" | "comment" | "reply" | string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["user_id"];
+          },
+          {
+            foreignKeyName: "notifications_post_id_fkey";
+            columns: ["post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      posts: {
+        Row: {
+          content: string;
+          created_at: string;
+          doc_url: string | null;
+          docx_path: string | null;
+          docx_url: string | null;
+          file_hash: string | null;
+          id: string;
+          title: string;
+          updated_at: string | null;
+          user_id: string;
+          version: number | null;
+        };
+        Insert: {
+          content: string;
+          created_at?: string;
+          doc_url?: string | null;
+          docx_path?: string | null;
+          docx_url?: string | null;
+          file_hash?: string | null;
+          id?: string;
+          title: string;
+          updated_at?: string | null;
+          user_id: string;
+          version?: number | null;
+        };
+        Update: {
+          content?: string;
+          created_at?: string;
+          doc_url?: string | null;
+          docx_path?: string | null;
+          docx_url?: string | null;
+          file_hash?: string | null;
+          id?: string;
+          title?: string;
+          updated_at?: string | null;
+          user_id?: string;
+          version?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "posts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
+      profiles: {
+        Row: {
+          avatar_url: string | null;
+          bio: string | null;
+          created_at: string | null;
+          id: string;
+          updated_at: string | null;
+          user_id: string;
+          username: string | null;
+        };
+        Insert: {
+          avatar_url?: string | null;
+          bio?: string | null;
+          created_at?: string | null;
+          id?: string;
+          updated_at?: string | null;
+          user_id: string;
+          username?: string | null;
+        };
+        Update: {
+          avatar_url?: string | null;
+          bio?: string | null;
+          created_at?: string | null;
+          id?: string;
+          updated_at?: string | null;
+          user_id?: string;
+          username?: string | null;
+        };
+        Relationships: [];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
+};

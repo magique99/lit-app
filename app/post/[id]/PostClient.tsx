@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
-import type { Comment, CommentWithProfile, Profile } from "@/lib/types";
+import type { Comment, CommentWithProfile } from "@/lib/types";
 
 export default function PostClient({ postId }: { postId: string }) {
   const [comments, setComments] = useState<CommentWithProfile[]>([]);
@@ -39,7 +39,7 @@ export default function PostClient({ postId }: { postId: string }) {
       return;
     }
 
-    const list = (data || []) as Comment[];
+    const list = data || [];
 
     const userIds = [...new Set(list.map((c) => c.user_id))];
 
@@ -52,7 +52,7 @@ export default function PostClient({ postId }: { postId: string }) {
 
     const merged = list.map((c) => ({
       ...c,
-      profiles: ((profiles ?? []) as Profile[]).find(
+      profiles: (profiles ?? []).find(
         (p) => p.user_id === c.user_id
       ),
     }));
@@ -97,7 +97,7 @@ export default function PostClient({ postId }: { postId: string }) {
           setComments((prev) =>
             prev.map((x) =>
               x.id === c.id
-                ? { ...x, profiles: (profile as Profile | null) ?? null }
+                ? { ...x, profiles: profile ?? null }
                 : x
             )
           );
@@ -168,7 +168,7 @@ export default function PostClient({ postId }: { postId: string }) {
         user_id: currentUserId,
         content: value,
         created_at: new Date().toISOString(),
-        profiles: { username: "you" },
+        profiles: { username: "you", avatar_url: null },
       },
       ...p,
     ]);

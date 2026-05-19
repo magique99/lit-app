@@ -24,7 +24,7 @@ export default function ProfileHeaderV4() {
       .select("*")
       .eq("user_id", userId)
       .maybeSingle()
-      .then(({ data }) => setProfile((data as Profile | null) ?? null));
+      .then(({ data }) => setProfile(data ?? null));
   }, [userId]);
 
   if (!profile) {

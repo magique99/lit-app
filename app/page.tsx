@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { toPlainText } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
-import type { Comment, Like, Post } from "@/lib/types";
+import type { Comment, Post } from "@/lib/types";
 
 const PAGE_SIZE = 12;
 
@@ -39,11 +39,11 @@ export default function HomePage() {
       nextComments[id] = 0;
     }
 
-    for (const like of (likesData ?? []) as Pick<Like, "post_id">[]) {
+    for (const like of likesData ?? []) {
       nextLikes[like.post_id] = (nextLikes[like.post_id] ?? 0) + 1;
     }
 
-    for (const comment of (commentsData ?? []) as Pick<Comment, "post_id">[]) {
+    for (const comment of commentsData ?? []) {
       nextComments[comment.post_id] = (nextComments[comment.post_id] ?? 0) + 1;
     }
 
@@ -76,7 +76,7 @@ export default function HomePage() {
       return;
     }
 
-    const nextPosts = (data ?? []) as Post[];
+    const nextPosts = data ?? [];
 
     if (nextPosts.length === 0) {
       setHasMore(false);
@@ -119,7 +119,7 @@ export default function HomePage() {
         return;
       }
 
-      setLatestComments((data ?? []) as Comment[]);
+      setLatestComments(data ?? []);
     }
 
     load();

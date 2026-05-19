@@ -30,7 +30,7 @@ export default function ProfilePostsV2() {
         return;
       }
 
-      setPosts((data || []) as Post[]);
+      setPosts(data || []);
     }
 
     load();

@@ -33,7 +33,7 @@ export default function Navbar() {
           .eq("user_id", data.user.id)
           .maybeSingle();
 
-        setProfile((profileData as Profile | null) ?? null);
+        setProfile(profileData ?? null);
       }
     }
 

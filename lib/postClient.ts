@@ -30,7 +30,7 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
     throw error;
   }
 
-  return data as Post;
+  return data;
 }
 
 export async function getPostById(id: string): Promise<Post | null> {
@@ -45,7 +45,7 @@ export async function getPostById(id: string): Promise<Post | null> {
     return null;
   }
 
-  return data as Post;
+  return data;
 }
 
 export async function updatePost(
@@ -70,7 +70,7 @@ export async function updatePost(
     throw error;
   }
 
-  return data as Post;
+  return data;
 }
 
 export async function listPosts(limit = 20): Promise<Post[]> {
@@ -85,5 +85,5 @@ export async function listPosts(limit = 20): Promise<Post[]> {
     return [];
   }
 
-  return (data ?? []) as Post[];
+  return data ?? [];
 }

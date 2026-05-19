@@ -18,7 +18,7 @@ export function useComments(postId: string) {
         return;
       }
 
-      setComments((data || []) as Comment[]);
+      setComments(data || []);
     }
 
     load();
