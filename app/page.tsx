@@ -450,48 +450,34 @@ export default function HomePage() {
           </div>
         </div>
 
-        {featuredPost && (
-          <section className="mt-12 rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_40px_120px_rgba(15,23,42,0.08)]">
-            <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-              <div className="max-w-3xl space-y-4">
-                <span className="inline-flex rounded-full border border-slate-200 bg-[#f9f2e9] px-4 py-2 text-xs uppercase tracking-[0.28em] text-slate-700">
-                  Alegerea curatorului</span>
-                <div>
-                  <h2 className="text-4xl font-semibold leading-tight text-slate-950 sm:text-5xl">
-                    {featuredPost.title}
-                  </h2>
-                  <p className="mt-4 max-w-2xl text-base leading-8 text-slate-700 sm:text-lg">
-                    {toPlainText(featuredPost.content)}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-3xl border border-slate-200 bg-[#f9f2e9] p-5 text-center shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-                  <p className="text-sm uppercase tracking-[0.25em] text-slate-500">Autor</p>
-                  <p className="mt-3 text-xl font-semibold text-slate-950">@{featuredPost.profile?.username ?? "anonim"}</p>
-                </div>
-                <div className="rounded-3xl border border-slate-200 bg-[#f9f2e9] p-5 text-center shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-                  <p className="text-sm uppercase tracking-[0.25em] text-slate-500">Voturi</p>
-                  <p className="mt-3 text-xl font-semibold text-slate-950">{featuredPost.likesCount ?? getLikes(featuredPost.id)}</p>
-                </div>
-                <div className="rounded-3xl border border-slate-200 bg-[#f9f2e9] p-5 text-center shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-                  <p className="text-sm uppercase tracking-[0.25em] text-slate-500">Vizualizări</p>
-                  <p className="mt-3 text-xl font-semibold text-slate-950">{featuredPost.commentsCount ?? getComments(featuredPost.id)}</p>
-                </div>
-              </div>
-
-              <div className="mt-8 flex flex-wrap gap-4 lg:mt-0 lg:justify-end">
-                <Link href={`/post/${featuredPost.id}`} className="inline-flex items-center justify-center rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_20px_60px_rgba(251,191,36,0.24)] transition hover:bg-amber-300">
-                  Citește acum
-                </Link>
-                <Link href="/create" className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100">
-                  Adaugă un text
-                </Link>
-              </div>
-            </div>
-          </section>
-        )}
+{featuredPost && (
+           <section className="mt-12 flex h-64 flex-col justify-between rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
+             <div>
+               <span className="inline-flex rounded-full border border-slate-200 bg-[#f9f2e9] px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-700">
+                 Alegerea curatorului
+               </span>
+               <h2 className="mt-3 text-xl font-semibold leading-tight text-slate-950">
+                 {featuredPost.title}
+               </h2>
+               <p className="mt-2 text-sm text-slate-600 line-clamp-2">
+                 {toPlainText(featuredPost.content)}
+               </p>
+             </div>
+             <div className="flex items-center justify-between">
+               <p className="text-xs text-slate-500">
+                 de <span className="font-semibold">@{featuredPost.profile?.username ?? "anonim"}</span>
+               </p>
+               <div className="flex gap-2">
+                 <Link href={`/post/${featuredPost.id}`} className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300">
+                   Citește acum
+                 </Link>
+                 <Link href="/create" className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-slate-100">
+                   Adaugă text
+                 </Link>
+               </div>
+             </div>
+           </section>
+         )}
 
         <div className="mt-16 grid gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="space-y-8">
@@ -512,8 +498,8 @@ export default function HomePage() {
                 </div>
               )}
 
-              <div className="space-y-6">
-                {posts.map((post) => (
+<div className="space-y-5">
+                 {posts.map((post) => (
                   <Link key={post.id} href={`/post/${post.id}`}>
                     <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
                       <div className="p-7">
@@ -589,8 +575,8 @@ export default function HomePage() {
                 Ultimele comentarii
               </h2>
 
-              <div className="space-y-4">
-                {latestComments.map((comment) => (
+<div className="space-y-3">
+                 {latestComments.map((comment) => (
                   <Link key={comment.id} href={`/post/${comment.post_id}`}>
                     <div className="cursor-pointer rounded-3xl border border-slate-200 bg-[#fef8f1] p-5 transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
                       <p className="text-sm leading-7 text-slate-700 line-clamp-2">
