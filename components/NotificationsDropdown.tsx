@@ -25,13 +25,56 @@ export default function NotificationsDropdown({
     if (!userId) return;
 
     async function load() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("notifications")
-        .select("*, actor:profiles(username, avatar_url)")
+        .select("*")
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
-      setNotifications(data || []);
+      if (error) {
+        console.error("LOAD NOTIFICATIONS ERROR:", error);
+        return;
+      }
+
+      const notificationsData = data || [];
+      const actorIds = Array.from(
+        new Set(
+          notificationsData
+            .map((item) => item.actor_id)
+            .filter(Boolean) as string[]
+        )
+      );
+
+      let actorMap: Record<string, { username: string | null; avatar_url: string | null }> = {};
+
+      if (actorIds.length > 0) {
+        const { data: actorsData, error: actorsError } = await supabase
+          .from("profiles")
+          .select("user_id, username, avatar_url")
+          .in("user_id", actorIds);
+
+        if (!actorsError && actorsData) {
+          actorMap = actorsData.reduce(
+            (map, actor) => ({
+              ...map,
+              [actor.user_id]: {
+                username: actor.username,
+                avatar_url: actor.avatar_url,
+              },
+            }),
+            {}
+          );
+        }
+      }
+
+      setNotifications(
+        notificationsData.map((notification) => ({
+          ...notification,
+          actor: notification.actor_id
+            ? actorMap[notification.actor_id] ?? null
+            : null,
+        }))
+      );
     }
 
     load();

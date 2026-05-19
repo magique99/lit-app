@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import type { Comment, Post, Profile } from "@/lib/types";
 
 type PostWithProfile = Post & {
-  profiles?: Pick<Profile, "username" | "avatar_url"> | null;
+  profile?: Pick<Profile, "username" | "avatar_url"> | null;
 };
 
 const PAGE_SIZE = 12;
@@ -80,7 +80,7 @@ export default function HomePage() {
 
     const { data, error } = await supabase
       .from("posts")
-      .select("*, profiles(username, avatar_url)")
+      .select("*")
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -94,7 +94,40 @@ export default function HomePage() {
 
     const nextPosts = data ?? [];
 
-    if (nextPosts.length === 0) {
+    const userIds = Array.from(
+      new Set(nextPosts.map((post) => post.user_id).filter(Boolean) as string[])
+    );
+
+    let profileMap: Record<string, Pick<Profile, "username" | "avatar_url">> = {};
+
+    if (userIds.length > 0) {
+      const { data: profilesData, error: profilesError } = await supabase
+        .from("profiles")
+        .select("user_id, username, avatar_url")
+        .in("user_id", userIds);
+
+      if (!profilesError && profilesData) {
+        profileMap = profilesData.reduce(
+          (map, profile) => ({
+            ...map,
+            [profile.user_id]: {
+              username: profile.username,
+              avatar_url: profile.avatar_url,
+            },
+          }),
+          {}
+        );
+      }
+    }
+
+    const nextPostsWithProfile: PostWithProfile[] = nextPosts.map(
+      (post) => ({
+        ...post,
+        profile: post.user_id ? profileMap[post.user_id] ?? null : null,
+      })
+    );
+
+    if (nextPostsWithProfile.length === 0) {
       setHasMore(false);
       loadingRef.current = false;
       setLoading(false);
@@ -103,7 +136,9 @@ export default function HomePage() {
 
     setPosts((prev) => {
       const existingIds = new Set(prev.map((p) => p.id));
-      const filtered = nextPosts.filter((p) => !existingIds.has(p.id));
+      const filtered = nextPostsWithProfile.filter(
+        (p) => !existingIds.has(p.id)
+      );
       return [...prev, ...filtered];
     });
 
@@ -162,10 +197,14 @@ export default function HomePage() {
         },
         (payload) => {
           const post = payload.new as Post;
+          const postWithProfile: PostWithProfile = {
+            ...post,
+            profile: null,
+          };
 
           setPosts((prev) => {
             if (prev.some((item) => item.id === post.id)) return prev;
-            return [post, ...prev];
+            return [postWithProfile, ...prev];
           });
           setLikeCounts((prev) => ({ ...prev, [post.id]: 0 }));
           setCommentCounts((prev) => ({ ...prev, [post.id]: 0 }));
@@ -331,10 +370,10 @@ export default function HomePage() {
                 >
                   <div className="flex items-center justify-between mb-3 gap-3">
                     <div className="flex items-center gap-3">
-                      {post.profiles?.avatar_url ? (
+                      {post.profile?.avatar_url ? (
                         <img
-                          src={post.profiles.avatar_url}
-                          alt={post.profiles.username ?? "Author avatar"}
+                          src={post.profile.avatar_url}
+                          alt={post.profile.username ?? "Author avatar"}
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (
@@ -344,7 +383,7 @@ export default function HomePage() {
                       )}
 
                       <span className="text-xs text-gray-400">
-                        @{post.profiles?.username ?? "anonim"}
+                        @{post.profile?.username ?? "anonim"}
                       </span>
                     </div>
 
