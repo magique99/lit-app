@@ -18,7 +18,7 @@ type PostPageData = {
 };
 
 export default async function PostPage({ params }: Props) {
-  const { id } = params;
+  const { id } = await params;
   console.log("POST ID:", id);
 
   const { data: post, error } = await supabase
