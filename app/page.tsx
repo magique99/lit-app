@@ -100,7 +100,7 @@ export default function HomePage() {
       .from("posts")
       .select("*")
       .order("created_at", { ascending: false })
-      .range(from, to);
+      .range(from, to) as any;
 
     if (filterType && filterType !== "Toate") {
       query = query.eq("text_type", filterType);
@@ -549,8 +549,8 @@ export default function HomePage() {
                 </div>
               )}
 
-<div className="space-y-5">
-                 {posts.map((post) => (
+<div className="space-y-5 py-[10px]">
+                  {posts.map((post) => (
                   <Link key={post.id} href={`/post/${post.id}`}>
                     <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
                       <div className="p-7">
