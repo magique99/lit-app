@@ -318,9 +318,7 @@ export default function CreatePost() {
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
                 Preview
               </h3>
-              <p className="text-sm leading-7 text-slate-700">
-                {toPlainText(content)}
-              </p>
+              <div className="prose max-w-none text-sm leading-7 text-slate-700" dangerouslySetInnerHTML={{ __html: content }} />
             </div>
           )}
 

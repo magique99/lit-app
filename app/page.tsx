@@ -15,6 +15,9 @@ type PostWithProfile = Post & {
 
 const PAGE_SIZE = 12;
 
+const TEXT_TYPES = ["Toate", "Proză", "Poezie", "Teatru", "Jurnal"];
+const GENRES = ["Toate", "Ficțiune", "Non-ficțiune", "SF", "Thriller", "Polițist", "Romantic"];
+
 export default function HomePage() {
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
@@ -24,6 +27,8 @@ export default function HomePage() {
   const [latestComments, setLatestComments] = useState<Comment[]>([]);
   const [topVotedPosts, setTopVotedPosts] = useState<PostWithProfile[]>([]);
   const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
+  const [filterType, setFilterType] = useState("");
+  const [filterGenre, setFilterGenre] = useState("");
 
   const totalLikes = useMemo(
     () => Object.values(likeCounts).reduce((sum, count) => sum + count, 0),
@@ -91,11 +96,20 @@ export default function HomePage() {
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("posts")
       .select("*")
       .order("created_at", { ascending: false })
       .range(from, to);
+
+    if (filterType && filterType !== "Toate") {
+      query = query.eq("text_type", filterType);
+    }
+    if (filterGenre && filterGenre !== "Toate") {
+      query = query.eq("genre", filterGenre);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("LOAD POSTS ERROR:", error);
@@ -164,7 +178,7 @@ export default function HomePage() {
 
     loadingRef.current = false;
     setLoading(false);
-  }, [hasMore, page]);
+  }, [hasMore, page, filterType, filterGenre]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -177,6 +191,14 @@ export default function HomePage() {
       setCurrentUserId(data.user?.id ?? null);
     });
   }, []);
+
+  const handleFilterChange = (type: string | null, genre: string | null) => {
+    setPosts([]);
+    setPage(0);
+    setHasMore(true);
+    if (type) setFilterType(type);
+    if (genre) setFilterGenre(genre);
+  };
 
   async function loadTopPosts() {
     // Fetch posts with aggregated likes/comments arrays, but don't rely on a
@@ -451,30 +473,62 @@ export default function HomePage() {
         </div>
 
 {featuredPost && (
-           <section className="mt-12 flex h-64 flex-col justify-between rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
-             <div>
-               <span className="inline-flex rounded-full border border-slate-200 bg-[#f9f2e9] px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-700">
-                 Textul zilei
-               </span>
-               <h2 className="mt-3 text-xl font-semibold leading-tight text-slate-950">
-                 {featuredPost.title}
-               </h2>
-               <p className="mt-2 text-sm text-slate-600 line-clamp-2">
-                 {toPlainText(featuredPost.content)}
-               </p>
-             </div>
-             <div className="flex items-center justify-between">
-               <p className="text-xs text-slate-500">
-                 de <span className="font-semibold">@{featuredPost.profile?.username ?? "anonim"}</span>
-               </p>
-               <div className="flex gap-2">
-                 <Link href={`/post/${featuredPost.id}`} className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300">
-                   Citește acum
-                 </Link>
-               </div>
-             </div>
-           </section>
-         )}
+            <section className="mt-12 flex h-64 flex-col justify-between rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
+              <div>
+                <span className="inline-flex rounded-full border border-slate-200 bg-[#f9f2e9] px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-700">
+                  Textul zilei
+                </span>
+                <h2 className="mt-3 text-xl font-semibold leading-tight text-slate-950">
+                  {featuredPost.title}
+                </h2>
+                <p className="mt-2 text-sm text-slate-600 line-clamp-2">
+                  {toPlainText(featuredPost.content)}
+                </p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-slate-500">
+                  de <span className="font-semibold">@{featuredPost.profile?.username ?? "anonim"}</span>
+                </p>
+                <div className="flex gap-2">
+<Link href={`/post/${post.id}`} className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300">
+                             Citește acum
+                           </Link>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* FILTERS */}
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+            <select
+              className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+              value={filterType}
+              onChange={(e) => {
+                setFilterType(e.target.value);
+                setPage(0);
+                setPosts([]);
+                setHasMore(true);
+              }}
+            >
+              {TEXT_TYPES.map((t) => (
+                <option key={t} value={t === "Toate" ? "" : t}>{t}</option>
+              ))}
+            </select>
+            <select
+              className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+              value={filterGenre}
+              onChange={(e) => {
+                setFilterGenre(e.target.value);
+                setPage(0);
+                setPosts([]);
+                setHasMore(true);
+              }}
+            >
+              {GENRES.map((g) => (
+                <option key={g} value={g === "Toate" ? "" : g}>{g}</option>
+              ))}
+            </select>
+          </div>
 
         <div className="mt-16 grid gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="space-y-8">
@@ -573,19 +627,19 @@ export default function HomePage() {
               </h2>
 
 <div className="space-y-3">
-                 {latestComments.map((comment) => (
-                  <Link key={comment.id} href={`/post/${comment.post_id}`}>
-                    <div className="cursor-pointer rounded-3xl border border-slate-200 bg-[#fef8f1] p-5 transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-                      <p className="text-sm leading-7 text-slate-700 line-clamp-2">
-                        {toPlainText(comment.content)}
-                      </p>
-                      <span className="mt-3 block text-xs uppercase tracking-[0.24em] text-slate-500">
-                        Vezi comentariul →
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                 {latestComments.slice(0, 3).map((comment) => (
+                   <Link key={comment.id} href={`/post/${comment.post_id}`}>
+                     <div className="cursor-pointer rounded-3xl border border-slate-200 bg-[#fef8f1] p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+                       <p className="text-sm leading-7 text-slate-700 line-clamp-2">
+                         {toPlainText(comment.content)}
+                       </p>
+                       <span className="mt-2 block text-xs uppercase tracking-[0.24em] text-slate-500">
+                         Vezi comentariul →
+                       </span>
+                     </div>
+                   </Link>
+                 ))}
+               </div>
             </div>
 
             <div className="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
