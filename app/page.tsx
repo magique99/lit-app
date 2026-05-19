@@ -406,16 +406,10 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-[#f8efe4]/40 to-[#f1e2d5]/90" />
             <div className="absolute inset-0 flex items-center">
               <div className="max-w-4xl px-6 py-10 sm:px-10 lg:px-16">
-                <span className="inline-flex rounded-full border border-slate-300/50 bg-white/80 px-4 py-2 text-xs uppercase tracking-[0.3em] text-slate-700">
-                  Editură digitală</span>
 
                 <h1 className="mt-8 text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[0.95] tracking-[-0.03em] text-slate-950">
-                  O poveste vizuală, o experiență literară premium.
+                  Un loc liniștit în care cuvintele par să lumineze dinăuntru, iar poveștile lasă pe piele urme pe care memoria nu știe dacă le-a trăit sau doar le-a visat.
                 </h1>
-
-                <p className="mt-6 max-w-2xl text-base leading-8 text-slate-700/90 sm:text-lg">
-                  Descoperă texte selectate, sugestii poetice și ritmuri cinematice într-un spațiu calm, modern și rafinat.
-                </p>
 
                 <div className="mt-10 grid gap-4 sm:grid-cols-3">
                   <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-amber-300/40 hover:bg-[#fffdf8] hover:shadow-[0_25px_60px_rgba(251,191,36,0.14)]">
