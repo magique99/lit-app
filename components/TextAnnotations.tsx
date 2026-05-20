@@ -10,6 +10,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   const [showPopup, setShowPopup] = useState(false);
   const [popupPos, setPopupPos] = useState({ x: 0, y: 0 });
   const [newAnnotation, setNewAnnotation] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -66,31 +67,42 @@ export default function TextAnnotations({ postId }: { postId: string }) {
     }
   }, []);
 
-  const addAnnotation = async () => {
-    if (!selectedText || !currentUserId || !newAnnotation.trim()) return;
-    
-    const { data, error } = await supabase
-      .from("annotations")
-      .insert({
-        post_id: postId,
-        user_id: currentUserId,
-        content_type: "comment",
-        content: newAnnotation,
-        start_offset: selectedText.start,
-        end_offset: selectedText.end,
-      } as any)
-      .select("*")
-      .single();
-    
-    if (!error && data) {
-      setAnnotations((prev) => [...prev, data as Annotation]);
-    }
-    
-    setNewAnnotation("");
-    setShowPopup(false);
-    setSelectedText(null);
-    window.getSelection()?.removeAllRanges();
-  };
+   const addAnnotation = async () => {
+     if (!selectedText || !currentUserId || !newAnnotation.trim()) return;
+     
+     try {
+       const { data, error } = await supabase
+         .from("annotations")
+         .insert({
+           post_id: postId,
+           user_id: currentUserId,
+           content_type: "comment",
+           content: newAnnotation,
+           start_offset: selectedText.start,
+           end_offset: selectedText.end,
+         })
+         .select("*")
+         .single();
+     
+       if (error) {
+         console.error("INSERT ANNOTATION ERROR:", error);
+         setError("Nu am putut salva adnotația.");
+         return;
+       }
+       
+       if (data) {
+         setAnnotations((prev) => [...prev, data]);
+       }
+     } catch (err) {
+       console.error("EXCEPTION IN ADD ANNOTATION:", err);
+       setError("A apărut o eroare neașteptată.");
+     }
+     
+     setNewAnnotation("");
+     setShowPopup(false);
+     setSelectedText(null);
+     window.getSelection()?.removeAllRanges();
+   };
 
   return (
     <div className="mt-8">
