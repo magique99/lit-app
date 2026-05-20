@@ -62,7 +62,22 @@ export default function ProfilePostsV2() {
       }
 
       setPosts(postsData || []);
-      setProfile(profileData ?? null);
+      
+      // Convert profile data to match Profile type
+      if (profileData) {
+        setProfile({
+          username: profileData.username,
+          avatar_url: profileData.avatar_url,
+          bio: null,
+          id: uid,
+          user_id: uid,
+          created_at: null,
+          updated_at: null,
+          role: null
+        });
+      } else {
+        setProfile(null);
+      }
       setLoading(false);
     }
 
