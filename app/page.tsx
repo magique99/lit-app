@@ -442,53 +442,53 @@ export default function HomePage() {
   return (
     <main className="relative min-h-screen bg-[#f7efe4] text-slate-950 pt-8 lg:pt-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <section className="relative overflow-hidden rounded-[3rem] bg-[#fcf5ec] text-slate-950 shadow-[0_60px_120px_rgba(15,23,42,0.12)] ring-1 ring-slate-200/70">
-          <div className="relative h-[420px] sm:h-[520px] lg:h-[620px]">
-            <Image
-              src="/Literatura9-1.png"
-              alt="Literatura banner"
-              fill
-              priority
-              className="object-cover object-center opacity-90"
-            />
+       <section className="relative overflow-hidden rounded-[3rem] bg-[#fcf5ec] text-slate-950 shadow-[0_60px_120px_rgba(15,23,42,0.12)] ring-1 ring-slate-200/70">
+         <div className="relative min-h-[20vh] sm:min-h-[25vh] lg:min-h-[35vh] max-h-[620px]">
+           <Image
+             src="/Literatura9-1.png"
+             alt="Literatura banner"
+             fill
+             priority
+             className="object-cover object-center opacity-90"
+           />
 
-            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-[#f8efe4]/40 to-[#f1e2d5]/90" />
-            <div className="absolute inset-0 flex items-center">
-              <div className="max-w-4xl px-6 py-10 sm:px-10 lg:px-16">
-                {/* stats grid moved below hero to appear after the banner */}
-              </div>
-            </div>
-          </div>
-        </section>
+           <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-[#f8efe4]/40 to-[#f1e2d5]/90" />
+           <div className="absolute inset-0 flex items-center">
+             <div className="max-w-4xl px-6 py-10 sm:px-10 lg:px-16">
+               {/* stats grid moved below hero to appear after the banner */}
+             </div>
+           </div>
+         </div>
+       </section>
 
 
-        {/* Stats grid: moved here so it appears after the banner */}
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-amber-300/40 hover:bg-[#fffdf8] hover:shadow-[0_25px_60px_rgba(251,191,36,0.14)]">
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-              Texte recente
-            </p>
-            <p className="mt-3 text-3xl font-semibold text-slate-950">
-              {posts.length}
-            </p>
-          </div>
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-[#fffdf8] hover:shadow-[0_25px_60px_rgba(56,189,248,0.1)]">
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-              Comentarii recente
-            </p>
-            <p className="mt-3 text-3xl font-semibold text-slate-950">
-              {latestComments.length}
-            </p>
-          </div>
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-emerald-300/40 hover:bg-[#fffdf8] hover:shadow-[0_25px_60px_rgba(16,185,129,0.1)]">
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-              Reacții
-            </p>
-            <p className="mt-3 text-3xl font-semibold text-slate-950">
-              {totalLikes}
-            </p>
-          </div>
-        </div>
+         {/* Stats grid: moved here so it appears after the banner */}
+         <div className="mt-8 grid gap-3 sm:gap-4 lg:gap-6">
+           <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-0.5 hover:border-amber-300/40 hover:bg-[#fffdf8] hover:shadow-[0_20px_40px_rgba(251,191,36,0.1)]">
+             <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+               Texte recente
+             </p>
+             <p className="mt-2 text-2xl font-semibold text-slate-950 sm:text-3xl">
+               {posts.length}
+             </p>
+           </div>
+           <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-0.5 hover:border-cyan-300/40 hover:bg-[#fffdf8] hover:shadow-[0_20px_40px_rgba(56,189,248,0.1)]">
+             <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+               Comentarii recente
+             </p>
+             <p className="mt-2 text-2xl font-semibold text-slate-950 sm:text-3xl">
+               {latestComments.length}
+             </p>
+           </div>
+           <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-0.5 hover:border-emerald-300/40 hover:bg-[#fffdf8] hover:shadow-[0_20px_40px_rgba(16,185,129,0.1)]">
+             <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+               Reacții
+             </p>
+             <p className="mt-2 text-2xl font-semibold text-slate-950 sm:text-3xl">
+               {totalLikes}
+             </p>
+           </div>
+         </div>
 
 
         {/* FILTERS */}
@@ -572,7 +572,7 @@ export default function HomePage() {
                 </div>
               )}
 
-              <div className="space-y-[10px] py-[10px]">
+              <div className="space-y-[10px] py-[10px] sm:space-y-[16px] sm:py-[16px] lg:space-y-[20px] lg:py-[20px]">
 {posts.map((post, index) => (
   <Link key={post.id} href={`/post/${post.id}`}>
     <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
@@ -594,9 +594,9 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-            <h2 className="text-xl font-semibold leading-none text-slate-950">
-              {post.title}
-            </h2>
+           <h2 className="text-lg font-semibold leading-none text-slate-950 lg:text-xl">
+               {post.title}
+             </h2>
           </div>
 
           <Link
