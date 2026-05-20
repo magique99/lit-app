@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { toPlainText } from "@/lib/content";
+import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
-import type { Post } from "@/lib/types";
+import type { Post, Profile } from "@/lib/types";
+
+const PAGE_SIZE = 5;
 
 export default function ProfilePostsV2() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [loading, setLoading] = useState(true);
@@ -30,25 +33,43 @@ export default function ProfilePostsV2() {
         return;
       }
 
-      const { data, error } = await supabase
+      // Fetch posts
+      const { data: postsData, error: postsError } = await supabase
         .from("posts")
         .select("*")
         .eq("user_id", uid)
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("LOAD PROFILE POSTS ERROR:", error);
+      if (postsError) {
+        console.error("LOAD PROFILE POSTS ERROR:", postsError);
         setError("Nu am putut încărca textele tale.");
         setLoading(false);
         return;
       }
 
-      setPosts(data || []);
+      // Fetch profile
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("username, avatar_url")
+        .eq("user_id", uid)
+        .single();
+
+      if (profileError && !profileError?.message?.includes("No rows")) {
+        console.error("LOAD PROFILE ERROR:", profileError);
+        setError("Nu am putut încărca informațiile de profil.");
+        setLoading(false);
+        return;
+      }
+
+      setPosts(postsData || []);
+      setProfile(profileData ?? null);
       setLoading(false);
     }
 
     load();
   }, []);
+
+  // Rest of the component remains the same until the return statement
 
   async function deletePost(id: string) {
     if (confirmDeleteId !== id) {
@@ -113,143 +134,71 @@ export default function ProfilePostsV2() {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-[10px] py-[10px]">
+      {posts.map((post, index) => (
+        <Link key={post.id} href={`/post/${post.id}`}>
+          <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
+            <div className="p-7">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col items-start gap-1">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={profile?.avatar_url ?? "/user.jpg"}
+                      alt={profile?.username ?? "Author avatar"}
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">
+                        @{profile?.username ?? "anonim"}
+                      </p>
+                      <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                        Autor
+                      </p>
+                    </div>
+                  </div>
 
-      {error && (
-        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-
-      {loading && (
-        <div className="h-24 animate-pulse rounded-xl bg-gray-100" />
-      )}
-
-      {!loading && posts.length === 0 && !error && (
-        <div className="rounded-xl border border-gray-100 bg-white p-5 text-sm text-gray-500">
-          Nu ai încă niciun text publicat.
-        </div>
-      )}
-
-      {posts.map((post) => (
-        <article
-          key={post.id}
-          className="
-            bg-white
-            border border-gray-100
-            rounded-xl
-            p-4 sm:p-5
-            transition
-            hover:shadow-sm
-          "
-        >
-
-          {/* META */}
-          <div className="text-xs text-gray-400 mb-2">
-            {new Date(
-              post.created_at
-            ).toLocaleDateString()}
-          </div>
-
-          {/* CONTENT */}
-          {editingId === post.id ? (
-            <div className="space-y-3">
-
-              <textarea
-                value={editText}
-                onChange={(e) =>
-                  setEditText(e.target.value)
-                }
-                className="
-                  w-full border
-                  rounded-xl p-3
-                  text-sm
-                  min-h-[140px]
-                "
-              />
-
-              <div className="flex gap-2">
-
-                <button
-                  onClick={() =>
-                    void saveEdit(post.id)
-                  }
-                  disabled={savingId === post.id}
-                  className="
-                    bg-black text-white
-                    px-4 py-2
-                    rounded-xl text-sm
-                    disabled:cursor-wait
-                    disabled:opacity-60
-                  "
-                >
-                  {savingId === post.id ? "Saving..." : "Save"}
-                </button>
-
-                <button
-                  onClick={() =>
-                    setEditingId(null)
-                  }
-                  disabled={savingId === post.id}
-                  className="text-sm text-gray-500"
-                >
-                  Cancel
-                </button>
-
-              </div>
-
-            </div>
-          ) : (
-            <>
-              {/* TEXT (Instagram-like clamp) */}
-              <div
-                className="
-                  text-sm text-gray-800
-                  line-clamp-4
-                  whitespace-pre-wrap
-                "
-              >
-                {toPlainText(post.content)}
-              </div>
-
-              {/* ACTIONS (Instagram-like simple row) */}
-              <div className="flex gap-6 mt-3 text-sm">
+                  <h2 className="text-xl font-semibold leading-none text-slate-950">
+                    {post.title}
+                  </h2>
+                </div>
 
                 <Link
                   href={`/post/${post.id}`}
-                  className="text-gray-600 hover:text-black"
+                  className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
                 >
-                  View
+                  Citește acum
                 </Link>
-
-                <button
-                  onClick={() => {
-                    setEditingId(post.id);
-                    setEditText(post.content ?? "");
-                  }}
-                  className="text-blue-600"
-                >
-                  Edit
-                </button>
-
-                <button
-                  onClick={() =>
-                    void deletePost(post.id)
-                  }
-                  disabled={deletingId === post.id}
-                  className="text-red-500 disabled:cursor-wait disabled:opacity-60"
-                >
-                  {deletingId === post.id
-                    ? "Deleting..."
-                    : confirmDeleteId === post.id
-                      ? "Confirm delete"
-                      : "Delete"}
-                </button>
-
               </div>
-            </>
-          )}
-        </article>
+
+              <p
+                className={`mt-4 text-base leading-8 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'}`}
+                style={{ whiteSpace: "pre-line" }}
+              >
+                {htmlToPlainTextWithNewlines(post.content)}
+              </p>
+
+              <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Handle like functionality would go here
+                  }}
+                  disabled={true} // Simplified for now
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  ❤️
+                  <span>0</span>
+                </button>
+
+                <span className="inline-flex items-center gap-2">
+                  💬<span>0</span>
+                </span>
+              </div>
+            </div>
+          </article>
+        </Link>
       ))}
     </div>
   );
