@@ -254,10 +254,10 @@ export default function ProfilePostsV2() {
                       className={`mt-4 text-base leading-8 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'}`}
                       style={{ whiteSpace: "pre-line" }}
                     >
-                      {() => {
+                      {(() => {
                         const plainText = htmlToPlainTextWithNewlines(post.content);
                         return plainText.trim() === "" ? "Fără text" : plainText;
-                      }()}
+                      })()}
                     </p>
 
                      <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
