@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
-import type { Comment, Post, Profile } from "@/lib/types";
+import type { Comment, Post, Profile, Like } from "@/lib/types";
 
 type PostWithProfile = Post & {
   profile?: Pick<Profile, "username" | "avatar_url"> | null;
