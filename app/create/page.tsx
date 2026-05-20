@@ -295,46 +295,46 @@ export default function CreatePost() {
             </select>
           </div>
 
-          <label className="mt-6 flex cursor-pointer items-center gap-3 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-700">
-            <input
-              type="checkbox"
-              checked={usesAI}
-              disabled={loading}
-              onChange={(e) => setUsesAI(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300"
-            />
-            Acest text a fost generat cu AI
-          </label>
+            <label className="mt-6 flex cursor-pointer items-center gap-3 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={usesAI}
+                disabled={loading}
+                onChange={(e) => setUsesAI(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300"
+              />
+              Acest text a fost generat cu AI
+            </label>
 
-           {content && (
-             <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6">
-               <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-                 Preview
-               </h3>
-               <div className="prose max-w-none text-sm leading-7 text-slate-700" dangerouslySetInnerHTML={{ __html: content }} />
-             </div>
-           )}
+            {content && (
+              <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6">
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  Preview
+                </h3>
+                <div className="prose max-w-none text-sm leading-7 text-slate-700" dangerouslySetInnerHTML={{ __html: content }} />
+              </div>
+            )}
 
-           <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-             <div className="w-full sm:w-auto">
-               <input
-                 type="file"
-                 accept=".txt,.docx"
-                 onChange={handleFileUpload}
-                 disabled={loading || processingFile}
-                 className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-amber-400 file:px-6 file:py-3 file:text-sm file:font-semibold file:text-slate-950 hover:file:bg-amber-300"
-               />
-             </div>
-             <div className="w-full sm:w-auto">
-               <button
-                 onClick={publish}
-                 disabled={loading || processingFile}
-                 className="mt-0 inline-flex items-center justify-center rounded-full bg-amber-400 px-8 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
-               >
-                 {loading ? "Se publică..." : processingFile ? "Se procesează..." : "Publică"}
-               </button>
-             </div>
-           </div>
+            <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="w-full sm:w-auto">
+                <input
+                  type="file"
+                  accept=".txt,.docx"
+                  onChange={handleFileUpload}
+                  disabled={loading || processingFile}
+                  className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-amber-400 file:px-6 file:py-3 file:text-sm file:font-semibold file:text-slate-950 hover:file:bg-amber-300"
+                />
+              </div>
+              <div className="w-full sm:w-auto">
+                <button
+                  onClick={publish}
+                  disabled={loading || processingFile}
+                  className="mt-0 inline-flex items-center justify-center rounded-full bg-amber-400 px-8 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {loading ? "Se publică..." : processingFile ? "Se procesează..." : "Publică"}
+                </button>
+              </div>
+            </div>
         </section>
       </div>
     </main>
