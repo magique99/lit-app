@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
+import type { Notification } from "@/lib/types";
 
 export default async function NotificationsPage() {
   const { data } = await supabase
@@ -13,7 +14,7 @@ export default async function NotificationsPage() {
       </h1>
 
       <div className="space-y-3">
-        {data?.map((n) => (
+        {(data as Notification[] | null)?.map((n) => (
           <div key={n.id} className="p-3 border rounded-xl">
             {n.type === "like_post" && "❤️ someone liked your post"}
             {n.type === "comment" && "💬 someone commented"}
