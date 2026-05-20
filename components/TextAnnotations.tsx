@@ -120,8 +120,20 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       setShowPopup(true);
     };
 
+    const handleClickAway = (e: MouseEvent) => {
+      // Only close if clicking outside the popup
+      const target = e.target as HTMLElement;
+      if (!target.closest('.fixed.z-50')) {
+        setShowPopup(false);
+      }
+    };
+
     document.addEventListener("mouseup", handleMouseUp);
-    return () => document.removeEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousedown", handleClickAway);
+    return () => {
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mousedown", handleClickAway);
+    };
   }, [showPopup]);
 
   return (
