@@ -461,6 +461,7 @@ export default function HomePage() {
           </div>
         </section>
 
+
         {/* Stats grid: moved here so it appears after the banner */}
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-amber-300/40 hover:bg-[#fffdf8] hover:shadow-[0_25px_60px_rgba(251,191,36,0.14)]">
