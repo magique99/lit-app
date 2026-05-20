@@ -70,7 +70,15 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   };
 
   useEffect(() => {
+    let ignoreNextMouseup = false;
+    
     const handleMouseUp = (e: MouseEvent) => {
+      // If we just interacted with the popup, skip this mouseup
+      if (ignoreNextMouseup) {
+        ignoreNextMouseup = false;
+        return;
+      }
+      
       const selection = window.getSelection();
       if (!selection || !selection.toString().trim()) {
         setShowPopup(false);
@@ -120,19 +128,21 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       setShowPopup(true);
     };
 
-    const handleClickAway = (e: MouseEvent) => {
-      // Only close if clicking outside the popup
-      const target = e.target as HTMLElement;
-      if (!target.closest('.fixed.z-50')) {
-        setShowPopup(false);
-      }
+    const handlePopupMouseDown = () => {
+      ignoreNextMouseup = true;
     };
 
     document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("mousedown", handleClickAway);
+    
+    // Use event delegation to catch popup interactions
+    document.addEventListener("mousedown", (e) => {
+      if (e.target instanceof HTMLElement && e.target.closest('.fixed.z-50')) {
+        handlePopupMouseDown();
+      }
+    });
+    
     return () => {
       document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("mousedown", handleClickAway);
     };
   }, [showPopup]);
 
