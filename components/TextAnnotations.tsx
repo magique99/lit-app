@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { Annotation } from "@/lib/types";
 
@@ -12,7 +12,6 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   const [newAnnotation, setNewAnnotation] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -30,19 +29,66 @@ export default function TextAnnotations({ postId }: { postId: string }) {
     setAnnotations((data as Annotation[]) || []);
   }, [postId]);
 
-  const handleMouseUp = useCallback(() => {
-    const selection = window.getSelection();
-    if (selection && selection.toString().trim()) {
+  const addAnnotation = async () => {
+    if (!selectedText || !currentUserId || !newAnnotation.trim()) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("annotations")
+        .insert({
+          post_id: postId,
+          user_id: currentUserId,
+          content_type: "comment",
+          content: newAnnotation,
+          start_offset: selectedText.start,
+          end_offset: selectedText.end,
+        })
+        .select("*")
+        .single();
+    
+      if (error) {
+        console.error("INSERT ANNOTATION ERROR:", error);
+        setError("Nu am putut salva adnotația.");
+        return;
+      }
+      
+      if (data) {
+        setAnnotations((prev) => [...prev, data as Annotation]);
+      }
+    } catch (err) {
+      console.error("EXCEPTION IN ADD ANNOTATION:", err);
+      setError("A apărut o eroare neașteptată.");
+    }
+    
+    setNewAnnotation("");
+    setShowPopup(false);
+    setSelectedText(null);
+    window.getSelection()?.removeAllRanges();
+  };
+
+  useEffect(() => {
+    const handleMouseUp = (e: MouseEvent) => {
+      const selection = window.getSelection();
+      if (!selection || !selection.toString().trim()) {
+        setShowPopup(false);
+        return;
+      }
+
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
       
-      // Find position in the text
-      const contentEl = contentRef.current;
-      if (!contentEl) return;
+      const article = document.querySelector("article");
+      if (!article) return;
+      
+      const selectionInArticle = article.contains(range.startContainer) || article.contains(range.endContainer);
+      if (!selectionInArticle) {
+        setShowPopup(false);
+        return;
+      }
       
       let start = 0;
       const textNodes: Node[] = [];
-      const walker = document.createTreeWalker(contentEl, NodeFilter.SHOW_TEXT, null);
+      const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, null);
       
       let node;
       while (node = walker.nextNode()) {
@@ -51,7 +97,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       
       for (const textNode of textNodes) {
         if (textNode === range.startContainer) {
-          const preText = textNodes.slice(0, textNodes.indexOf(textNode)).reduce((acc, n) => acc + n.textContent, "");
+          const preText = textNodes.slice(0, textNodes.indexOf(textNode)).reduce((acc, n) => acc + (n.textContent || ""), "");
           start = preText.length + range.startOffset;
           break;
         }
@@ -62,57 +108,15 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       setSelectedText({ text: selection.toString(), start, end });
       setPopupPos({ x: rect.left + rect.width / 2, y: rect.bottom });
       setShowPopup(true);
-    } else {
-      setShowPopup(false);
-    }
-  }, []);
+    };
 
-   const addAnnotation = async () => {
-     if (!selectedText || !currentUserId || !newAnnotation.trim()) return;
-     
-     try {
-       const { data, error } = await supabase
-         .from("annotations")
-         .insert({
-           post_id: postId,
-           user_id: currentUserId,
-           content_type: "comment",
-           content: newAnnotation,
-           start_offset: selectedText.start,
-           end_offset: selectedText.end,
-         })
-         .select("*")
-         .single();
-     
-       if (error) {
-         console.error("INSERT ANNOTATION ERROR:", error);
-         setError("Nu am putut salva adnotația.");
-         return;
-       }
-       
-       if (data) {
-         setAnnotations((prev) => [...prev, data as Annotation]);
-       }
-     } catch (err) {
-       console.error("EXCEPTION IN ADD ANNOTATION:", err);
-       setError("A apărut o eroare neașteptată.");
-     }
-     
-     setNewAnnotation("");
-     setShowPopup(false);
-     setSelectedText(null);
-     window.getSelection()?.removeAllRanges();
-   };
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => document.removeEventListener("mouseup", handleMouseUp);
+  }, []);
 
   return (
     <div className="mt-8">
-      <div
-        ref={contentRef}
-        onMouseUp={handleMouseUp}
-        className="prose max-w-none text-slate-700"
-      >
-        <p className="text-sm text-slate-500 mb-2">Selectează un fragment pentru a adăuga o adnotație.</p>
-      </div>
+      <p className="text-sm text-slate-500 mb-4">Selectează un fragment din text pentru a adăuga o adnotație.</p>
       
       {showPopup && selectedText && (
         <div
