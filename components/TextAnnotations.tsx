@@ -91,7 +91,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
        }
        
        if (data) {
-         setAnnotations((prev) => [...prev, data]);
+         setAnnotations((prev) => [...prev, data as Annotation]);
        }
      } catch (err) {
        console.error("EXCEPTION IN ADD ANNOTATION:", err);
