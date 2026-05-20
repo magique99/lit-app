@@ -133,72 +133,124 @@ export default function ProfilePostsV2() {
     setSavingId(null);
   }
 
-  return (
+   return (
     <div className="space-y-[10px] py-[10px]">
       {posts.map((post, index) => (
-        <Link key={post.id} href={`/post/${post.id}`}>
-          <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
-            <div className="p-7">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex flex-col items-start gap-1">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={profile?.avatar_url ?? "/user.jpg"}
-                      alt={profile?.username ?? "Author avatar"}
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">
-                        @{profile?.username ?? "anonim"}
-                      </p>
-                      <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
-                        Autor
-                      </p>
-                    </div>
+        <>
+          {editingId === post.id ? (
+            <div className="bg-white border border-slate-200/90 shadow-[0_20px_80px_rgba(15,23,42,0.08)] rounded-[2rem] p-7">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={profile?.avatar_url ?? "/user.jpg"}
+                    alt={profile?.username ?? "Author avatar"}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">
+                      @{profile?.username ?? "anonim"}
+                    </p>
+                    <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                      Autor
+                    </p>
                   </div>
-
-                  <h2 className="text-xl font-semibold leading-none text-slate-950">
-                    {post.title}
-                  </h2>
                 </div>
 
-                <Link
-                  href={`/post/${post.id}`}
-                  className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
-                >
-                  Citește acum
-                </Link>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setEditingId(null);
+                    }}
+                    className="text-sm text-slate-500 hover:text-slate-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      void saveEdit(post.id);
+                    }}
+                    disabled={savingId === post.id}
+                    className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {savingId === post.id ? "Salvez..." : "Salvează"}
+                  </button>
+                </div>
               </div>
 
-              <p
-                className={`mt-4 text-base leading-8 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'}`}
-                style={{ whiteSpace: "pre-line" }}
-              >
-                {htmlToPlainTextWithNewlines(post.content)}
-              </p>
-
-              <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    // Handle like functionality would go here
-                  }}
-                  disabled={true} // Simplified for now
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  ❤️
-                  <span>0</span>
-                </button>
-
-                <span className="inline-flex items-center gap-2">
-                  💬<span>0</span>
-                </span>
-              </div>
+              <textarea
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                className="w-full border border-slate-200 bg-slate-50 rounded-[1.5rem] px-5 py-4 text-lg text-slate-900 placeholder:text-slate-500 shadow-sm focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-100 min-h-[200px]"
+                disabled={savingId === post.id}
+              />
             </div>
-          </article>
-        </Link>
+          ) : (
+            <Link key={post.id} href={`/post/${post.id}`}>
+              <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
+                <div className="p-7">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex flex-col items-start gap-1">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={profile?.avatar_url ?? "/user.jpg"}
+                          alt={profile?.username ?? "Author avatar"}
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                        <div>
+                          <p className="text-sm font-medium text-slate-900">
+                            @{profile?.username ?? "anonim"}
+                          </p>
+                          <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                            Autor
+                          </p>
+                        </div>
+                      </div>
+
+                      <h2 className="text-xl font-semibold leading-none text-slate-950">
+                        {post.title}
+                      </h2>
+                    </div>
+
+                    <Link
+                      href={`/post/${post.id}`}
+                      className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
+                    >
+                      Citește acum
+                    </Link>
+                  </div>
+
+                  <p
+                    className={`mt-4 text-base leading-8 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'}`}
+                    style={{ whiteSpace: "pre-line" }}
+                  >
+                    {htmlToPlainTextWithNewlines(post.content)}
+                  </p>
+
+                <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+                  {/* Like button placeholder - would need actual like implementation */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Handle like functionality would go here
+                    }}
+                    disabled={true} // Simplified for now
+                    className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    ❤️
+                    <span>0</span>
+                  </button>
+
+                  <span className="inline-flex items-center gap-2">
+                    💬<span>0</span>
+                  </span>
+                </div>
+                </div>
+              </article>
+            </Link>
+          )}
+        </>
       ))}
     </div>
   );
