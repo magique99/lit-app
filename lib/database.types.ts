@@ -253,10 +253,58 @@ export type Database = {
          };
          Relationships: [];
        };
-    };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
-    CompositeTypes: Record<string, never>;
-  };
+       annotations: {
+         Row: {
+           id: string;
+           post_id: string;
+           user_id: string;
+           content_type: string;
+           content: string;
+           start_offset: number;
+           end_offset: number;
+           created_at: string;
+           updated_at: string;
+         };
+         Insert: {
+           id?: string;
+           post_id: string;
+           user_id: string;
+           content_type: string;
+           content: string;
+           start_offset: number;
+           end_offset: number;
+           created_at?: string;
+           updated_at?: string;
+         };
+         Update: {
+           id?: string;
+           post_id?: string;
+           user_id?: string;
+           content_type?: string;
+           content?: string;
+           start_offset?: number;
+           end_offset?: number;
+           created_at?: string;
+           updated_at?: string;
+         };
+         Relationships: [
+           {
+             foreignKeyName: "annotations_post_id_fkey";
+             columns: ["post_id"];
+             isOneToOne: false;
+             referencedRelation: "posts";
+             referencedColumns: ["id"];
+           },
+           {
+             foreignKeyName: "annotations_user_id_fkey";
+             columns: ["user_id"];
+             isOneToOne: false;
+             referencedRelation: "profiles";
+             referencedColumns: ["user_id"];
+           },
+         ];
+       };
+     };
+   };
+ };
 };
