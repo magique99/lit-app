@@ -153,9 +153,9 @@ export default function HomePage() {
          profileMap = profilesData.reduce(
            (map, profile) => ({
              ...map,
-             [profile.user_id]: {
-               username: profile.username,
-               avatar_url: profile.avatar_url,
+             [profile.user_id as string]: {
+               username: profile.username as string,
+               avatar_url: profile.avatar_url as string | null,
              },
            }),
            {},
@@ -246,15 +246,15 @@ export default function HomePage() {
         .select("user_id, username, avatar_url")
         .in("user_id", userIds);
 
-      if (!profilesError && profilesData) {
-        profileMap = profilesData.reduce(
-          (map: any, p: any) => ({
-            ...map,
-            [p.user_id]: { username: p.username, avatar_url: p.avatar_url },
-          }),
-          {},
-        );
-      }
+     if (!profilesError && profilesData) {
+         profileMap = profilesData.reduce(
+           (map: any, p: any) => ({
+             ...map,
+             [p.user_id as string]: { username: p.username as string, avatar_url: p.avatar_url as string | null },
+           }),
+           {},
+         );
+       }
     }
 
     const postsWithCounts: PostWithProfile[] = data.map((post: any) => ({
