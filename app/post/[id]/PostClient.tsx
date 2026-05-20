@@ -42,7 +42,7 @@ export default function PostClient({ postId }: { postId: string }) {
       return;
     }
 
-    const list = data || [];
+    const list = (data as Comment[]) || [];
 
     const userIds = [...new Set(list.map((c) => c.user_id))];
 

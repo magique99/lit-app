@@ -24,7 +24,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   const loadAnnotations = useCallback(async () => {
     const { data } = await supabase
       .from("annotations")
-      .select("*")
+      .select<Annotation>("*")
       .eq("post_id", postId);
     setAnnotations((data as Annotation[]) || []);
   }, [postId]);

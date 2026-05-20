@@ -408,32 +408,31 @@ export default function HomePage() {
       [postId]: (prev[postId] ?? 0) + 1,
     }));
 
-     const { data, error } = await supabase
+     const { error } = await supabase
        .from("likes")
        .insert({
          post_id: postId,
          user_id: currentUserId,
-       })
-       .select("*");
+       });
 
-    if (error) {
-      console.error("LIKE ERROR:", error);
+     if (error) {
+       console.error("LIKE ERROR:", error);
 
-      setLikeCounts((prev) => ({
-        ...prev,
-        [postId]: Math.max((prev[postId] ?? 1) - 1, 0),
-      }));
+       setLikeCounts((prev) => ({
+         ...prev,
+         [postId]: Math.max((prev[postId] ?? 1) - 1, 0),
+       }));
 
-      if (error.code !== "23505") {
-        setLikeError("Like-ul nu a putut fi salvat.");
-      }
-    }
+       if (error.code !== "23505") {
+         setLikeError("Like-ul nu a putut fi salvat.");
+       }
+     }
 
-    setLikingIds((prev) => {
-      const next = new Set(prev);
-      next.delete(postId);
-      return next;
-    });
+     setLikingIds((prev) => {
+       const next = new Set(prev);
+       next.delete(postId);
+       return next;
+     });
   }
 
   // =========================
