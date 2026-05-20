@@ -413,26 +413,7 @@ export default function HomePage() {
        .insert({
          post_id: postId,
          user_id: currentUserId,
-       });
-
-     if (error) {
-       console.error("LIKE ERROR:", error);
-
-       setLikeCounts((prev) => ({
-         ...prev,
-         [postId]: Math.max((prev[postId] ?? 1) - 1, 0),
-       }));
-
-       if (error.code !== "23505") {
-         setLikeError("Like-ul nu a putut fi salvat.");
-       }
-     }
-
-     setLikingIds((prev) => {
-       const next = new Set(prev);
-       next.delete(postId);
-       return next;
-     });
+       } as LikeInsert);
   }
 
   // =========================
