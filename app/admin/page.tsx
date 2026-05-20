@@ -36,19 +36,20 @@ export default function AdminPage() {
         return;
       }
 
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+       const { data: profileData } = await supabase
+         .from("profiles")
+         .select("*")
+         .eq("user_id", user.id)
+         .maybeSingle();
 
-      const role = profileData?.role as UserRole | undefined;
-      setCurrentRole(role ?? null);
+       const profile = toProfile(profileData);
+       const role = profile?.role;
+       setCurrentRole(role ?? null);
 
-      if (role !== "owner") {
-        window.location.href = "/";
-        return;
-      }
+       if (role !== "owner") {
+         window.location.href = "/";
+         return;
+       }
 
       const profiles = await getAllUsers();
 
