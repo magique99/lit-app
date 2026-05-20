@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { Annotation } from "@/lib/types";
 
@@ -12,6 +12,8 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   const [newAnnotation, setNewAnnotation] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const lastSelectionKey = useRef<string | null>(null);
+  const popupId = useRef(0);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -63,6 +65,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
     setNewAnnotation("");
     setShowPopup(false);
     setSelectedText(null);
+    lastSelectionKey.current = null;
     window.getSelection()?.removeAllRanges();
   };
 
@@ -75,7 +78,6 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       }
 
       const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
       
       const article = document.querySelector("article");
       if (!article) return;
@@ -85,6 +87,13 @@ export default function TextAnnotations({ postId }: { postId: string }) {
         setShowPopup(false);
         return;
       }
+      
+      // Create a unique key for this selection to prevent duplicates
+      const selectionKey = `${range.startContainer.textContent}-${range.startOffset}-${range.endOffset}`;
+      if (lastSelectionKey.current === selectionKey && showPopup) return;
+      lastSelectionKey.current = selectionKey;
+      
+      const rect = range.getBoundingClientRect();
       
       let start = 0;
       const textNodes: Node[] = [];
@@ -105,6 +114,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       
       const end = start + selection.toString().length;
       
+      popupId.current += 1;
       setSelectedText({ text: selection.toString(), start, end });
       setPopupPos({ x: rect.left + rect.width / 2, y: rect.bottom });
       setShowPopup(true);
@@ -112,7 +122,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
 
     document.addEventListener("mouseup", handleMouseUp);
     return () => document.removeEventListener("mouseup", handleMouseUp);
-  }, []);
+  }, [showPopup]);
 
   return (
     <div className="mt-8">
@@ -120,6 +130,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       
       {showPopup && selectedText && (
         <div
+          key={popupId.current}
           className="fixed z-50 bg-white border border-slate-200 rounded-lg shadow-lg p-3 w-64"
           style={{ left: popupPos.x, top: popupPos.y }}
         >
