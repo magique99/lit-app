@@ -572,69 +572,69 @@ export default function HomePage() {
               )}
 
               <div className="space-y-[10px] py-[10px]">
-                {posts.map((post) => (
-                  <Link key={post.id} href={`/post/${post.id}`}>
-                    <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
-                      <div className="p-7">
-                        <div className="flex items-center justify-between gap-4 mb-4">
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={post.profile?.avatar_url ?? "/user.jpg"}
-                              alt={post.profile?.username ?? "Author avatar"}
-                              className="h-10 w-10 rounded-full object-cover"
-                            />
-                            <div>
-                              <p className="text-sm font-medium text-slate-900">
-                                @{post.profile?.username ?? "anonim"}
-                              </p>
-                              <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
-                                Autor
-                              </p>
-                            </div>
-                          </div>
+{posts.map((post, index) => (
+  <Link key={post.id} href={`/post/${post.id}`}>
+    <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
+      <div className="p-7">
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-3">
+            <img
+              src={post.profile?.avatar_url ?? "/user.jpg"}
+              alt={post.profile?.username ?? "Author avatar"}
+              className="h-10 w-10 rounded-full object-cover"
+            />
+            <div>
+              <p className="text-sm font-medium text-slate-900">
+                @{post.profile?.username ?? "anonim"}
+              </p>
+              <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                Autor
+              </p>
+            </div>
+          </div>
 
-                          <Link
-                            href={`/post/${post.id}`}
-                            className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
-                          >
-                            Citește acum
-                          </Link>
-                        </div>
+          <Link
+            href={`/post/${post.id}`}
+            className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
+          >
+            Citește acum
+          </Link>
+        </div>
 
-                        <h2 className="text-2xl font-semibold leading-tight text-slate-950">
-                          {post.title}
-                        </h2>
+        <h2 className="text-2xl font-semibold leading-tight text-slate-950">
+          {post.title}
+        </h2>
 
-                        <p
-                          className="mt-4 text-base leading-8 text-slate-600 line-clamp-3"
-                          style={{ whiteSpace: "pre-line" }}
-                        >
-                          {htmlToPlainTextWithNewlines(post.content)}
-                        </p>
+        <p
+          className={`mt-4 text-base leading-8 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'}`}
+          style={{ whiteSpace: "pre-line" }}
+        >
+          {htmlToPlainTextWithNewlines(post.content)}
+        </p>
 
-                        <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              void handleLike(post.id);
-                            }}
-                            disabled={likingIds.has(post.id) || !currentUserId}
-                            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
-                          >
-                            ❤️
-                            <span>{getLikes(post.id)}</span>
-                          </button>
+        <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void handleLike(post.id);
+            }}
+            disabled={likingIds.has(post.id) || !currentUserId}
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            ❤️
+            <span>{getLikes(post.id)}</span>
+          </button>
 
-                          <span className="inline-flex items-center gap-2">
-                            💬<span>{getComments(post.id)}</span>
-                          </span>
-                        </div>
-                      </div>
-                    </article>
-                  </Link>
-                ))}
+          <span className="inline-flex items-center gap-2">
+            💬<span>{getComments(post.id)}</span>
+          </span>
+        </div>
+      </div>
+    </article>
+  </Link>
+))}
               </div>
 
               <div ref={observerRef} className="h-10" />
