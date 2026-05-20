@@ -55,7 +55,7 @@ export default function PaginatedContent({
   if (totalPages === 0) return null;
 
   return (
-    <div className="font-serif">
+    <div className="font-serif" data-post-content>
       {totalPages === 1 ? (
         <div
           className="max-w-3xl mx-auto px-8 py-12 text-lg leading-relaxed text-slate-800 text-justify hyphens-auto"

@@ -10,22 +10,12 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   const [showPopup, setShowPopup] = useState(false);
   const [popupPos, setPopupPos] = useState({ x: 0, y: 0 });
   const [newAnnotation, setNewAnnotation] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const popupId = useRef(0);
-
   const showPopupRef = useRef(showPopup);
   const lastSelectionKeyRef = useRef<string | null>(null);
 
   showPopupRef.current = showPopup;
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setCurrentUserId(data.user?.id ?? null);
-    });
-
-    loadAnnotations();
-  }, [postId]);
 
   const loadAnnotations = useCallback(async () => {
     const { data } = await supabase
@@ -54,7 +44,6 @@ export default function TextAnnotations({ postId }: { postId: string }) {
 
       if (error) {
         console.error("INSERT ANNOTATION ERROR:", error);
-        setError("Nu am putut salva adnotația.");
         return;
       }
 
@@ -63,7 +52,6 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       }
     } catch (err) {
       console.error("EXCEPTION IN ADD ANNOTATION:", err);
-      setError("A apărut o eroare neașteptată.");
     }
 
     setNewAnnotation("");
@@ -74,31 +62,29 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   };
 
   useEffect(() => {
-    let ignoreNextMouseup = false;
+    supabase.auth.getUser().then(({ data }) => {
+      setCurrentUserId(data.user?.id ?? null);
+    });
 
-    function handleMouseUp(e: MouseEvent) {
-      if (ignoreNextMouseup) {
-        ignoreNextMouseup = false;
-        return;
-      }
+    void loadAnnotations();
+  }, [loadAnnotations]);
 
+  useEffect(() => {
+    function handleMouseUp() {
       const selection = window.getSelection();
       if (!selection || !selection.toString().trim()) return;
 
       const range = selection.getRangeAt(0);
 
-      // Target only the paginated content container on the post page
-      const contentContainer = document.querySelector(
-        ".max-w-3xl.mx-auto"
-      ) as HTMLElement | null;
-      if (!contentContainer) return;
+      // The only element with [data-post-content] is inside PaginatedContent,
+      // which is used only on /post/[id]. If it's not found (any other page),
+      // this handler returns immediately — no popup anywhere else.
+      const textEl = document.querySelector("[data-post-content]");
+      if (!textEl) return;
 
-      const selectionInContent =
-        contentContainer.contains(range.startContainer) ||
-        contentContainer.contains(range.endContainer);
-      if (!selectionInContent) return;
+      const inside = textEl.contains(range.startContainer) || textEl.contains(range.endContainer);
+      if (!inside) return;
 
-      // Prevent duplicate popup for the same selection
       const selectionKey = `${range.startContainer.textContent}-${range.startOffset}-${range.endOffset}`;
       if (lastSelectionKeyRef.current === selectionKey && showPopupRef.current) return;
       lastSelectionKeyRef.current = selectionKey;
@@ -107,11 +93,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
 
       let start = 0;
       const textNodes: Node[] = [];
-      const walker = document.createTreeWalker(
-        contentContainer,
-        NodeFilter.SHOW_TEXT,
-        null,
-      );
+      const walker = document.createTreeWalker(textEl, NodeFilter.SHOW_TEXT, null);
 
       let node;
       while ((node = walker.nextNode())) {
@@ -128,39 +110,30 @@ export default function TextAnnotations({ postId }: { postId: string }) {
         }
       }
 
-      const end = start + selection.toString().length;
-
-      setSelectedText({ text: selection.toString(), start, end });
+      setSelectedText({ text: selection.toString(), start, end: start + selection.toString().length });
       setPopupPos({ x: rect.left + rect.width / 2, y: rect.bottom });
       setShowPopup(true);
     }
 
-    function handlePopupMouseDown() {
-      ignoreNextMouseup = true;
-    }
-
-    function handlePopupInteraction(e: MouseEvent) {
-      if (
-        e.target instanceof HTMLElement &&
-        e.target.closest(".fixed.z-50")
-      ) {
-        handlePopupMouseDown();
+    function handlePopupMouseDown(e: MouseEvent) {
+      if (e.target instanceof HTMLElement && e.target.closest('.fixed.z-50')) {
+        return;
       }
     }
 
     document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("mousedown", handlePopupInteraction);
+    document.addEventListener("mousedown", handlePopupMouseDown);
 
     return () => {
       document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("mousedown", handlePopupInteraction);
+      document.removeEventListener("mousedown", handlePopupMouseDown);
     };
   }, [postId]);
 
   return (
     <div className="mt-8">
       <p className="text-sm text-slate-500 mb-4">Selectează un fragment din text pentru a adăuga o adnotație.</p>
-      
+
       {showPopup && selectedText && (
         <div
           key={popupId.current}
