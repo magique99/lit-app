@@ -134,16 +134,26 @@ export default function CreatePost() {
     setProcessingFile(false);
   }
 
-  async function publish() {
-    if (!title.trim()) {
-      setError("Adaugă un titlu înainte de publicare.");
-      return;
-    }
+   async function publish() {
+     if (!title.trim()) {
+       setError("Adaugă un titlu înainte de publicare.");
+       return;
+     }
+ 
+     if (!content.trim()) {
+       setError("Adaugă conținut înainte de publicare.");
+       return;
+     }
 
-    if (!content.trim()) {
-      setError("Adaugă conținut înainte de publicare.");
-      return;
-    }
+     if (!textType) {
+       setError("Selectează un tip de text.");
+       return;
+     }
+
+     if (!genre) {
+       setError("Selectează un gen.");
+       return;
+     }
 
     setError(null);
     setStatus("Se pregătește publicarea...");
@@ -203,28 +213,30 @@ export default function CreatePost() {
 
     setProgress(70);
 
-    try {
-      setStatus("Se salvează postarea...");
-      const post = await createPost({
-        title,
-        content,
-        user_id: user.id,
-        file_hash: fileHash,
-        version: 1,
-        doc_url: docUrl,
-        text_type: textType || null,
-        genre: genre || null,
-        uses_ai: usesAI,
-      });
+     try {
+       setStatus("Se salvează postarea...");
+       const post = await createPost({
+         title,
+         content,
+         user_id: user.id,
+         file_hash: fileHash,
+         version: 1,
+         doc_url: docUrl,
+         text_type: textType,
+         genre: genre,
+         uses_ai: usesAI,
+       });
 
-      setProgress(100);
-      setStatus("Publicat.");
-
-      router.push(`/post/${post.id}`);
-    } catch (err) {
-      console.error(err);
-      setError("Nu am putut salva postarea.");
-    }
+       setProgress(100);
+       setStatus("Publicat.");
+       
+       // Show confirmation message and redirect after a brief delay
+       alert("Publicare realizată cu succes!");
+       router.push(`/post/${post.id}`);
+     } catch (err) {
+       console.error(err);
+       setError("Nu am putut salva postarea.");
+     }
 
     setLoading(false);
   }
@@ -294,41 +306,35 @@ export default function CreatePost() {
             Acest text a fost generat cu AI
           </label>
 
-          <div className="mt-6">
-            <input
-              type="file"
-              accept=".txt,.docx"
-              onChange={handleFileUpload}
-              disabled={loading || processingFile}
-              className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-amber-400 file:px-6 file:py-3 file:text-sm file:font-semibold file:text-slate-950 hover:file:bg-amber-300"
-            />
-          </div>
+           {content && (
+             <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6">
+               <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+                 Preview
+               </h3>
+               <div className="prose max-w-none text-sm leading-7 text-slate-700" dangerouslySetInnerHTML={{ __html: content }} />
+             </div>
+           )}
 
-          {progress > 0 && (
-            <div className="mt-6 h-2 overflow-hidden rounded-full bg-slate-200">
-              <div
-                className="h-2 bg-amber-400 transition-all"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          )}
-
-          {content && (
-            <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6">
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Preview
-              </h3>
-              <div className="prose max-w-none text-sm leading-7 text-slate-700" dangerouslySetInnerHTML={{ __html: content }} />
-            </div>
-          )}
-
-          <button
-            onClick={publish}
-            disabled={loading || processingFile}
-            className="mt-8 inline-flex items-center justify-center rounded-full bg-amber-400 px-8 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {loading ? "Se publică..." : processingFile ? "Se procesează..." : "Publică"}
-          </button>
+           <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+             <div className="w-full sm:w-auto">
+               <input
+                 type="file"
+                 accept=".txt,.docx"
+                 onChange={handleFileUpload}
+                 disabled={loading || processingFile}
+                 className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-amber-400 file:px-6 file:py-3 file:text-sm file:font-semibold file:text-slate-950 hover:file:bg-amber-300"
+               />
+             </div>
+             <div className="w-full sm:w-auto">
+               <button
+                 onClick={publish}
+                 disabled={loading || processingFile}
+                 className="mt-0 inline-flex items-center justify-center rounded-full bg-amber-400 px-8 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
+               >
+                 {loading ? "Se publică..." : processingFile ? "Se procesează..." : "Publică"}
+               </button>
+             </div>
+           </div>
         </section>
       </div>
     </main>
