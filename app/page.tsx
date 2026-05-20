@@ -576,7 +576,7 @@ export default function HomePage() {
 {posts.map((post, index) => (
   <Link key={post.id} href={`/post/${post.id}`}>
     <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
-      <div className="p-7">
+           <div className="p-4 sm:p-6 lg:p-7">
         <div className="flex items-center justify-between gap-4">
           <div className="flex flex-col items-start gap-1">
             <div className="flex items-center gap-3">
