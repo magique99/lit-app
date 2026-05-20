@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import type { Annotation } from "@/lib/types";
 
 export default function TextAnnotations({ postId }: { postId: string }) {
+  const pathname = usePathname();
+  const isPostPage = pathname?.startsWith("/post/");
+
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [selectedText, setSelectedText] = useState<{ text: string; start: number; end: number } | null>(null);
   const [showPopup, setShowPopup] = useState(false);
