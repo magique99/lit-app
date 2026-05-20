@@ -187,124 +187,127 @@ export type Database = {
           },
         ];
       };
-       profiles: {
-         Row: {
-           avatar_url: string | null;
-           bio: string | null;
-           created_at: string | null;
-           id: string;
-           role: string | null;
-           updated_at: string | null;
-           user_id: string;
-           username: string | null;
-           // New fields as requested
-           first_name: string | null;
-           last_name: string | null;
-           nickname: string | null;
-           gender: string | null;
-           age: number | null;
-           city: string | null;
-           country: string | null;
-           phone: string | null;
-           vehicle: string | null;
-           awards: string | null;
-         };
-         Insert: {
-           avatar_url?: string | null;
-           bio?: string | null;
-           created_at?: string | null;
-           id?: string;
-           role?: string | null;
-           updated_at?: string | null;
-           user_id: string;
-           username?: string | null;
-           // New fields as requested
-           first_name?: string | null;
-           last_name?: string | null;
-           nickname?: string | null;
-           gender?: string | null;
-           age?: number | null;
-           city?: string | null;
-           country?: string | null;
-           phone?: string | null;
-           vehicle?: string | null;
-           awards?: string | null;
-         };
-         Update: {
-           avatar_url?: string | null;
-           bio?: string | null;
-           created_at?: string | null;
-           id?: string;
-           role?: string | null;
-           updated_at?: string | null;
-           user_id?: string;
-           username?: string | null;
-           // New fields as requested
-           first_name?: string | null;
-           last_name?: string | null;
-           nickname?: string | null;
-           gender?: string | null;
-           age?: number | null;
-           city?: string | null;
-           country?: string | null;
-           phone?: string | null;
-           vehicle?: string | null;
-           awards?: string | null;
-         };
-         Relationships: [];
-       };
-       annotations: {
-         Row: {
-           id: string;
-           post_id: string;
-           user_id: string;
-           content_type: string;
-           content: string;
-           start_offset: number;
-           end_offset: number;
-           created_at: string;
-           updated_at: string;
-         };
-         Insert: {
-           id?: string;
-           post_id: string;
-           user_id: string;
-           content_type: string;
-           content: string;
-           start_offset: number;
-           end_offset: number;
-           created_at?: string;
-           updated_at?: string;
-         };
-         Update: {
-           id?: string;
-           post_id?: string;
-           user_id?: string;
-           content_type?: string;
-           content?: string;
-           start_offset?: number;
-           end_offset?: number;
-           created_at?: string;
-           updated_at?: string;
-         };
-         Relationships: [
-           {
-             foreignKeyName: "annotations_post_id_fkey";
-             columns: ["post_id"];
-             isOneToOne: false;
-             referencedRelation: "posts";
-             referencedColumns: ["id"];
-           },
-           {
-             foreignKeyName: "annotations_user_id_fkey";
-             columns: ["user_id"];
-             isOneToOne: false;
-             referencedRelation: "profiles";
-             referencedColumns: ["user_id"];
-           },
-         ];
-       };
-     };
-   };
- };
+      profiles: {
+        Row: {
+          avatar_url: string | null;
+          bio: string | null;
+          created_at: string | null;
+          id: string;
+          role: string | null;
+          updated_at: string | null;
+          user_id: string;
+          username: string | null;
+          // New fields as requested
+          first_name: string | null;
+          last_name: string | null;
+          nickname: string | null;
+          gender: string | null;
+          age: number | null;
+          city: string | null;
+          country: string | null;
+          phone: string | null;
+          vehicle: string | null;
+          awards: string | null;
+        };
+        Insert: {
+          avatar_url?: string | null;
+          bio?: string | null;
+          created_at?: string | null;
+          id?: string;
+          role?: string | null;
+          updated_at?: string | null;
+          user_id: string;
+          username?: string | null;
+          // New fields as requested
+          first_name?: string | null;
+          last_name?: string | null;
+          nickname?: string | null;
+          gender?: string | null;
+          age?: number | null;
+          city?: string | null;
+          country?: string | null;
+          phone?: string | null;
+          vehicle?: string | null;
+          awards?: string | null;
+        };
+        Update: {
+          avatar_url?: string | null;
+          bio?: string | null;
+          created_at?: string | null;
+          id?: string;
+          role?: string | null;
+          updated_at?: string | null;
+          user_id?: string;
+          username?: string | null;
+          // New fields as requested
+          first_name?: string | null;
+          last_name?: string | null;
+          nickname?: string | null;
+          gender?: string | null;
+          age?: number | null;
+          city?: string | null;
+          country?: string | null;
+          phone?: string | null;
+          vehicle?: string | null;
+          awards?: string | null;
+        };
+        Relationships: [];
+      };
+      annotations: {
+        Row: {
+          id: string;
+          post_id: string;
+          user_id: string;
+          content_type: string;
+          content: string;
+          start_offset: number;
+          end_offset: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          post_id: string;
+          user_id: string;
+          content_type: string;
+          content: string;
+          start_offset: number;
+          end_offset: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          post_id?: string;
+          user_id?: string;
+          content_type?: string;
+          content?: string;
+          start_offset?: number;
+          end_offset?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "annotations_post_id_fkey";
+            columns: ["post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "annotations_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
 };
