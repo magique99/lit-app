@@ -306,15 +306,6 @@ export default function CreatePost() {
               Acest text a fost generat cu AI
             </label>
 
-            {content && (
-              <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6">
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  Preview
-                </h3>
-                <div className="prose max-w-none text-sm leading-7 text-slate-700" dangerouslySetInnerHTML={{ __html: content }} />
-              </div>
-            )}
-
             <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="w-full sm:w-auto">
                 <input
@@ -335,6 +326,15 @@ export default function CreatePost() {
                 </button>
               </div>
             </div>
+
+            {content && (
+              <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6">
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  Preview
+                </h3>
+                <div className="prose max-w-none text-sm leading-7 text-slate-700" dangerouslySetInnerHTML={{ __html: content }} />
+              </div>
+            )}
         </section>
       </div>
     </main>
