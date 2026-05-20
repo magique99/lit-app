@@ -7,6 +7,7 @@ import {
   getAllUsers,
   updateProfileRole,
 } from "@/lib/postClient";
+import { toProfile } from "@/lib/types";
 import type { Profile, UserRole } from "@/lib/types";
 
 type UserWithProfile = {
