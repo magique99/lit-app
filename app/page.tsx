@@ -138,30 +138,30 @@ export default function HomePage() {
       ),
     );
 
-    let profileMap: Record<
-      string,
-      Pick<Profile, "username" | "avatar_url">
-    > = {};
+     let profileMap: Record<
+       string,
+       Pick<Profile, "username" | "avatar_url">
+     > = {};
 
-    if (userIds.length > 0) {
-      const { data: profilesData, error: profilesError } = await supabase
-        .from("profiles")
-        .select("user_id, username, avatar_url")
-        .in("user_id", userIds);
+     if (userIds.length > 0) {
+       const { data: profilesData, error: profilesError } = await supabase
+         .from("profiles")
+         .select("*")
+         .in("user_id", userIds);
 
-      if (!profilesError && profilesData) {
-        profileMap = profilesData.reduce(
-          (map, profile) => ({
-            ...map,
-            [profile.user_id]: {
-              username: profile.username,
-              avatar_url: profile.avatar_url,
-            },
-          }),
-          {},
-        );
-      }
-    }
+       if (!profilesError && profilesData) {
+         profileMap = profilesData.reduce(
+           (map, profile) => ({
+             ...map,
+             [profile.user_id]: {
+               username: profile.username,
+               avatar_url: profile.avatar_url,
+             },
+           }),
+           {},
+         );
+       }
+     }
 
     const nextPostsWithProfile: PostWithProfile[] = nextPosts.map((post) => ({
       ...post,
