@@ -12,8 +12,12 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   const [newAnnotation, setNewAnnotation] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const lastSelectionKey = useRef<string | null>(null);
   const popupId = useRef(0);
+
+  const showPopupRef = useRef(showPopup);
+  const lastSelectionKeyRef = useRef<string | null>(null);
+
+  showPopupRef.current = showPopup;
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -33,7 +37,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
 
   const addAnnotation = async () => {
     if (!selectedText || !currentUserId || !newAnnotation.trim()) return;
-    
+
     try {
       const { data, error } = await supabase
         .from("annotations")
@@ -47,13 +51,13 @@ export default function TextAnnotations({ postId }: { postId: string }) {
         })
         .select("*")
         .single();
-    
+
       if (error) {
         console.error("INSERT ANNOTATION ERROR:", error);
         setError("Nu am putut salva adnotația.");
         return;
       }
-      
+
       if (data) {
         setAnnotations((prev) => [...prev, data as Annotation]);
       }
@@ -61,90 +65,97 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       console.error("EXCEPTION IN ADD ANNOTATION:", err);
       setError("A apărut o eroare neașteptată.");
     }
-    
+
     setNewAnnotation("");
     setShowPopup(false);
     setSelectedText(null);
-    lastSelectionKey.current = null;
+    lastSelectionKeyRef.current = null;
     window.getSelection()?.removeAllRanges();
   };
 
   useEffect(() => {
     let ignoreNextMouseup = false;
-    
-    const handleMouseUp = (e: MouseEvent) => {
-      // If we just interacted with the popup, skip this mouseup
+
+    function handleMouseUp(e: MouseEvent) {
       if (ignoreNextMouseup) {
         ignoreNextMouseup = false;
         return;
       }
-      
+
       const selection = window.getSelection();
-      if (!selection || !selection.toString().trim()) {
-        setShowPopup(false);
-        return;
-      }
+      if (!selection || !selection.toString().trim()) return;
 
       const range = selection.getRangeAt(0);
-      
-      const article = document.querySelector("article");
-      if (!article) return;
-      
-      const selectionInArticle = article.contains(range.startContainer) || article.contains(range.endContainer);
-      if (!selectionInArticle) {
-        setShowPopup(false);
-        return;
-      }
-      
-      // Create a unique key for this selection to prevent duplicates
+
+      // Target only the paginated content container on the post page
+      const contentContainer = document.querySelector(
+        ".max-w-3xl.mx-auto"
+      ) as HTMLElement | null;
+      if (!contentContainer) return;
+
+      const selectionInContent =
+        contentContainer.contains(range.startContainer) ||
+        contentContainer.contains(range.endContainer);
+      if (!selectionInContent) return;
+
+      // Prevent duplicate popup for the same selection
       const selectionKey = `${range.startContainer.textContent}-${range.startOffset}-${range.endOffset}`;
-      if (lastSelectionKey.current === selectionKey && showPopup) return;
-      lastSelectionKey.current = selectionKey;
-      
+      if (lastSelectionKeyRef.current === selectionKey && showPopupRef.current) return;
+      lastSelectionKeyRef.current = selectionKey;
+
       const rect = range.getBoundingClientRect();
-      
+
       let start = 0;
       const textNodes: Node[] = [];
-      const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, null);
-      
+      const walker = document.createTreeWalker(
+        contentContainer,
+        NodeFilter.SHOW_TEXT,
+        null,
+      );
+
       let node;
-      while (node = walker.nextNode()) {
+      while ((node = walker.nextNode())) {
         textNodes.push(node);
       }
-      
+
       for (const textNode of textNodes) {
         if (textNode === range.startContainer) {
-          const preText = textNodes.slice(0, textNodes.indexOf(textNode)).reduce((acc, n) => acc + (n.textContent || ""), "");
+          const preText = textNodes
+            .slice(0, textNodes.indexOf(textNode))
+            .reduce((acc, n) => acc + (n.textContent || ""), "");
           start = preText.length + range.startOffset;
           break;
         }
       }
-      
+
       const end = start + selection.toString().length;
-      
-      popupId.current += 1;
+
       setSelectedText({ text: selection.toString(), start, end });
       setPopupPos({ x: rect.left + rect.width / 2, y: rect.bottom });
       setShowPopup(true);
-    };
+    }
 
-    const handlePopupMouseDown = () => {
+    function handlePopupMouseDown() {
       ignoreNextMouseup = true;
-    };
+    }
 
-    document.addEventListener("mouseup", handleMouseUp);
-    
-    // Use event delegation to catch popup interactions
-    document.addEventListener("mousedown", (e) => {
-      if (e.target instanceof HTMLElement && e.target.closest('.fixed.z-50')) {
+    function handlePopupInteraction(e: MouseEvent) {
+      if (
+        e.target instanceof HTMLElement &&
+        e.target.closest(".fixed.z-50")
+      ) {
         handlePopupMouseDown();
       }
-    });
-    
+    }
+
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousedown", handlePopupInteraction);
+
     return () => {
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mousedown", handlePopupInteraction);
     };
-  }, [showPopup]);
+  }, [postId]);
 
   return (
     <div className="mt-8">
