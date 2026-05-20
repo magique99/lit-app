@@ -9,7 +9,7 @@ type Props = {
 
 export default function PaginatedContent({
   content,
-  wordsPerPage = 350,
+  wordsPerPage = 200,
 }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
 
