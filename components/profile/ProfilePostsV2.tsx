@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
-import type { Post, Profile } from "@/lib/types";
+import type { Post, Profile, UserRole } from "@/lib/types";
 
 const PAGE_SIZE = 5;
 
@@ -73,7 +73,7 @@ export default function ProfilePostsV2() {
            user_id: uid,
            created_at: profileData.created_at ?? null,
            updated_at: profileData.updated_at ?? null,
-           role: profileData.role ?? null,
+           role: profileData.role as UserRole | null,
            // New fields
            first_name: profileData.first_name ?? null,
            last_name: profileData.last_name ?? null,
