@@ -77,38 +77,115 @@ export default function ProfileHeaderV4() {
           {/* INFO */}
           <div className="flex-1 text-center sm:text-left">
 
-            {!edit ? (
-              <>
-                <h2 className="text-xl sm:text-2xl font-bold">
-                  {profile.username}
-                </h2>
+             {!edit ? (
+               <>
+                 <h2 className="text-xl sm:text-2xl font-bold">
+                   {profile.username}
+                 </h2>
 
-                <p className="text-sm text-gray-600 mt-1">
-                  {profile.bio || "No bio yet"}
-                </p>
+                 <div className="text-sm text-gray-600 mt-1 space-y-1">
+                   {profile.first_name && profile.last_name && (
+                     <>
+                       {profile.first_name} {profile.last_name}
+                       {profile.nickname && (
+                         <span className="text-xs text-gray-500">
+                           ("{profile.nickname}")
+                         </span>
+                       )}
+                     </>
+                   )}
+                   {!profile.first_name && !profile.last_name && profile.nickname && (
+                     <span className="text-xs text-gray-500">
+                       "{profile.nickname}"
+                     </span>
+                   )}
+                   
+                   {profile.gender && (
+                     <span className="text-xs text-gray-500">
+                       {profile.gender === 'masculin' ? 'Masculin' : 
+                        profile.gender === 'feminin' ? 'Feminin' : 'Altul'}
+                     </span>
+                   )}
+                   
+                   {profile.age && (
+                     <span className="text-xs text-gray-500">
+                       {profile.age} ani
+                     </span>
+                   )}
+                   
+                   {profile.city && profile.country && (
+                     <span className="text-xs text-gray-500">
+                       {profile.city}, {profile.country}
+                     </span>
+                   )}
+                   
+                   {!profile.city && profile.country && (
+                     <span className="text-xs text-gray-500">
+                       {profile.country}
+                     </span>
+                   )}
+                   
+                   {profile.city && !profile.country && (
+                     <span className="text-xs text-gray-500">
+                       {profile.city}
+                     </span>
+                   )}
+                   
+                   {profile.phone && (
+                     <span className="text-xs text-gray-500">
+                       {profile.phone}
+                     </span>
+                   )}
+                   
+                   {profile.vehicle && (
+                     <span className="text-xs text-gray-500">
+                       {profile.vehicle}
+                     </span>
+                   )}
+                   
+                   {profile.awards && (
+                     <span className="text-xs text-gray-500">
+                       Premii: {profile.awards}
+                     </span>
+                   )}
+                   
+                   {profile.bio && (
+                     <p className="mt-1">
+                       {profile.bio}
+                     </p>
+                   )}
+                   
+                   {!profile.first_name && !profile.last_name && !profile.nickname && 
+                    !profile.gender && !profile.age && !profile.city && !profile.country && 
+                    !profile.phone && !profile.vehicle && !profile.awards && !profile.bio && (
+                     <span className="text-xs text-gray-500">
+                       No profile information yet
+                     </span>
+                   )}
+                 </div>
 
-                <button
-                  onClick={() => setEdit(true)}
-                  className="
-                    mt-3 sm:mt-4
-                    w-full sm:w-auto
-                    px-4 py-2
-                    rounded-xl border
-                    text-sm
-                    hover:bg-gray-50
-                    transition
-                  "
-                >
-                  Edit profile
-                </button>
-              </>
-            ) : (
-              <ProfileEditorInline
-                profile={profile}
-                onClose={() => setEdit(false)}
-                onSaved={setProfile}
-              />
-            )}
+                 <button
+                   onClick={() => setEdit(true)}
+                   className="
+                     mt-3 sm:mt-4
+                     w-full sm:w-auto
+                     px-4 py-2
+                     rounded-xl border
+                     text-sm
+                     hover:bg-gray-50
+                     transition
+                   "
+                 >
+                   Edit profile
+                 </button>
+               </>
+             ) : (
+               <ProfileEditorInline
+                 profile={profile}
+                 onClose={() => setEdit(false)}
+                 onSaved={setProfile}
+               />
+             )}
 
           </div>
         </div>
@@ -129,9 +206,28 @@ function ProfileEditorInline({
 }) {
   const [username, setUsername] =
     useState(profile.username || "");
-
+  const [firstName, setFirstName] =
+    useState(profile.first_name ?? "");
+  const [lastName, setLastName] =
+    useState(profile.last_name ?? "");
+  const [nickname, setNickname] =
+    useState(profile.nickname ?? "");
   const [bio, setBio] =
     useState(profile.bio || "");
+  const [gender, setGender] =
+    useState(profile.gender ?? "");
+  const [age, setAge] =
+    useState(profile.age ?? 0);
+  const [city, setCity] =
+    useState(profile.city ?? "");
+  const [country, setCountry] =
+    useState(profile.country ?? "");
+  const [phone, setPhone] =
+    useState(profile.phone ?? "");
+  const [vehicle, setVehicle] =
+    useState(profile.vehicle ?? "");
+  const [awards, setAwards] =
+    useState(profile.awards ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -147,7 +243,17 @@ function ProfileEditorInline({
       .from("profiles")
       .update({
         username,
+        first_name: firstName || null,
+        last_name: lastName || null,
+        nickname: nickname || null,
         bio,
+        gender: gender || null,
+        age: age > 0 ? age : null,
+        city: city || null,
+        country: country || null,
+        phone: phone || null,
+        vehicle: vehicle || null,
+        awards: awards || null,
       })
       .eq("id", profile.id);
 
@@ -161,7 +267,17 @@ function ProfileEditorInline({
     onSaved({
       ...profile,
       username,
+      first_name: firstName || null,
+      last_name: lastName || null,
+      nickname: nickname || null,
       bio,
+      gender: gender || null,
+      age: age > 0 ? age : null,
+      city: city || null,
+      country: country || null,
+      phone: phone || null,
+      vehicle: vehicle || null,
+      awards: awards || null,
     });
 
     setSaved(true);
@@ -171,17 +287,125 @@ function ProfileEditorInline({
 
   return (
     <div className="space-y-3 mt-4">
-
-      <input
-        value={username}
-        onChange={(e) =>
-          setUsername(e.target.value)
-        }
-        className="
-          w-full border rounded-xl p-3 text-sm
-        "
-        placeholder="username"
-      />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <input
+          value={username}
+          onChange={(e) =>
+            setUsername(e.target.value)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+          placeholder="username"
+        />
+        <input
+          value={firstName}
+          onChange={(e) =>
+            setFirstName(e.target.value)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+          placeholder="Nume"
+        />
+        <input
+          value={lastName}
+          onChange={(e) =>
+            setLastName(e.target.value)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+          placeholder="Prenume"
+        />
+        <input
+          value={nickname}
+          onChange={(e) =>
+            setNickname(e.target.value)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+          placeholder="Pseudonim"
+        />
+        <select
+          value={gender}
+          onChange={(e) =>
+            setGender(e.target.value)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+        >
+          <option value="">Sex (alegere)</option>
+          <option value="masculin">Masculin</option>
+          <option value="feminin">Feminin</option>
+          <option value="altul">Altul</option>
+        </select>
+        <input
+          type="number"
+          value={age}
+          onChange={(e) =>
+            setAge(parseInt(e.target.value) || 0)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+          placeholder="Varsta"
+          min="0"
+          max="150"
+        />
+        <input
+          value={city}
+          onChange={(e) =>
+            setCity(e.target.value)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+          placeholder="Oras"
+        />
+        <input
+          value={country}
+          onChange={(e) =>
+            setCountry(e.target.value)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+          placeholder="Tara"
+        />
+        <input
+          value={phone}
+          onChange={(e) =>
+            setPhone(e.target.value)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+          placeholder="Telefon"
+        />
+        <input
+          value={vehicle}
+          onChange={(e) =>
+            setVehicle(e.target.value)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+          placeholder="Moto"
+        />
+        <input
+          value={awards}
+          onChange={(e) =>
+            setAwards(e.target.value)
+          }
+          className="
+            w-full border rounded-xl p-3 text-sm
+          "
+          placeholder="Premii"
+        />
+      </div>
 
       <textarea
         value={bio}
@@ -189,9 +413,9 @@ function ProfileEditorInline({
           setBio(e.target.value)
         }
         className="
-          w-full border rounded-xl p-3 text-sm
+          w-full border rounded-xl p-3 text-sm min-h-[100px]
         "
-        placeholder="bio"
+        placeholder="Descriere"
       />
 
       <div className="flex flex-col sm:flex-row gap-2">
