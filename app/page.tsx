@@ -553,12 +553,12 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="mt-16 grid gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <section className="space-y-8">
-            <div className="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
-              <div className="mb-4 text-sm uppercase tracking-[0.22em] text-slate-500">
-                Ultimele postări
-              </div>
+         <div className="mt-12 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+           <section className="space-y-6">
+             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 sm:p-8 shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+               <div className="mb-3 text-xs sm:text-sm uppercase tracking-[0.22em] text-slate-500">
+                 Ultimele postări
+               </div>
 
               {error && (
                 <div className="mb-6 rounded-3xl border border-rose-200/60 bg-rose-50/80 px-5 py-4 text-sm text-rose-700">
@@ -649,11 +649,11 @@ export default function HomePage() {
             </div>
           </section>
 
-          <aside className="space-y-8">
-            <div className="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-600 mb-5">
-                Ultimele comentarii
-              </h2>
+           <aside className="space-y-6">
+             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 sm:p-8 shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+               <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.24em] text-slate-600 mb-4">
+                 Ultimele comentarii
+               </h2>
 
               <div className="space-y-3 py-[10px]">
                 {latestComments.slice(0, 3).map((comment) => (
@@ -679,11 +679,11 @@ export default function HomePage() {
                 Top texte
               </h2>
 
-              <div className="space-y-8">
-                <div>
-                  <div className="mb-4 text-sm uppercase tracking-[0.2em] text-slate-500">
-                    Cele mai votate
-                  </div>
+               <div className="space-y-6">
+                 <div>
+                   <div className="mb-3 text-xs sm:text-xs uppercase tracking-[0.2em] text-slate-500">
+                     Cele mai votate
+                   </div>
 
                   <div className="space-y-3 py-[10px]">
                     {topVotedPosts.length === 0 ? (
@@ -712,10 +712,10 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div>
-                  <div className="mb-4 text-sm uppercase tracking-[0.2em] text-gray-500">
-                    Cele mai vizualizate
-                  </div>
+                 <div>
+                   <div className="mb-3 text-xs sm:text-xs uppercase tracking-[0.2em] text-gray-500">
+                     Cele mai vizualizate
+                   </div>
 
                   <div className="space-y-3 py-[10px]">
                     {topViewedPosts.length === 0 ? (
