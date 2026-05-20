@@ -54,14 +54,14 @@ export default function ProfileHeaderV4() {
   return (
     <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
 
-      {/* COVER (Instagram-like small banner) */}
-      <div className="h-20 sm:h-24 bg-gradient-to-r from-gray-900 to-gray-600" />
+       {/* COVER (Instagram-like small banner) */}
+       <div className="h-20 sm:h-24 bg-gradient-to-r from-gray-900 to-gray-600" />
 
-      {/* CONTENT */}
-      <div className="px-4 sm:px-6 pb-5">
+       {/* CONTENT */}
+       <div className="px-4 sm:px-6 pb-5 pt-4">
 
-        {/* AVATAR + INFO */}
-        <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-10 sm:-mt-12">
+         {/* AVATAR + INFO */}
+         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
 
           {/* AVATAR */}
           <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white bg-gray-200 overflow-hidden shrink-0">
