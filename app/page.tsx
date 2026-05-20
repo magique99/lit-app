@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
-import type { Comment, Post, Profile, Like } from "@/lib/types";
+import type { Comment, Post, Profile, Like, LikeInsert } from "@/lib/types";
 
 type PostWithProfile = Post & {
   profile?: Pick<Profile, "username" | "avatar_url"> | null;
@@ -150,12 +150,13 @@ export default function HomePage() {
          .in("user_id", userIds);
 
        if (!profilesError && profilesData) {
-         profileMap = profilesData.reduce(
+         const typedProfilesData = profilesData as Array<{ user_id: string; username: string; avatar_url: string | null }>;
+         profileMap = typedProfilesData.reduce(
            (map, profile) => ({
              ...map,
-             [profile.user_id as string]: {
-               username: profile.username as string,
-               avatar_url: profile.avatar_url as string | null,
+             [profile.user_id]: {
+               username: profile.username,
+               avatar_url: profile.avatar_url,
              },
            }),
            {},
@@ -407,10 +408,13 @@ export default function HomePage() {
       [postId]: (prev[postId] ?? 0) + 1,
     }));
 
-    const { error } = await supabase.from("likes").insert({
-      post_id: postId,
-      user_id: currentUserId,
-    });
+     const { data, error } = await supabase
+       .from("likes")
+       .insert({
+         post_id: postId,
+         user_id: currentUserId,
+       })
+       .select("*");
 
     if (error) {
       console.error("LIKE ERROR:", error);
