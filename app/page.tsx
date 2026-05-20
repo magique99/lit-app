@@ -80,13 +80,15 @@ export default function HomePage() {
       nextComments[id] = 0;
     }
 
-    for (const like of likesData ?? []) {
-      nextLikes[like.post_id] = (nextLikes[like.post_id] ?? 0) + 1;
-    }
+     for (const like of likesData ?? []) {
+       const postId = (like as { post_id: string }).post_id;
+       nextLikes[postId] = (nextLikes[postId] ?? 0) + 1;
+     }
 
-    for (const comment of commentsData ?? []) {
-      nextComments[comment.post_id] = (nextComments[comment.post_id] ?? 0) + 1;
-    }
+     for (const comment of commentsData ?? []) {
+       const postId = (comment as { post_id: string }).post_id;
+       nextComments[postId] = (nextComments[postId] ?? 0) + 1;
+     }
 
     setLikeCounts((prev) => ({ ...prev, ...nextLikes }));
     setCommentCounts((prev) => ({ ...prev, ...nextComments }));
