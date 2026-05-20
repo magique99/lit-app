@@ -607,14 +607,14 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <p
-          className={`mt-4 text-base leading-8 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'}`}
-          style={{ whiteSpace: "pre-line" }}
-        >
-          {htmlToPlainTextWithNewlines(post.content)}
-        </p>
+         <p
+           className={`mt-3 text-sm leading-6 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'} max-w-xs sm:max-w-sm lg:max-w-md`}
+           style={{ whiteSpace: "pre-line" }}
+         >
+           {htmlToPlainTextWithNewlines(post.content)}
+         </p>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+         <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-500 sm:mt-5">
           <button
             type="button"
             onClick={(e) => {
