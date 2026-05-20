@@ -146,7 +146,7 @@ export default function HomePage() {
      if (userIds.length > 0) {
        const { data: profilesData, error: profilesError } = await supabase
          .from("profiles")
-         .select("*")
+         .select("user_id, username, avatar_url")
          .in("user_id", userIds);
 
        if (!profilesError && profilesData) {
