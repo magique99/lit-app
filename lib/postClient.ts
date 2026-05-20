@@ -73,6 +73,29 @@ export async function getAllUsers(): Promise<Profile[]> {
   return (data ?? []).map(toProfile).filter((p): p is Profile => p !== null);
 }
 
+export async function deleteAllPostsAndComments(): Promise<boolean> {
+  const deletionSteps = [
+    { table: "notifications", label: "notifications" },
+    { table: "likes", label: "likes" },
+    { table: "comments", label: "comments" },
+    { table: "posts", label: "posts" },
+  ];
+
+  for (const step of deletionSteps) {
+    const { error } = await supabase
+      .from(step.table)
+      .delete()
+      .not("id", "is", null);
+
+    if (error) {
+      console.error(`deleteAllPostsAndComments error deleting ${step.label}:`, error);
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export async function getPostById(id: string): Promise<Post | null> {
   const { data, error } = await supabase
     .from("posts")
