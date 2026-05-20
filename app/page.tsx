@@ -16,7 +16,6 @@ type PostWithProfile = Post & {
   uses_ai?: boolean | null;
 };
 
-
 const PAGE_SIZE = 5;
 
 const TEXT_TYPES = ["Toate", "Proză", "Poezie", "Teatru", "Jurnal"];
