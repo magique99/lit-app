@@ -151,7 +151,7 @@ export default async function PostPage({ params }: Props) {
         </article>
 
         {/* ANNOTATIONS */}
-        <TextAnnotations postId={id} />
+        <TextAnnotations postId={id} postContent={post.content} />
 
         {/* COMMENTS */}
         <PostClient postId={id} />

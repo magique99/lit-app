@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import type { Annotation } from "@/lib/types";
 
-export default function TextAnnotations({ postId }: { postId: string }) {
+export default function TextAnnotations({ postId, postContent }: { postId: string; postContent?: string }) {
   const pathname = usePathname();
   const isPostPage = pathname?.startsWith("/post/");
 
@@ -190,12 +190,18 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       {annotations.length > 0 && (
         <div className="mt-6 space-y-3">
           <h3 className="text-sm font-semibold text-slate-700">Adnotări ({annotations.length})</h3>
-          {annotations.map((a) => (
-            <div key={a.id} className="border-l-2 border-amber-400 pl-3">
-              <p className="text-xs text-slate-500">Offset: {a.start_offset}-{a.end_offset}</p>
-              <p className="text-sm text-slate-700">{a.content}</p>
-            </div>
-          ))}
+          {annotations.map((a) => {
+            const previewStart = Math.max(0, a.start_offset - 30);
+            const previewEnd = Math.min(a.end_offset + 30, a.start_offset + a.end_offset - a.start_offset + 100);
+            const previewText = postContent?.substring(previewStart, previewEnd) || "N/A";
+            return (
+              <div key={a.id} className="border-l-2 border-amber-400 pl-3">
+                <p className="text-xs text-slate-500">Fragment: "...{previewText}..."</p>
+                <p className="text-xs text-slate-400">Offset: {a.start_offset}-{a.end_offset}</p>
+                <p className="text-sm text-slate-700">{a.content}</p>
+              </div>
+            );
+          })}
         </div>
       )}
 
