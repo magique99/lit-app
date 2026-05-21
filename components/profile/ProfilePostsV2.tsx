@@ -220,26 +220,26 @@ export default function ProfilePostsV2() {
                    <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
                      <div className="p-7">
                        <div className="flex items-center justify-between gap-4">
-                         <div className="flex flex-col items-start gap-1">
-                           <div className="flex items-center gap-3">
-                             <img
-                               src={profile?.avatar_url ?? "/user.jpg"}
-                               alt={profile?.username ?? "Author avatar"}
-                               className="h-10 w-10 rounded-full object-cover"
-                             />
-                             <div>
-                               <p className="text-sm font-medium text-slate-900">
-                                 @{profile?.username ?? "anonim"}
-                               </p>
-                               <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
-                                 Autor
-                               </p>
-                             </div>
-                           </div>
-
-<h2 className="text-xl font-semibold leading-none text-slate-950">
-                          {post.title}
-                        </h2>
+                        <div className="flex flex-col items-start gap-1">
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={profile?.avatar_url ?? "/user.jpg"}
+                                  alt={profile?.username ?? "Author avatar"}
+                                  className="h-10 w-10 rounded-full object-cover"
+                                />
+                                <div>
+                                  <p className="text-sm font-medium text-slate-900">
+                                    @{profile?.username ?? "anonim"}
+                                  </p>
+                                  <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                                    Autor
+                                  </p>
+                                </div>
+                              </div>
+                              <h2 className="text-xl font-semibold leading-none text-slate-950">
+                                {post.title}
+                              </h2>
+                            </div>
                       </div>
 
                       <p
