@@ -95,9 +95,26 @@ export default function NotificationsDropdown({
           table: "notifications",
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => {
+        async (payload) => {
+          const newNotification = payload.new as NotificationRow;
+          
+          let actorData = null;
+          if (newNotification.actor_id) {
+            const { data: actorResult } = await supabase
+              .from("profiles")
+              .select("username, avatar_url")
+              .eq("user_id", newNotification.actor_id)
+              .single();
+            if (actorResult) {
+              actorData = {
+                username: actorResult.username,
+                avatar_url: actorResult.avatar_url,
+              };
+            }
+          }
+
           setNotifications((prev) => [
-            payload.new as Notification,
+            { ...newNotification, actor: actorData },
             ...prev,
           ]);
         }
