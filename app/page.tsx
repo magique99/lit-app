@@ -517,9 +517,6 @@ export default function HomePage() {
         <div className="mt-8 rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
           <div className="flex flex-col gap-6">
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Tip text
-              </p>
               <div className="flex flex-wrap gap-2">
                 {TEXT_TYPES.map((t) => {
                   const isActive = (filterType || "Toate") === t;
@@ -545,9 +542,6 @@ export default function HomePage() {
               </div>
             </div>
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Gen
-              </p>
               <div className="flex flex-wrap gap-2">
                 {GENRES.map((g) => {
                   const isActive = (filterGenre || "Toate") === g;
