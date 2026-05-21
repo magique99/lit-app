@@ -243,14 +243,15 @@ function ProfileEditorInline({
      setSaved(false);
 
      let finalAvatarUrl = profile.avatar_url;
+     let avatarError = null;
+     
      if (selectedFile && profile.id) {
        try {
          finalAvatarUrl = await uploadAvatar(selectedFile, profile.id);
        } catch (uploadError) {
          console.error("AVATAR UPLOAD ERROR:", uploadError);
-         // Don't fail the entire save if avatar upload fails - just continue with existing avatar
-         setError("Nu am putut încărca avatarul, dar celelalte modificări au fost salvate.");
-         // Continue with saving other fields
+         // Store the avatar error to show later, but continue with existing avatar
+         avatarError = "Nu am putut încărca avatarul. Asemenea modificări vor fi salvate.";
        }
      }
 
@@ -299,7 +300,17 @@ function ProfileEditorInline({
 
      setSaved(true);
      setSaving(false);
-     onClose();
+     // Show avatar error if there was one, but don't close yet
+     if (avatarError) {
+       setError(avatarError);
+       // Reset error after 3 seconds so user can see it before closing
+       setTimeout(() => {
+         setError(null);
+         onClose();
+       }, 3000);
+     } else {
+       onClose();
+     }
    }
 
   return (
