@@ -56,12 +56,15 @@ export default function LikeButton({ postId }: { postId: string }) {
       setCount((c) => c + 1);
 
       if (postData && postData.user_id && postData.user_id !== userId) {
-        await supabase.from("notifications").insert({
+        const { error: notifError } = await supabase.from("notifications").insert({
           user_id: postData.user_id,
           actor_id: userId,
           post_id: postId,
           type: "like_post",
         });
+        if (notifError) {
+          console.error("NOTIFICATION ERROR:", notifError);
+        }
       }
     }
     setLiked(!liked);

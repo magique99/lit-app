@@ -217,13 +217,16 @@ export default function PostClient({ postId }: { postId: string }) {
       .single();
 
     if (postData && postData.user_id && postData.user_id !== currentUserId) {
-      await supabase.from("notifications").insert({
+      const { error: notifError } = await supabase.from("notifications").insert({
         user_id: postData.user_id,
         actor_id: currentUserId,
         post_id: postId,
         comment_id: data.id,
         type: "comment",
       });
+      if (notifError) {
+        console.error("NOTIFICATION ERROR:", notifError);
+      }
     }
   }
 
