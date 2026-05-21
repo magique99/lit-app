@@ -136,7 +136,7 @@ export default function HomePage() {
       .select("*")
       .order("created_at", { ascending: false })
       .range(from, to) as any;
-
+console.log("QUERY", query)
     if (filterType && filterType !== "Toate") {
       query = query.eq("text_type", filterType);
     }
