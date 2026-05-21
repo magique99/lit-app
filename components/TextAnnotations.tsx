@@ -9,6 +9,8 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   const pathname = usePathname();
   const isPostPage = pathname?.startsWith("/post/");
 
+  console.log("TextAnnotations - postId:", postId, "isPostPage:", isPostPage, "pathname:", pathname);
+
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [selectedText, setSelectedText] = useState<{ text: string; start: number; end: number } | null>(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -22,12 +24,13 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   showPopupRef.current = showPopup;
 
   const loadAnnotations = useCallback(async () => {
+    console.log("LOAD ANNOTATIONS - postId:", postId);
     const { data, error } = await supabase
       .from("annotations")
       .select("*")
       .eq("post_id", postId);
 
-    console.log("LOAD ANNOTATIONS - error:", error, "data:", data?.length ?? 0);
+    console.log("LOAD ANNOTATIONS - error:", error, "data count:", data?.length ?? 0, "data:", data);
     if (error) console.error("LOAD ANNOTATIONS ERROR:", error);
     setAnnotations((data as Annotation[]) || []);
   }, [postId]);
