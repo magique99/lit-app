@@ -285,7 +285,7 @@ if (error) {
         return;
       }
 
-      onSaved({
+onSaved({
         ...profile,
         username,
         first_name: firstName || null,
