@@ -247,11 +247,15 @@ function ProfileEditorInline({
      
      if (selectedFile && profile.id) {
        try {
-         finalAvatarUrl = await uploadAvatar(selectedFile, profile.id);
+         const uploadedUrl = await uploadAvatar(selectedFile, profile.id);
+         if (uploadedUrl) {
+           finalAvatarUrl = uploadedUrl;
+         } else {
+           avatarError = "Nu am putut încărca avatarul. Verificați că bucket-ul de stocare este configurat corect.";
+         }
        } catch (uploadError) {
          console.error("AVATAR UPLOAD ERROR:", uploadError);
-         // Store the avatar error to show later, but continue with existing avatar
-         avatarError = "Nu am putut încărca avatarul. Asemenea modificări vor fi salvate.";
+         avatarError = "Eroare la încărcarea avatarului. Verificați conexiunea și încercă din nou.";
        }
      }
 

@@ -1,8 +1,9 @@
 import { supabase } from "@/lib/supabaseClient";
 
-export async function uploadAvatar(file: File, userId: string) {
+export async function uploadAvatar(file: File, userId: string): Promise<string | null> {
   const path = `${userId}/avatar-${Date.now()}.${file.name.split(".").pop()}`;
 
+  // Try avatars bucket first
   try {
     const { error } = await supabase.storage
       .from("avatars")
@@ -11,18 +12,17 @@ export async function uploadAvatar(file: File, userId: string) {
         cacheControl: "3600",
       });
 
-    if (error) throw error;
-
-    const { data } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(path);
-
-    return data.publicUrl;
-  } catch (error: any) {
-    // If avatars bucket doesn't exist, fall back to documents bucket
+    if (!error) {
+      const { data } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(path);
+      return data.publicUrl;
+    }
+    
+    // If bucket not found error, try documents bucket
     if (error?.message?.includes('Bucket not found')) {
       try {
-        const { error: uploadError } = await supabase.storage
+        const { error: docError } = await supabase.storage
           .from("documents")
           .upload(path, file, {
             upsert: true,
@@ -30,20 +30,39 @@ export async function uploadAvatar(file: File, userId: string) {
             contentType: file.type,
           });
 
-        if (uploadError) throw uploadError;
+        if (!docError) {
+          const { data } = supabase.storage
+            .from("documents")
+            .getPublicUrl(path);
+          return data.publicUrl;
+        }
+      } catch (docError) {
+        // Documents bucket also failed, continue below
+      }
+    }
+  } catch (avatarError) {
+    // Avatars bucket had some other error, try documents
+    try {
+      const { error: docError } = await supabase.storage
+        .from("documents")
+        .upload(path, file, {
+          upsert: true,
+          cacheControl: "3600",
+          contentType: file.type,
+        });
 
+      if (!docError) {
         const { data } = supabase.storage
           .from("documents")
           .getPublicUrl(path);
-
         return data.publicUrl;
-      } catch (fallbackError) {
-        console.error("AVATAR UPLOAD FALLBACK ERROR:", fallbackError);
-        throw new Error("Nu am putut încărca avatarul. Bucket-ul de stocare nu este configurat corect.");
       }
-    } else {
-      console.error("AVATAR UPLOAD ERROR:", error);
-      throw error;
+    } catch (docError) {
+      // Both buckets failed, continue below
     }
   }
+
+  // If we get here, both upload attempts failed
+  // Return null to indicate we couldn't upload the avatar
+  return null;
 }
