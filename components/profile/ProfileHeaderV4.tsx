@@ -278,14 +278,14 @@ function ProfileEditorInline({
         })
         .eq("user_id", profile.user_id);
 
-if (error) {
+      if (error) {
         console.error("SAVE PROFILE ERROR:", error);
         setError("Nu am putut salva profilul.");
         setSaving(false);
         return;
       }
 
-onSaved({
+      onSaved({
         ...profile,
         username,
         first_name: firstName || null,
@@ -303,9 +303,6 @@ onSaved({
       });
       setSaving(false);
       setSaved(true);
-    }
-
-    save();
   }
 
   return (
