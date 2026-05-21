@@ -24,19 +24,24 @@ export default function Navbar() {
   const { results, search } = useSearch();
 
   useEffect(() => {
+    let ignore = false;
+    let profileChannel: any = null;
+    
     async function loadUser() {
       const { data } = await supabase.auth.getUser();
 
       setUser(data.user ?? null);
 
-      if (data.user) {
+      if (data.user && !ignore) {
         const { data: profileData } = await supabase
           .from("profiles")
           .select("*")
           .eq("user_id", data.user.id)
           .maybeSingle();
 
-        setProfile(toProfile(profileData));
+        if (!ignore) {
+          setProfile(toProfile(profileData));
+        }
       }
     }
 
@@ -46,10 +51,63 @@ export default function Navbar() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", session.user.id)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (!ignore) {
+              setProfile(toProfile(data));
+            }
+          });
+      } else {
+        if (!ignore) {
+          setProfile(null);
+        }
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      ignore = true;
+      subscription.unsubscribe();
+      if (profileChannel) {
+        supabase.removeChannel(profileChannel);
+      }
+    };
   }, []);
+
+  // Listen for profile updates in real-time
+  const currentUserId = user?.id;
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    const profileChannel = supabase
+      .channel(`profile-${currentUserId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "profiles",
+          filter: `user_id=eq.${currentUserId}`,
+        },
+        (payload) => {
+          const updated = payload.new as any;
+          setProfile((prev) => ({
+            ...prev,
+            username: updated.username ?? prev?.username,
+            avatar_url: updated.avatar_url ?? prev?.avatar_url,
+          }) as Profile);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(profileChannel);
+    };
+  }, [currentUserId]);
 
   useEffect(() => {
     function handleClickOutside(event: Event) {
