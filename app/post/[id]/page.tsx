@@ -22,7 +22,7 @@ type PostPageData = {
 };
 
 type ProfileData = {
-  username: string;
+  username: string | null;
   avatar_url: string | null;
 };
 
@@ -41,17 +41,21 @@ export default async function PostPage({ params }: Props) {
     notFound();
   }
 
+  // Dacă postul nu are user_id, trebuie să notFound() deoarece nu putem avea un post fără autor
+  if (!post.user_id) {
+    notFound();
+    return; // Adăugat pentru a evita executarea ulterioară
+  }
+
   let profile: ProfileData | null = null;
-  if (post.user_id) {
-    const { data: profileData, error: profileError } = await supabase
-      .from("profiles")
-      .select("username, avatar_url")
-      .eq("user_id", post.user_id)
-      .maybeSingle<ProfileData>();
-    
-    if (!profileError && profileData) {
-      profile = profileData;
-    }
+  const { data: profileData, error: profileError } = await supabase
+    .from("profiles")
+    .select("username, avatar_url")
+    .eq("user_id", post.user_id)
+    .maybeSingle<ProfileData>();
+   
+  if (!profileError && profileData) {
+    profile = profileData;
   }
 
   const authorName = profile?.username ?? "anonim";
