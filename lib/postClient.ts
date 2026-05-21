@@ -15,6 +15,20 @@ export type CreatePostInput = {
 };
 
 export async function createPost(input: CreatePostInput): Promise<Post> {
+  // Ensure profile exists for the user
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("user_id")
+    .eq("user_id", input.user_id)
+    .single();
+
+  if (!existingProfile) {
+    await supabase.from("profiles").insert({
+      user_id: input.user_id,
+      username: `user_${input.user_id.slice(0, 8)}`,
+    });
+  }
+
   const { data, error } = await supabase
     .from("posts")
     .insert({
