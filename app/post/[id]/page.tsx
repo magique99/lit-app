@@ -24,6 +24,9 @@ type PostPageData = {
 type ProfileData = {
   username: string | null;
   avatar_url: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  nickname: string | null;
 };
 
 export default async function PostPage({ params }: Props) {
