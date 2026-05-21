@@ -43,12 +43,15 @@ export default async function PostPage({ params }: Props) {
 
   let profile: ProfileData | null = null;
   if (post.user_id) {
-    const { data: profileData } = await supabase
+    const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("username, avatar_url")
       .eq("user_id", post.user_id)
-      .single<ProfileData>();
-    profile = profileData;
+      .maybeSingle<ProfileData>();
+    
+    if (!profileError && profileData) {
+      profile = profileData;
+    }
   }
 
   const authorName = profile?.username ?? "anonim";
@@ -61,6 +64,14 @@ export default async function PostPage({ params }: Props) {
       year: "numeric",
     }
   );
+
+  // Fetch comment count
+  const { data: commentsData, error: commentsError } = await supabase
+    .from("comments")
+    .select("id", { count: "exact" })
+    .eq("post_id", id);
+
+  const commentCount = commentsError ? 0 : (commentsData?.length ?? 0);
 
   return (
     <main className="relative min-h-screen bg-[#f7efe4] text-slate-950">
@@ -83,33 +94,36 @@ export default async function PostPage({ params }: Props) {
               </p>
             </div>
 
-{/* AUTHOR BOX (simplificat) */}
-<div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-               <div className="flex items-center gap-3">
-                 <div className="relative h-12 w-12 overflow-hidden rounded-full">
-                   <Image
-                     src={profile?.avatar_url ?? "/user.jpg"}
-                     alt={authorName}
-                     fill
-                     sizes="48px"
-                     className="object-cover"
-                   />
-                 </div>
-                 <div>
-                   <p className="text-sm font-semibold">@{authorName}</p>
-                   <p className="text-xs text-slate-500">
-                     Publicat {publishedAt}
-                   </p>
-                 </div>
-               </div>
-                <div className="mt-4">
-                  <LikeButton postId={id} />
+            {/* AUTHOR BOX (simplificat) */}
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="relative h-12 w-12 overflow-hidden rounded-full">
+                  <Image
+                    src={profile?.avatar_url ?? "/user.jpg"}
+                    alt={authorName}
+                    fill
+                    sizes="48px"
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">@{authorName}</p>
+                  <p className="text-xs text-slate-500">
+                    Publicat {publishedAt}
+                  </p>
                 </div>
               </div>
+               <div className="mt-4 flex flex-col items-center">
+                 <div className="flex items-center gap-4 text-sm text-slate-600">
+                   <LikeButton postId={id} />
+                   <span>💬 {commentCount}</span>
+                 </div>
+               </div>
+            </div>
           </div>
         </section>
 
-{/* CONTENT */}
+        {/* CONTENT */}
         <article className="mt-10 overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-10 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
           <PaginatedContent content={post.content} wordsPerPage={350} />
         </article>
