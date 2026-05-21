@@ -61,22 +61,23 @@ export default function ProfileHeaderV4() {
        {/* CONTENT */}
        <div className="px-4 sm:px-6 pb-5 pt-4">
 
-         {/* AVATAR + INFO */}
-         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-
-          {/* AVATAR */}
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white bg-gray-200 overflow-hidden shrink-0">
-            <Image
-              src={profile.avatar_url ?? "/user.jpg"}
-              alt={profile.username || "Avatar"}
-              fill
-              sizes="(min-width: 640px) 96px, 80px"
-              className="object-cover"
-            />
-          </div>
-
-          {/* INFO */}
-          <div className="flex-1 text-center sm:text-left">
+          {/* AVATAR + INFO */}
+          <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+            {!edit ? (
+              {/* AVATAR (only show in view mode) */}
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white bg-gray-200 overflow-hidden shrink-0">
+                <Image
+                  src={profile.avatar_url ?? "/user.jpg"}
+                  alt={profile.username || "Avatar"}
+                  fill
+                  sizes="(min-width: 640px) 96px, 80px"
+                  className="object-cover"
+                />
+              </div>
+            ) : null}
+            
+            {/* INFO */}
+            <div className="flex-1 text-center sm:text-left">
 
         {!edit ? (
             <>
