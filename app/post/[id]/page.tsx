@@ -50,12 +50,26 @@ export default async function PostPage({ params }: Props) {
   let profile: ProfileData | null = null;
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
-    .select("username, avatar_url")
+    .select("username, avatar_url, first_name, last_name, nickname")
     .eq("user_id", post.user_id)
     .maybeSingle<ProfileData>();
    
   if (!profileError && profileData) {
-    profile = profileData;
+    // Determine display name: username > first_name + last_name > nickname > "anonim"
+    let displayName = null;
+    if (profileData.username && profileData.username.trim() !== '') {
+      displayName = profileData.username;
+    } else if ((profileData.first_name && profileData.first_name.trim() !== '') || 
+               (profileData.last_name && profileData.last_name.trim() !== '')) {
+      displayName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim();
+    } else if (profileData.nickname && profileData.nickname.trim() !== '') {
+      displayName = profileData.nickname;
+    }
+    
+    profile = {
+      username: displayName ?? null,
+      avatar_url: profileData.avatar_url ?? null
+    };
   }
 
   const authorName = profile?.username ?? "anonim";
