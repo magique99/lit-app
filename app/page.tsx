@@ -34,7 +34,7 @@ export default function HomePage() {
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>(
     {},
-  );
+  );console.log("AAA", posts)
   const [latestComments, setLatestComments] = useState<Comment[]>([]);
   const [topVotedPosts, setTopVotedPosts] = useState<PostWithProfile[]>([]);
   const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
