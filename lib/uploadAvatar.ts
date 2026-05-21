@@ -62,7 +62,6 @@ export async function uploadAvatar(file: File, userId: string): Promise<string |
     }
   }
 
-  // If we get here, both upload attempts failed
-  // Return null to indicate we couldn't upload the avatar
+  // If storage fails, return null - caller should handle with base64 fallback
   return null;
 }

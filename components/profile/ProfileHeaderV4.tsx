@@ -235,27 +235,46 @@ function ProfileEditorInline({
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-   async function save() {
-     if (!profile.user_id) return;
+async function save() {
+      if (!profile.user_id) return;
 
-     setSaving(true);
-     setError(null);
-     setSaved(false);
+      setSaving(true);
+      setError(null);
+      setSaved(false);
 
-     let finalAvatarUrl = profile.avatar_url;
-     let avatarError = null;
+      let finalAvatarUrl = profile.avatar_url;
+      let avatarError = null;
 
-     if (selectedFile && profile.user_id) {
+      if (selectedFile && profile.user_id) {
         try {
           const uploadedUrl = await uploadAvatar(selectedFile, profile.user_id);
           if (uploadedUrl) {
             finalAvatarUrl = uploadedUrl;
           } else {
-            avatarError = "Nu am putut încărca avatarul. Verificați că bucket-ul de stocare este configurat corect.";
+            // Fallback to base64 if storage upload fails
+            const reader = new FileReader();
+            const base64Promise = new Promise<string>((resolve, reject) => {
+              reader.onload = () => resolve(reader.result as string);
+              reader.onerror = reject;
+              reader.readAsDataURL(selectedFile);
+            });
+            finalAvatarUrl = await base64Promise;
           }
         } catch (uploadError) {
           console.error("AVATAR UPLOAD ERROR:", uploadError);
-          avatarError = "Eroare la încărcarea avatarului. Verificați conexiunea și încercă din nou.";
+          // Try base64 fallback on any error
+          try {
+            const reader = new FileReader();
+            const base64Promise = new Promise<string>((resolve, reject) => {
+              reader.onload = () => resolve(reader.result as string);
+              reader.onerror = reject;
+              reader.readAsDataURL(selectedFile);
+            });
+            finalAvatarUrl = await base64Promise;
+          } catch (fallbackError) {
+            console.error("BASE64 FALLBACK ERROR:", fallbackError);
+            avatarError = "Nu am putut încărca avatarul. Verificați conexiunea și încercă din nou.";
+          }
         }
       }
 
