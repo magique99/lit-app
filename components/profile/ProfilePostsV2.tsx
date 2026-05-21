@@ -283,23 +283,23 @@ export default function ProfilePostsV2() {
 
                      <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
                        {/* Like button placeholder - would need actual like implementation */}
-                       <button
-                         type="button"
-                         onClick={(e) => {
-                           e.preventDefault();
-                           e.stopPropagation();
-                           // Handle like functionality would go here
-                         }}
-                         disabled={true} // Simplified for now
-                         className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
-                       >
-                         ❤️
-                         <span>0</span>
-                       </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            // Handle like functionality would go here
+                          }}
+                          disabled={true} // Simplified for now
+                          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          ❤️
+                          <span>0</span>
+                        </button>
 
-<span className="inline-flex items-center gap-2">
-                          💬<span>0</span>
-                        </span>
+                        <span className="inline-flex items-center gap-2">
+                            <span>💬</span><span>0</span>
+                          </span>
                       </div>
                   </article>
                 </Link>
