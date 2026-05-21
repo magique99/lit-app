@@ -237,11 +237,22 @@ export default function ProfilePostsV2() {
                              </div>
                            </div>
 
-                          <h2 className="text-xl font-semibold leading-none text-slate-950">
-                            {post.title}
-                          </h2>
-                        </div>
+<h2 className="text-xl font-semibold leading-none text-slate-950">
+                          {post.title}
+                        </h2>
+                      </div>
 
+                      <p
+                        className={`mt-4 text-base leading-8 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'}`}
+                        style={{ whiteSpace: "pre-line" }}
+                      >
+                        {(() => {
+                          const plainText = htmlToPlainTextWithNewlines(post.content);
+                          return plainText.trim() === "" ? "Fără text" : plainText;
+                        })()}
+                      </p>
+
+                      <div className="mt-6 flex flex-wrap items-center gap-2">
                         <Link
                           href={`/post/${post.id}`}
                           className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
@@ -249,38 +260,26 @@ export default function ProfilePostsV2() {
                           Citește acum
                         </Link>
 
-                        {/* Edit and Delete buttons (only visible in profile) */}
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <Link
-                            href={`/post/${post.id}/edit`}
-                            className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
-                          >
-                            Modifica Text
-                          </Link>
-                          <button
-                            onClick={async (e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (window.confirm('Sigur vrei să ștergi acest post?')) {
-                                await deletePost(post.id);
-                              }
-                            }}
-                            className="inline-flex items-center justify-center rounded-full bg-red-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-red-300"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                       </div>
+                        <Link
+                          href={`/post/${post.id}/edit`}
+                          className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
+                        >
+                          Modifica Text
+                        </Link>
 
-                    <p
-                      className={`mt-4 text-base leading-8 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'}`}
-                      style={{ whiteSpace: "pre-line" }}
-                    >
-                      {(() => {
-                        const plainText = htmlToPlainTextWithNewlines(post.content);
-                        return plainText.trim() === "" ? "Fără text" : plainText;
-                      })()}
-                    </p>
+                        <button
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (window.confirm('Sigur vrei să ștergi acest post?')) {
+                              await deletePost(post.id);
+                            }
+                          }}
+                          className="inline-flex items-center justify-center rounded-full bg-red-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-red-300"
+                        >
+                          Delete
+                        </button>
+                      </div>
 
                      <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500">
                        {/* Like button placeholder - would need actual like implementation */}
@@ -298,18 +297,17 @@ export default function ProfilePostsV2() {
                          <span>0</span>
                        </button>
 
-                       <span className="inline-flex items-center gap-2">
-                         💬<span>0</span>
-                       </span>
-                     </div>
-                     </div>
-                 </article>
-               </Link>
-               )}
-             </>
-           ))}
-         </div>
-       )}
-     </div>
-   );
+<span className="inline-flex items-center gap-2">
+                          💬<span>0</span>
+                        </span>
+                      </div>
+                  </article>
+                </Link>
+                )}
+              </>
+            ))}
+          </div>
+        )}
+      </div>
+    );
 }

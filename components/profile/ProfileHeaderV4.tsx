@@ -81,86 +81,18 @@ export default function ProfileHeaderV4() {
         {!edit ? (
             <>
                 <h2 className="text-xl sm:text-2xl font-bold">
-                    {profile.username}
+                    @{profile.username}
                 </h2>
 
-                <div className="text-sm text-gray-600 mt-1 space-y-1">
+                <div className="text-sm text-slate-600 mt-1">
                     {profile.first_name && profile.last_name && (
-                        <>
+                        <span className="text-slate-700">
                             {profile.first_name} {profile.last_name}
-                            {profile.nickname && (
-                                <span className="text-xs text-gray-500">
-                                    ("{profile.nickname}")
-                                </span>
-                            )}
-                        </>
+                        </span>
                     )}
                     {!profile.first_name && !profile.last_name && profile.nickname && (
-                        <span className="text-xs text-gray-500">
+                        <span className="text-slate-700">
                             "{profile.nickname}"
-                        </span>
-                    )}
-                    
-                    {profile.gender && (
-                        <span className="text-xs text-gray-500">
-                            {profile.gender === 'masculin' ? 'Masculin' : 
-                             profile.gender === 'feminin' ? 'Feminin' : 'Altul'}
-                        </span>
-                    )}
-                    
-                    {profile.age && (
-                        <span className="text-xs text-gray-500">
-                            {profile.age} ani
-                        </span>
-                    )}
-                    
-                    {profile.city && profile.country && (
-                        <span className="text-xs text-gray-500">
-                            {profile.city}, {profile.country}
-                        </span>
-                    )}
-                    
-                    {!profile.city && profile.country && (
-                        <span className="text-xs text-gray-500">
-                            {profile.country}
-                        </span>
-                    )}
-                    
-                    {profile.city && !profile.country && (
-                        <span className="text-xs text-gray-500">
-                            {profile.city}
-                        </span>
-                    )}
-                    
-                    {profile.phone && (
-                        <span className="text-xs text-gray-500">
-                            {profile.phone}
-                        </span>
-                    )}
-                    
-                    {profile.vehicle && (
-                        <span className="text-xs text-gray-500">
-                            {profile.vehicle}
-                        </span>
-                    )}
-                    
-                    {profile.awards && (
-                        <span className="text-xs text-gray-500">
-                            Premii: {profile.awards}
-                        </span>
-                    )}
-                    
-                    {profile.bio && (
-                        <p className="mt-1">
-                            {profile.bio}
-                        </p>
-                    )}
-                    
-                    {!profile.first_name && !profile.last_name && !profile.nickname && 
-                     !profile.gender && !profile.age && !profile.city && !profile.country && 
-                     !profile.phone && !profile.vehicle && !profile.awards && !profile.bio && (
-                        <span className="text-xs text-gray-500">
-                            No profile information yet
                         </span>
                     )}
                 </div>
