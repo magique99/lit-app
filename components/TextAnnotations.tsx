@@ -22,10 +22,13 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   showPopupRef.current = showPopup;
 
   const loadAnnotations = useCallback(async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("annotations")
       .select("*")
       .eq("post_id", postId);
+
+    console.log("LOAD ANNOTATIONS - error:", error, "data:", data?.length ?? 0);
+    if (error) console.error("LOAD ANNOTATIONS ERROR:", error);
     setAnnotations((data as Annotation[]) || []);
   }, [postId]);
 
