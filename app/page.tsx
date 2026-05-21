@@ -320,20 +320,35 @@ export default function HomePage() {
           schema: "public",
           table: "posts",
         },
-        (payload) => {
-          const post = payload.new as Post;
-          const postWithProfile: PostWithProfile = {
-            ...post,
-            profile: null,
-          };
+      (payload) => {
+        const post = payload.new as Post;
+        // Fetch profile for the new post
+        let profileData = null;
+        if (post.user_id) {
+          const { data: profileDataResult } = await supabase
+            .from("profiles")
+            .select("username, avatar_url")
+            .eq("user_id", post.user_id)
+            .single();
+          if (profileDataResult) {
+            profileData = {
+              username: profileDataResult.username,
+              avatar_url: profileDataResult.avatar_url,
+            };
+          }
+        }
+        const postWithProfile: PostWithProfile = {
+          ...post,
+          profile: profileData,
+        };
 
-          setPosts((prev) => {
-            if (prev.some((item) => item.id === post.id)) return prev;
-            return [postWithProfile, ...prev];
-          });
-          setLikeCounts((prev) => ({ ...prev, [post.id]: 0 }));
-          setCommentCounts((prev) => ({ ...prev, [post.id]: 0 }));
-        },
+        setPosts((prev) => {
+          if (prev.some((item) => item.id === post.id)) return prev;
+          return [postWithProfile, ...prev];
+        });
+        setLikeCounts((prev) => ({ ...prev, [post.id]: 0 }));
+        setCommentCounts((prev) => ({ ...prev, [post.id]: 0 }));
+      },
       )
       .subscribe();
 
