@@ -137,11 +137,11 @@ export default async function PostPage({ params }: Props) {
                   </p>
                 </div>
               </div>
-            </div>
-                            <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-500 sm:mt-5">
+                <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-500 sm:mt-5">
                   <LikeButton postId={id} />
                   <span className="inline-flex items-center gap-2">💬 {commentCount}</span>
                 </div>
+            </div>
           </div>
         </section>
 
