@@ -254,24 +254,23 @@ export default function HomePage() {
         .select("user_id, username, avatar_url")
         .in("user_id", userIds);
 
-if (!profilesError && profilesData) {
-          const typedProfilesData = profilesData as Array<{ user_id: string; username: string; avatar_url: string | null }>;
-          profileMap = typedProfilesData.reduce(
-            (map, profile) => ({
-              ...map,
-              [profile.user_id]: {
-                username: profile.username,
-                avatar_url: profile.avatar_url,
-              },
-            }),
-            {},
-          );
-        }
+      if (!profilesError && profilesData) {
+        const typedProfilesData = profilesData as Array<{ user_id: string; username: string; avatar_url: string | null }>;
+        profileMap = typedProfilesData.reduce(
+          (map, profile) => ({
+            ...map,
+            [profile.user_id]: {
+              username: profile.username,
+              avatar_url: profile.avatar_url,
+            },
+          }),
+          {},
+        );
       }
-    
+    }
+
     if (userIds.length > 0 && Object.keys(profileMap).length === 0) {
       console.warn("No profiles found for userIds:", userIds);
-    }
     }
 
     const postsWithCounts: PostWithProfile[] = data.map((post: any) => ({
