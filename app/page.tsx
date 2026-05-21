@@ -147,26 +147,29 @@ export default function HomePage() {
        Pick<Profile, "username" | "avatar_url">
      > = {};
 
-     if (userIds.length > 0) {
-       const { data: profilesData, error: profilesError } = await supabase
-         .from("profiles")
-         .select("user_id, username, avatar_url")
-         .in("user_id", userIds);
+      if (userIds.length > 0) {
+        const { data: profilesData, error: profilesError } = await supabase
+          .from("profiles")
+          .select("user_id, username, avatar_url")
+          .in("user_id", userIds);
 
-       if (!profilesError && profilesData) {
-         const typedProfilesData = profilesData as Array<{ user_id: string; username: string; avatar_url: string | null }>;
-         profileMap = typedProfilesData.reduce(
-           (map, profile) => ({
-             ...map,
-             [profile.user_id]: {
-               username: profile.username,
-               avatar_url: profile.avatar_url,
-             },
-           }),
-           {},
-         );
-       }
-     }
+        if (profilesError) {
+          console.error("LOAD PROFILES ERROR:", profilesError);
+          // Continue with empty profileMap - posts will show default avatar/username
+        } else if (profilesData) {
+          const typedProfilesData = profilesData as Array<{ user_id: string; username: string; avatar_url: string | null }>;
+          profileMap = typedProfilesData.reduce(
+            (map, profile) => ({
+              ...map,
+              [profile.user_id]: {
+                username: profile.username,
+                avatar_url: profile.avatar_url,
+              },
+            }),
+            {},
+          );
+        }
+      }
 
     const nextPostsWithProfile: PostWithProfile[] = nextPosts.map((post) => ({
       ...post,
@@ -325,17 +328,23 @@ export default function HomePage() {
         // Fetch profile for the new post
         let profileData = null;
         if (post.user_id) {
-          const { data: profileDataResult } = await supabase
-            .from("profiles")
-            .select("username, avatar_url")
-            .eq("user_id", post.user_id)
-            .single();
-          if (profileDataResult) {
-            profileData = {
-              username: profileDataResult.username,
-              avatar_url: profileDataResult.avatar_url,
-            };
-          }
+          (async () => {
+            try {
+              const { data: profileDataResult, error } = await supabase
+                .from("profiles")
+                .select("username, avatar_url")
+                .eq("user_id", post.user_id)
+                .single();
+              if (!error && profileDataResult) {
+                profileData = {
+                  username: profileDataResult.username,
+                  avatar_url: profileDataResult.avatar_url,
+                };
+              }
+            } catch (err) {
+              console.error("Error fetching profile for realtime post:", err);
+            }
+          })();
         }
         const postWithProfile: PostWithProfile = {
           ...post,
