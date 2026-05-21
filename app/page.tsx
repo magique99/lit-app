@@ -182,12 +182,10 @@ export default function HomePage() {
           .select("user_id, username, avatar_url")
           .in("user_id", userIds);
 
-        console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?.length ?? 0);
-        
+console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?.length ?? 0);
+
         if (profilesError) {
           console.error("LOAD PROFILES ERROR:", profilesError);
-        } else if (profilesData) {
-          // Continue with empty profileMap - posts will show default avatar/username
         } else if (profilesData) {
           const typedProfilesData = profilesData as Array<{ user_id: string; username: string; avatar_url: string | null }>;
           profileMap = typedProfilesData.reduce(
@@ -201,7 +199,7 @@ export default function HomePage() {
             {},
           );
         }
-      }
+    }
 
     const nextPostsWithProfile: PostWithProfile[] = nextPosts.map((post) => ({
       ...post,
