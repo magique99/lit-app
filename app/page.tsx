@@ -101,6 +101,26 @@ export default function HomePage() {
   // =========================
   // POSTS
   // =========================
+  async function ensureProfiles(userIds: string[]) {
+    if (userIds.length === 0) return;
+    
+    const { data: existingProfiles } = await supabase
+      .from("profiles")
+      .select("user_id")
+      .in("user_id", userIds);
+    
+    const existingIds = new Set(existingProfiles?.map(p => p.user_id) ?? []);
+    const missingUserIds = userIds.filter(id => !existingIds.has(id));
+    
+    if (missingUserIds.length > 0) {
+      const profilesToCreate = missingUserIds.map(uid => ({
+        user_id: uid,
+        username: `user_${uid.slice(0, 8)}`,
+      }));
+      await supabase.from("profiles").insert(profilesToCreate);
+    }
+  }
+
   const loadPosts = useCallback(async () => {
     if (loadingRef.current || !hasMore) return;
 
@@ -142,7 +162,9 @@ export default function HomePage() {
       ),
     );
 
-     let profileMap: Record<
+    await ensureProfiles(userIds);
+
+    let profileMap: Record<
        string,
        Pick<Profile, "username" | "avatar_url">
      > = {};
@@ -242,6 +264,8 @@ export default function HomePage() {
     const userIds = Array.from(
       new Set(data.map((p: any) => p.user_id).filter(Boolean) as string[]),
     );
+
+    await ensureProfiles(userIds);
 
     let profileMap: Record<
       string,
