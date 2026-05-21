@@ -30,8 +30,10 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       .select("*")
       .eq("post_id", postId);
 
-    console.log("LOAD ANNOTATIONS - error:", error, "data count:", data?.length ?? 0, "data:", data);
-    if (error) console.error("LOAD ANNOTATIONS ERROR:", error);
+    console.log("LOAD ANNOTATIONS - error:", error, "data:", JSON.stringify(data));
+    if (error) {
+      console.error("LOAD ANNOTATIONS ERROR:", error);
+    }
     setAnnotations((data as Annotation[]) || []);
   }, [postId]);
 
@@ -72,6 +74,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   };
 
   useEffect(() => {
+    console.log("useEffect - mounting, calling loadAnnotations");
     supabase.auth.getUser().then(({ data }) => {
       setCurrentUserId(data.user?.id ?? null);
     });
