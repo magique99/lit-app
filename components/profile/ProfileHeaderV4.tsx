@@ -236,7 +236,7 @@ function ProfileEditorInline({
   const [saved, setSaved] = useState(false);
 
    async function save() {
-     if (!profile.id) return;
+     if (!profile.user_id) return;
 
      setSaving(true);
      setError(null);
@@ -245,9 +245,9 @@ function ProfileEditorInline({
      let finalAvatarUrl = profile.avatar_url;
      let avatarError = null;
      
-     if (selectedFile && profile.id) {
+     if (selectedFile && profile.user_id) {
        try {
-         const uploadedUrl = await uploadAvatar(selectedFile, profile.id);
+         const uploadedUrl = await uploadAvatar(selectedFile, profile.user_id);
          if (uploadedUrl) {
            finalAvatarUrl = uploadedUrl;
          } else {
@@ -276,7 +276,70 @@ function ProfileEditorInline({
          awards: awards || null,
          avatar_url: finalAvatarUrl,
        })
-       .eq("id", profile.id);
+       .eq("user_id", profile.user_id);
+
+     if (error) {
+       console.error("SAVE PROFILE ERROR:", error);
+       setError("Nu am putut salva profilul.");
+       setSaving(false);
+       return;
+     }
+
+     onSaved({
+       ...profile,
+       username,
+       first_name: firstName || null,
+       last_name: lastName || null,
+       nickname: nickname || null,
+       bio,
+       gender: gender || null,
+       age: age > 0 ? age : null,
+       city: city || null,
+       country: country || null,
+       phone: phone || null,
+       vehicle: vehicle || null,
+       awards: awards || null,
+       avatar_url: finalAvatarUrl,
+     });
+
+     setSaved(true);
+     setSaving(false);
+     // Show avatar error if there was one, but don't close yet
+     if (avatarError) {
+       setError(avatarError);
+       // Reset error after 3 seconds so user can see it before closing
+       setTimeout(() => {
+         setError(null);
+         onClose();
+       }, 3000);
+     } else {
+       onClose();
+     }
+   }
+       } catch (uploadError) {
+         console.error("AVATAR UPLOAD ERROR:", uploadError);
+         avatarError = "Eroare la încărcarea avatarului. Verificați conexiunea și încercă din nou.";
+       }
+     }
+
+     const { error } = await supabase
+       .from("profiles")
+       .update({
+         username,
+         first_name: firstName || null,
+         last_name: lastName || null,
+         nickname: nickname || null,
+         bio,
+         gender: gender || null,
+         age: age > 0 ? age : null,
+         city: city || null,
+         country: country || null,
+         phone: phone || null,
+         vehicle: vehicle || null,
+         awards: awards || null,
+         avatar_url: finalAvatarUrl,
+       })
+       .eq("user_id", profile.user_id);
 
      if (error) {
        console.error("SAVE PROFILE ERROR:", error);
