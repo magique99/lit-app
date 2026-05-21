@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import type { Annotation } from "@/lib/types";
@@ -9,9 +9,13 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   const pathname = usePathname();
   const isPostPage = pathname?.startsWith("/post/");
 
-  console.log("TextAnnotations - postId:", postId, "isPostPage:", isPostPage, "pathname:", pathname);
+  console.log("TextAnnotations render - postId:", postId, "isPostPage:", isPostPage, "pathname:", pathname);
 
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
+  // Folosim un key pentru a forța refresh la postId change
+  const annotationsKey = useMemo(() => `${postId}-${annotations.length}`, [postId, annotations.length]);
+  
+  console.log("TextAnnotations state - annotations count:", annotations.length, "key:", annotationsKey);
   const [selectedText, setSelectedText] = useState<{ text: string; start: number; end: number } | null>(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupPos, setPopupPos] = useState({ x: 0, y: 0 });
@@ -30,11 +34,16 @@ export default function TextAnnotations({ postId }: { postId: string }) {
       .select("*")
       .eq("post_id", postId);
 
-    console.log("LOAD ANNOTATIONS - error:", error, "data:", JSON.stringify(data));
+    console.log("LOAD ANNOTATIONS - error:", error, "data raw:", data);
     if (error) {
       console.error("LOAD ANNOTATIONS ERROR:", error);
+      setAnnotations([]);
+      return;
     }
-    setAnnotations((data as Annotation[]) || []);
+    
+    const typedData = (data as Annotation[]) || [];
+    console.log("LOAD ANNOTATIONS - typedData:", typedData.length, "items");
+    setAnnotations(typedData);
   }, [postId]);
 
   const addAnnotation = async () => {
@@ -144,7 +153,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
   }, [postId]);
 
   return (
-    <div className="mt-8">
+    <div key={annotationsKey} className="mt-8">
       <p className="text-sm text-slate-500 mb-4">Selectează un fragment din text pentru a adăuga o adnotație.</p>
 
       {showPopup && selectedText && (
@@ -180,7 +189,7 @@ export default function TextAnnotations({ postId }: { postId: string }) {
 
       {annotations.length > 0 && (
         <div className="mt-6 space-y-3">
-          <h3 className="text-sm font-semibold text-slate-700">Adnotări</h3>
+          <h3 className="text-sm font-semibold text-slate-700">Adnotări ({annotations.length})</h3>
           {annotations.map((a) => (
             <div key={a.id} className="border-l-2 border-amber-400 pl-3">
               <p className="text-xs text-slate-500">Offset: {a.start_offset}-{a.end_offset}</p>
@@ -188,6 +197,10 @@ export default function TextAnnotations({ postId }: { postId: string }) {
             </div>
           ))}
         </div>
+      )}
+
+      {annotations.length === 0 && (
+        <p className="text-xs text-slate-400 mt-4">Nicio adnotație încă.</p>
       )}
     </div>
   );
