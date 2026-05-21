@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { uploadAvatar } from "@/lib/uploadAvatar";
 import type { Profile } from "@/lib/types";
 import { toProfile } from "@/lib/types";
 
@@ -228,6 +229,8 @@ function ProfileEditorInline({
     useState(profile.vehicle ?? "");
   const [awards, setAwards] =
     useState(profile.awards ?? "");
+  const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url || "");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
