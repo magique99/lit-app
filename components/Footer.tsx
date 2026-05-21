@@ -35,18 +35,15 @@ export default function Footer() {
             >
               Profil
             </Link>
-            <Link
-              href="/login"
-              className="text-slate-400 transition hover:text-amber-200"
-            >
-              Login
-            </Link>
           </nav>
 
           <div className="border-t border-[#3a342f]"></div>
 
           <p className="text-center font-serif text-xs tracking-[0.2em] text-slate-500 uppercase">
             Un proiect de literatură digitală
+          </p>
+          <p className="text-center font-serif text-xs tracking-[0.2em] text-slate-500 uppercase">
+            @2026 Literatura9
           </p>
         </div>
       </div>
