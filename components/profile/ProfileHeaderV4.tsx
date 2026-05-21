@@ -248,9 +248,9 @@ function ProfileEditorInline({
          finalAvatarUrl = await uploadAvatar(selectedFile, profile.id);
        } catch (uploadError) {
          console.error("AVATAR UPLOAD ERROR:", uploadError);
-         setError("Nu am putut încărca avatarul.");
-         setSaving(false);
-         return;
+         // Don't fail the entire save if avatar upload fails - just continue with existing avatar
+         setError("Nu am putut încărca avatarul, dar celelalte modificări au fost salvate.");
+         // Continue with saving other fields
        }
      }
 
