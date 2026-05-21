@@ -300,8 +300,9 @@ export default function ProfilePostsV2() {
                         <span className="inline-flex items-center gap-2">
                             <span>💬</span><span>0</span>
                           </span>
-                      </div>
-                  </article>
+                       </div>
+                     </div>
+                   </article>
                 </Link>
                 )}
               </>
