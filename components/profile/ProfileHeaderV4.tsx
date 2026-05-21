@@ -278,7 +278,7 @@ function ProfileEditorInline({
         })
         .eq("user_id", profile.user_id);
 
-      if (error) {
+if (error) {
         console.error("SAVE PROFILE ERROR:", error);
         setError("Nu am putut salva profilul.");
         setSaving(false);
@@ -286,13 +286,30 @@ function ProfileEditorInline({
       }
 
       onSaved({
-       ...profile,
-       username,
-       first_name: firstName || null,
-       last_name: lastName || null,
-       nickname: nickname || null,
-       bio,
-      <div className="space-y-4">
+        ...profile,
+        username,
+        first_name: firstName || null,
+        last_name: lastName || null,
+        nickname: nickname || null,
+        bio,
+        gender: gender || null,
+        age: age > 0 ? age : null,
+        city: city || null,
+        country: country || null,
+        phone: phone || null,
+        vehicle: vehicle || null,
+        awards: awards || null,
+        avatar_url: finalAvatarUrl,
+      });
+      setSaving(false);
+      setSaved(true);
+    }
+
+    save();
+  }
+
+  return (
+    <div className="space-y-4">
         <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="shrink-0">
               <div className="relative w-24 h-24 rounded-full border-2 border-gray-300 bg-gray-200 overflow-hidden">
