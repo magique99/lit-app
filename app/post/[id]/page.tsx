@@ -71,7 +71,10 @@ export default async function PostPage({ params }: Props) {
     
     profile = {
       username: displayName ?? null,
-      avatar_url: profileData.avatar_url ?? null
+      avatar_url: profileData.avatar_url ?? null,
+      first_name: profileData.first_name ?? null,
+      last_name: profileData.last_name ?? null,
+      nickname: profileData.nickname ?? null
     };
   }
 
