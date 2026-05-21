@@ -209,6 +209,22 @@ export default function PostClient({ postId }: { postId: string }) {
           : c
       )
     );
+
+    const { data: postData } = await supabase
+      .from("posts")
+      .select("user_id")
+      .eq("id", postId)
+      .single();
+
+    if (postData && postData.user_id && postData.user_id !== currentUserId) {
+      await supabase.from("notifications").insert({
+        user_id: postData.user_id,
+        actor_id: currentUserId,
+        post_id: postId,
+        comment_id: data.id,
+        type: "comment",
+      });
+    }
   }
 
   // =========================

@@ -46,8 +46,23 @@ export default function LikeButton({ postId }: { postId: string }) {
         .eq("user_id", userId);
       setCount((c) => c - 1);
     } else {
+      const { data: postData } = await supabase
+        .from("posts")
+        .select("user_id")
+        .eq("id", postId)
+        .single();
+      
       await supabase.from("likes").insert({ post_id: postId, user_id: userId });
       setCount((c) => c + 1);
+
+      if (postData && postData.user_id && postData.user_id !== userId) {
+        await supabase.from("notifications").insert({
+          user_id: postData.user_id,
+          actor_id: userId,
+          post_id: postId,
+          type: "like_post",
+        });
+      }
     }
     setLiked(!liked);
     setLoading(false);

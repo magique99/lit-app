@@ -473,7 +473,7 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
     return () => observer.disconnect();
   }, [loading, hasMore]);
 
-  // =========================
+// =========================
   // OPTIMISTIC LIKE
   // =========================
   async function handleLike(postId: string) {
@@ -491,12 +491,27 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
       [postId]: (prev[postId] ?? 0) + 1,
     }));
 
-     const { error } = await supabase
-       .from("likes")
-       .insert({
-         post_id: postId,
-         user_id: currentUserId,
-       } as LikeInsert);
+    const { data: postData } = await supabase
+      .from("posts")
+      .select("user_id")
+      .eq("id", postId)
+      .single();
+
+    const { error } = await supabase
+      .from("likes")
+      .insert({
+        post_id: postId,
+        user_id: currentUserId,
+      } as LikeInsert);
+
+    if (!error && postData && postData.user_id && postData.user_id !== currentUserId) {
+      await supabase.from("notifications").insert({
+        user_id: postData.user_id,
+        actor_id: currentUserId,
+        post_id: postId,
+        type: "like_post",
+      });
+    }
   }
 
   // =========================
