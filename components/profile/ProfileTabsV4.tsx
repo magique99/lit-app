@@ -159,34 +159,34 @@ function AboutContent({ profile }: { profile: any }) {
 
   return (
     <div className="space-y-8">
-      {/* STATISTICS */}
-      <div className="border-t pt-6">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900">
-          Statistici
-        </h3>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-center">
-          <div>
-            <p className="text-2xl font-bold text-gray-900">{profile.posts_count ?? 0}</p>
-            <p className="text-sm text-gray-500">Posts</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-gray-900">{profile.followers_count ?? 0}</p>
-            <p className="text-sm text-gray-500">Followers</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-gray-900">{profile.following_count ?? 0}</p>
-            <p className="text-sm text-gray-500">Following</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-gray-900">{profile.likes_count ?? 0}</p>
-            <p className="text-sm text-gray-500">Likes</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-gray-900">{profile.comments_count ?? 0}</p>
-            <p className="text-sm text-gray-500">Comments</p>
+        {/* STATISTICS */}
+        <div className="border-t pt-6">
+          <h3 className="text-lg font-semibold mb-4 text-gray-900">
+            Statistici
+          </h3>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-center px-4 sm:px-6">
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-2xl font-bold text-gray-900">{profile.posts_count ?? 0}</p>
+              <p className="text-sm text-gray-500">Posts</p>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-2xl font-bold text-gray-900">{profile.followers_count ?? 0}</p>
+              <p className="text-sm text-gray-500">Followers</p>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-2xl font-bold text-gray-900">{profile.following_count ?? 0}</p>
+              <p className="text-sm text-gray-500">Following</p>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-2xl font-bold text-gray-900">{profile.likes_count ?? 0}</p>
+              <p className="text-sm text-gray-500">Likes</p>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-2xl font-bold text-gray-900">{profile.comments_count ?? 0}</p>
+              <p className="text-sm text-gray-500">Comments</p>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* ADDITIONAL INFO */}
       <div className="border-t pt-6">
