@@ -1,7 +1,7 @@
 "use client";
 
 import { supabase } from "@/lib/supabaseClient";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
 type FormValues = {
@@ -9,8 +9,8 @@ type FormValues = {
   content: string;
 };
 
-export default function EditPostPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function EditPostPage() {
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [post, setPost] = useState<{ title: string; content: string } | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -20,6 +20,7 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     const fetchPost = async () => {
+      if (!id) return;
       setLoading(true);
       setError(null);
       setSuccess(null);

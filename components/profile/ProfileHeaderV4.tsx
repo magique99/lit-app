@@ -78,115 +78,115 @@ export default function ProfileHeaderV4() {
           {/* INFO */}
           <div className="flex-1 text-center sm:text-left">
 
-             {!edit ? (
-               <>
-                 <h2 className="text-xl sm:text-2xl font-bold">
-                   {profile.username}
-                 </h2>
+        {!edit ? (
+            <>
+                <h2 className="text-xl sm:text-2xl font-bold">
+                    {profile.username}
+                </h2>
 
-                 <div className="text-sm text-gray-600 mt-1 space-y-1">
-                   {profile.first_name && profile.last_name && (
-                     <>
-                       {profile.first_name} {profile.last_name}
-                       {profile.nickname && (
-                         <span className="text-xs text-gray-500">
-                           ("{profile.nickname}")
-                         </span>
-                       )}
-                     </>
-                   )}
-                   {!profile.first_name && !profile.last_name && profile.nickname && (
-                     <span className="text-xs text-gray-500">
-                       "{profile.nickname}"
-                     </span>
-                   )}
-                   
-                   {profile.gender && (
-                     <span className="text-xs text-gray-500">
-                       {profile.gender === 'masculin' ? 'Masculin' : 
-                        profile.gender === 'feminin' ? 'Feminin' : 'Altul'}
-                     </span>
-                   )}
-                   
-                   {profile.age && (
-                     <span className="text-xs text-gray-500">
-                       {profile.age} ani
-                     </span>
-                   )}
-                   
-                   {profile.city && profile.country && (
-                     <span className="text-xs text-gray-500">
-                       {profile.city}, {profile.country}
-                     </span>
-                   )}
-                   
-                   {!profile.city && profile.country && (
-                     <span className="text-xs text-gray-500">
-                       {profile.country}
-                     </span>
-                   )}
-                   
-                   {profile.city && !profile.country && (
-                     <span className="text-xs text-gray-500">
-                       {profile.city}
-                     </span>
-                   )}
-                   
-                   {profile.phone && (
-                     <span className="text-xs text-gray-500">
-                       {profile.phone}
-                     </span>
-                   )}
-                   
-                   {profile.vehicle && (
-                     <span className="text-xs text-gray-500">
-                       {profile.vehicle}
-                     </span>
-                   )}
-                   
-                   {profile.awards && (
-                     <span className="text-xs text-gray-500">
-                       Premii: {profile.awards}
-                     </span>
-                   )}
-                   
-                   {profile.bio && (
-                     <p className="mt-1">
-                       {profile.bio}
-                     </p>
-                   )}
-                   
-                   {!profile.first_name && !profile.last_name && !profile.nickname && 
-                    !profile.gender && !profile.age && !profile.city && !profile.country && 
-                    !profile.phone && !profile.vehicle && !profile.awards && !profile.bio && (
-                     <span className="text-xs text-gray-500">
-                       No profile information yet
-                     </span>
-                   )}
-                 </div>
+                <div className="text-sm text-gray-600 mt-1 space-y-1">
+                    {profile.first_name && profile.last_name && (
+                        <>
+                            {profile.first_name} {profile.last_name}
+                            {profile.nickname && (
+                                <span className="text-xs text-gray-500">
+                                    ("{profile.nickname}")
+                                </span>
+                            )}
+                        </>
+                    )}
+                    {!profile.first_name && !profile.last_name && profile.nickname && (
+                        <span className="text-xs text-gray-500">
+                            "{profile.nickname}"
+                        </span>
+                    )}
+                    
+                    {profile.gender && (
+                        <span className="text-xs text-gray-500">
+                            {profile.gender === 'masculin' ? 'Masculin' : 
+                             profile.gender === 'feminin' ? 'Feminin' : 'Altul'}
+                        </span>
+                    )}
+                    
+                    {profile.age && (
+                        <span className="text-xs text-gray-500">
+                            {profile.age} ani
+                        </span>
+                    )}
+                    
+                    {profile.city && profile.country && (
+                        <span className="text-xs text-gray-500">
+                            {profile.city}, {profile.country}
+                        </span>
+                    )}
+                    
+                    {!profile.city && profile.country && (
+                        <span className="text-xs text-gray-500">
+                            {profile.country}
+                        </span>
+                    )}
+                    
+                    {profile.city && !profile.country && (
+                        <span className="text-xs text-gray-500">
+                            {profile.city}
+                        </span>
+                    )}
+                    
+                    {profile.phone && (
+                        <span className="text-xs text-gray-500">
+                            {profile.phone}
+                        </span>
+                    )}
+                    
+                    {profile.vehicle && (
+                        <span className="text-xs text-gray-500">
+                            {profile.vehicle}
+                        </span>
+                    )}
+                    
+                    {profile.awards && (
+                        <span className="text-xs text-gray-500">
+                            Premii: {profile.awards}
+                        </span>
+                    )}
+                    
+                    {profile.bio && (
+                        <p className="mt-1">
+                            {profile.bio}
+                        </p>
+                    )}
+                    
+                    {!profile.first_name && !profile.last_name && !profile.nickname && 
+                     !profile.gender && !profile.age && !profile.city && !profile.country && 
+                     !profile.phone && !profile.vehicle && !profile.awards && !profile.bio && (
+                        <span className="text-xs text-gray-500">
+                            No profile information yet
+                        </span>
+                    )}
+                </div>
 
-                 <button
-                   onClick={() => setEdit(true)}
-                   className="
-                     mt-3 sm:mt-4
-                     w-full sm:w-auto
-                     px-4 py-2
-                     rounded-xl border
-                     text-sm
-                     hover:bg-gray-50
-                     transition
-                   "
-                 >
-                   Edit profile
-                 </button>
-               </>
-             ) : (
-               <ProfileEditorInline
-                 profile={profile}
-                 onClose={() => setEdit(false)}
-                 onSaved={setProfile}
-               />
-             )}
+                <button
+                    onClick={() => setEdit(true)}
+                    className="
+                      mt-3 sm:mt-4
+                      w-full sm:w-auto
+                      px-4 py-2
+                      rounded-xl border
+                      text-sm
+                      hover:bg-gray-50
+                      transition
+                    "
+                >
+                    Edit profile
+                </button>
+            </>
+        ) : (
+            <ProfileEditorInline
+                profile={profile}
+                onClose={() => setEdit(false)}
+                onSaved={setProfile}
+            />
+        )}
 
           </div>
         </div>
@@ -235,233 +235,296 @@ function ProfileEditorInline({
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  async function save() {
-    if (!profile.id) return;
+   async function save() {
+     if (!profile.id) return;
 
-    setSaving(true);
-    setError(null);
-    setSaved(false);
+     setSaving(true);
+     setError(null);
+     setSaved(false);
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        username,
-        first_name: firstName || null,
-        last_name: lastName || null,
-        nickname: nickname || null,
-        bio,
-        gender: gender || null,
-        age: age > 0 ? age : null,
-        city: city || null,
-        country: country || null,
-        phone: phone || null,
-        vehicle: vehicle || null,
-        awards: awards || null,
-      })
-      .eq("id", profile.id);
+     let finalAvatarUrl = profile.avatar_url;
+     if (selectedFile && profile.id) {
+       try {
+         finalAvatarUrl = await uploadAvatar(selectedFile, profile.id);
+       } catch (uploadError) {
+         console.error("AVATAR UPLOAD ERROR:", uploadError);
+         setError("Nu am putut încărca avatarul.");
+         setSaving(false);
+         return;
+       }
+     }
 
-    if (error) {
-      console.error("SAVE PROFILE ERROR:", error);
-      setError("Nu am putut salva profilul.");
-      setSaving(false);
-      return;
-    }
+     const { error } = await supabase
+       .from("profiles")
+       .update({
+         username,
+         first_name: firstName || null,
+         last_name: lastName || null,
+         nickname: nickname || null,
+         bio,
+         gender: gender || null,
+         age: age > 0 ? age : null,
+         city: city || null,
+         country: country || null,
+         phone: phone || null,
+         vehicle: vehicle || null,
+         awards: awards || null,
+         avatar_url: finalAvatarUrl,
+       })
+       .eq("id", profile.id);
 
-    onSaved({
-      ...profile,
-      username,
-      first_name: firstName || null,
-      last_name: lastName || null,
-      nickname: nickname || null,
-      bio,
-      gender: gender || null,
-      age: age > 0 ? age : null,
-      city: city || null,
-      country: country || null,
-      phone: phone || null,
-      vehicle: vehicle || null,
-      awards: awards || null,
-    });
+     if (error) {
+       console.error("SAVE PROFILE ERROR:", error);
+       setError("Nu am putut salva profilul.");
+       setSaving(false);
+       return;
+     }
 
-    setSaved(true);
-    setSaving(false);
-    onClose();
-  }
+     onSaved({
+       ...profile,
+       username,
+       first_name: firstName || null,
+       last_name: lastName || null,
+       nickname: nickname || null,
+       bio,
+       gender: gender || null,
+       age: age > 0 ? age : null,
+       city: city || null,
+       country: country || null,
+       phone: phone || null,
+       vehicle: vehicle || null,
+       awards: awards || null,
+       avatar_url: finalAvatarUrl,
+     });
+
+     setSaved(true);
+     setSaving(false);
+     onClose();
+   }
 
   return (
-    <div className="space-y-3 mt-4">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <input
-          value={username}
-          onChange={(e) =>
-            setUsername(e.target.value)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-          placeholder="username"
-        />
-        <input
-          value={firstName}
-          onChange={(e) =>
-            setFirstName(e.target.value)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-          placeholder="Nume"
-        />
-        <input
-          value={lastName}
-          onChange={(e) =>
-            setLastName(e.target.value)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-          placeholder="Prenume"
-        />
-        <input
-          value={nickname}
-          onChange={(e) =>
-            setNickname(e.target.value)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-          placeholder="Pseudonim"
-        />
-        <select
-          value={gender}
-          onChange={(e) =>
-            setGender(e.target.value)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-        >
-          <option value="">Sex (alegere)</option>
-          <option value="masculin">Masculin</option>
-          <option value="feminin">Feminin</option>
-          <option value="altul">Altul</option>
-        </select>
-        <input
-          type="number"
-          value={age}
-          onChange={(e) =>
-            setAge(parseInt(e.target.value) || 0)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-          placeholder="Varsta"
-          min="0"
-          max="150"
-        />
-        <input
-          value={city}
-          onChange={(e) =>
-            setCity(e.target.value)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-          placeholder="Oras"
-        />
-        <input
-          value={country}
-          onChange={(e) =>
-            setCountry(e.target.value)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-          placeholder="Tara"
-        />
-        <input
-          value={phone}
-          onChange={(e) =>
-            setPhone(e.target.value)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-          placeholder="Telefon"
-        />
-        <input
-          value={vehicle}
-          onChange={(e) =>
-            setVehicle(e.target.value)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-          placeholder="Moto"
-        />
-        <input
-          value={awards}
-          onChange={(e) =>
-            setAwards(e.target.value)
-          }
-          className="
-            w-full border rounded-xl p-3 text-sm
-          "
-          placeholder="Premii"
-        />
-      </div>
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="shrink-0">
+            <div className="relative w-24 h-24 rounded-full border-2 border-gray-300 bg-gray-200 overflow-hidden">
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt="Avatar"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <Image
+                  src="/user.jpg"
+                  alt="Default avatar"
+                  fill
+                  className="object-cover"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setSelectedFile(file);
+                    // Preview the file (optional)
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setAvatarUrl(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              >
+                <Image
+                  src="/camera.svg"
+                  alt="Change avatar"
+                  className="absolute bottom-0 right-0 h-6 w-6 p-1 bg-white rounded-full shadow"
+                >
+                </Image>
+              </input>
+            </div>
+          </div>
+          <div>
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <input
+                  value={username}
+                  onChange={(e) =>
+                    setUsername(e.target.value)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                  placeholder="username"
+                />
+                <input
+                  value={firstName}
+                  onChange={(e) =>
+                    setFirstName(e.target.value)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                  placeholder="Nume"
+                />
+                <input
+                  value={lastName}
+                  onChange={(e) =>
+                    setLastName(e.target.value)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                  placeholder="Prenume"
+                />
+                <input
+                  value={nickname}
+                  onChange={(e) =>
+                    setNickname(e.target.value)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                  placeholder="Pseudonim"
+                />
+                <select
+                  value={gender}
+                  onChange={(e) =>
+                    setGender(e.target.value)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                >
+                  <option value="">Sex (alegere)</option>
+                  <option value="masculin">Masculin</option>
+                  <option value="feminin">Feminin</option>
+                  <option value="altul">Altul</option>
+                </select>
+                <input
+                  type="number"
+                  value={age}
+                  onChange={(e) =>
+                    setAge(parseInt(e.target.value) || 0)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                  placeholder="Varsta"
+                  min="0"
+                  max="150"
+                />
+                <input
+                  value={city}
+                  onChange={(e) =>
+                    setCity(e.target.value)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                  placeholder="Oras"
+                />
+                <input
+                  value={country}
+                  onChange={(e) =>
+                    setCountry(e.target.value)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                  placeholder="Tara"
+                />
+                <input
+                  value={phone}
+                  onChange={(e) =>
+                    setPhone(e.target.value)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                  placeholder="Telefon"
+                />
+                <input
+                  value={vehicle}
+                  onChange={(e) =>
+                    setVehicle(e.target.value)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                  placeholder="Moto"
+                />
+                <input
+                  value={awards}
+                  onChange={(e) =>
+                    setAwards(e.target.value)
+                  }
+                  className="
+                    w-full border rounded-xl p-3 text-sm
+                  "
+                  placeholder="Premii"
+                />
+              </div>
 
-      <textarea
-        value={bio}
-        onChange={(e) =>
-          setBio(e.target.value)
-        }
-        className="
-          w-full border rounded-xl p-3 text-sm min-h-[100px]
-        "
-        placeholder="Descriere"
-      />
-
-      <div className="flex flex-col sm:flex-row gap-2">
-
-        <button
-          onClick={() => void save()}
-          disabled={saving}
-          className="
-            bg-black text-white
-            px-4 py-2 rounded-xl
-            text-sm
-            disabled:cursor-wait
-            disabled:opacity-60
-          "
-        >
-          {saving ? "Saving..." : "Save"}
-        </button>
-
-        <button
-          onClick={onClose}
-          disabled={saving}
-          className="
-            text-gray-500 text-sm
-            disabled:cursor-wait
-            disabled:opacity-60
-          "
-        >
-          Cancel
-        </button>
-
-      </div>
-
-      {error && (
-        <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}
+              <textarea
+                value={bio}
+                onChange={(e) =>
+                  setBio(e.target.value)
+                }
+                className="
+                  w-full border rounded-xl p-3 text-sm min-h-[100px]
+                "
+                placeholder="Descriere"
+              />
+            </div>
+          </div>
         </div>
-      )}
 
-      {saved && (
-        <div className="rounded-xl border border-green-100 bg-green-50 px-3 py-2 text-sm text-green-700">
-          Saved
+        <div className="flex flex-col sm:flex-row gap-2">
+
+          <button
+            onClick={() => void save()}
+            disabled={saving}
+            className="
+              bg-black text-white
+              px-4 py-2 rounded-xl
+              text-sm
+              disabled:cursor-wait
+              disabled:opacity-60
+            "
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+
+          <button
+            onClick={onClose}
+            disabled={saving}
+            className="
+              text-gray-500 text-sm
+              disabled:cursor-wait
+              disabled:opacity-60
+            "
+          >
+            Cancel
+          </button>
+
         </div>
-      )}
-    </div>
+
+        {error && (
+          <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        {saved && (
+          <div className="rounded-xl border border-green-100 bg-green-50 px-3 py-2 text-sm text-green-700">
+            Saved
+          </div>
+        )}
+      </div>
   );
 }
