@@ -47,12 +47,12 @@ export default function ProfilePostsV2() {
         return;
       }
 
-       // Fetch profile
-       const { data: profileData, error: profileError } = await supabase
-         .from("profiles")
-         .select("username, avatar_url, bio, first_name, last_name, nickname, gender, age, city, country, phone, vehicle, awards, role, created_at, updated_at")
-         .eq("user_id", uid)
-         .single();
+        // Fetch profile
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("username, avatar_url, bio, first_name, last_name, nickname, gender, age, city, country, phone, vehicle, awards, role, created_at, updated_at, posts_count, followers_count, following_count, likes_count, comments_count")
+          .eq("user_id", uid)
+          .single();
 
       if (profileError && !profileError?.message?.includes("No rows")) {
         console.error("LOAD PROFILE ERROR:", profileError);
@@ -63,32 +63,38 @@ export default function ProfilePostsV2() {
 
       setPosts(postsData || []);
       
-       // Convert profile data to match Profile type
-       if (profileData) {
-         setProfile({
-           username: profileData.username,
-           avatar_url: profileData.avatar_url,
-           bio: profileData.bio ?? null,
-           id: uid,
-           user_id: uid,
-           created_at: profileData.created_at ?? null,
-           updated_at: profileData.updated_at ?? null,
-           role: profileData.role as UserRole | null,
-           // New fields
-           first_name: profileData.first_name ?? null,
-           last_name: profileData.last_name ?? null,
-           nickname: profileData.nickname ?? null,
-           gender: profileData.gender ?? null,
-           age: profileData.age ?? null,
-           city: profileData.city ?? null,
-           country: profileData.country ?? null,
-           phone: profileData.phone ?? null,
-           vehicle: profileData.vehicle ?? null,
-           awards: profileData.awards ?? null,
-         });
-       } else {
-         setProfile(null);
-       }
+        // Convert profile data to match Profile type
+        if (profileData) {
+          setProfile({
+            username: profileData.username,
+            avatar_url: profileData.avatar_url,
+            bio: profileData.bio ?? null,
+            id: uid,
+            user_id: uid,
+            created_at: profileData.created_at ?? null,
+            updated_at: profileData.updated_at ?? null,
+            role: profileData.role as UserRole | null,
+            // New fields
+            first_name: profileData.first_name ?? null,
+            last_name: profileData.last_name ?? null,
+            nickname: profileData.nickname ?? null,
+            gender: profileData.gender ?? null,
+            age: profileData.age ?? null,
+            city: profileData.city ?? null,
+            country: profileData.country ?? null,
+            phone: profileData.phone ?? null,
+            vehicle: profileData.vehicle ?? null,
+            awards: profileData.awards ?? null,
+            // Statistics fields
+            posts_count: profileData.posts_count ?? 0,
+            followers_count: profileData.followers_count ?? 0,
+            following_count: profileData.following_count ?? 0,
+            likes_count: profileData.likes_count ?? 0,
+            comments_count: profileData.comments_count ?? 0,
+          });
+        } else {
+          setProfile(null);
+        }
       setLoading(false);
     }
 

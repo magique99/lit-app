@@ -158,24 +158,24 @@ function AboutContent({ profile }: { profile: any }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* PROFILE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-start gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-8">
         {/* AVATAR */}
         <div className="flex-shrink-0">
           <Image
             src={profile.avatar_url ?? "/user.jpg"}
             alt={profile.username ?? "User avatar"}
-            width={120}
-            height={120}
-            className="rounded-full border-4 border-white bg-gray-200 object-cover"
+            width={140}
+            height={140}
+            className="rounded-full border-4 border-white bg-gray-200 object-cover shadow-lg"
           />
         </div>
 
         {/* INFO */}
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2">
-            <h2 className="text-xl font-bold text-gray-900">
+        <div className="space-y-4">
+          <div className="flex items-center space-x-3">
+            <h2 className="text-2xl font-bold text-gray-900">
               {profile.username}
             </h2>
             {profile.verified && (
@@ -184,7 +184,7 @@ function AboutContent({ profile }: { profile: any }) {
           </div>
 
           {/* NAME INFO */}
-          <div className="text-sm text-gray-600 space-y-1">
+          <div className="text-sm text-gray-600 space-y-2">
             {profile.first_name && profile.last_name && (
               <>
                 {profile.first_name} {profile.last_name}
@@ -251,7 +251,7 @@ function AboutContent({ profile }: { profile: any }) {
             )}
             
             {profile.bio && (
-              <p className="mt-1">
+              <p className="mt-2 leading-relaxed">
                 {profile.bio}
               </p>
             )}
@@ -259,36 +259,51 @@ function AboutContent({ profile }: { profile: any }) {
             {!profile.first_name && !profile.last_name && !profile.nickname && 
              !profile.gender && !profile.age && !profile.city && !profile.country && 
              !profile.phone && !profile.vehicle && !profile.awards && !profile.bio && (
-               <span className="text-xs text-gray-500">
-                 No profile information yet
-               </span>
-             )}
+              <span className="text-xs text-gray-500">
+                No profile information yet
+              </span>
+            )}
           </div>
+        </div>
+      </div>
 
-          {/* STATS */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 text-sm text-gray-500">
-            <div>
-              <p className="font-medium">{profile.posts_count ?? 0}</p>
-              <p>Posts</p>
-            </div>
-            <div>
-              <p className="font-medium">{profile.followers_count ?? 0}</p>
-              <p>Followers</p>
-            </div>
-            <div>
-              <p className="font-medium">{profile.following_count ?? 0}</p>
-              <p>Following</p>
-            </div>
+      {/* STATISTICS */}
+      <div className="border-t pt-6">
+        <h3 className="text-lg font-semibold mb-4 text-gray-900">
+          Statistici
+        </h3>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 text-center">
+          <div>
+            <p className="text-2xl font-bold text-gray-900">{profile.posts_count ?? 0}</p>
+            <p className="text-sm text-gray-500">Posts</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-gray-900">{profile.followers_count ?? 0}</p>
+            <p className="text-sm text-gray-500">Followers</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-gray-900">{profile.following_count ?? 0}</p>
+            <p className="text-sm text-gray-500">Following</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-gray-900">{profile.likes_count ?? 0}</p>
+            <p className="text-sm text-gray-500">Likes</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-gray-900">{profile.comments_count ?? 0}</p>
+            <p className="text-sm text-gray-500">Comments</p>
           </div>
         </div>
       </div>
 
       {/* ADDITIONAL INFO */}
-      <div className="border-t pt-4">
-        <h3 className="text-lg font-semibold mb-3">Mai multe detalii</h3>
-        <div className="space-y-3 text-sm">
+      <div className="border-t pt-6">
+        <h3 className="text-lg font-semibold mb-4 text-gray-900">
+          Mai multe detalii
+        </h3>
+        <div className="space-y-4 text-sm">
           <div className="flex items-center space-x-3">
-            <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium">
+            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
               📍
             </span>
             <span>
@@ -307,7 +322,7 @@ function AboutContent({ profile }: { profile: any }) {
           </div>
           
           <div className="flex items-center space-x-3">
-            <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium">
+            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
               📞
             </span>
             <span>
@@ -316,7 +331,7 @@ function AboutContent({ profile }: { profile: any }) {
           </div>
           
           <div className="flex items-center space-x-3">
-            <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium">
+            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
               🏍️
             </span>
             <span>
@@ -325,7 +340,7 @@ function AboutContent({ profile }: { profile: any }) {
           </div>
           
           <div className="flex items-center space-x-3">
-            <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium">
+            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
               🏆
             </span>
             <span>
@@ -334,7 +349,7 @@ function AboutContent({ profile }: { profile: any }) {
           </div>
           
           <div className="flex items-center space-x-3">
-            <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium">
+            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
               🎂
             </span>
             <span>
@@ -355,7 +370,7 @@ function AboutContent({ profile }: { profile: any }) {
           </div>
           
           <div className="flex items-center space-x-3">
-            <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium">
+            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
               📅
             </span>
             <span>

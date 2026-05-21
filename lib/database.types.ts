@@ -187,70 +187,88 @@ export type Database = {
           },
         ];
       };
-      profiles: {
-        Row: {
-          avatar_url: string | null;
-          bio: string | null;
-          created_at: string | null;
-          id: string;
-          role: string | null;
-          updated_at: string | null;
-          user_id: string;
-          username: string | null;
-          // New fields as requested
-          first_name: string | null;
-          last_name: string | null;
-          nickname: string | null;
-          gender: string | null;
-          age: number | null;
-          city: string | null;
-          country: string | null;
-          phone: string | null;
-          vehicle: string | null;
-          awards: string | null;
-        };
-        Insert: {
-          avatar_url?: string | null;
-          bio?: string | null;
-          created_at?: string | null;
-          id?: string;
-          role?: string | null;
-          updated_at?: string | null;
-          user_id: string;
-          username?: string | null;
-          // New fields as requested
-          first_name?: string | null;
-          last_name?: string | null;
-          nickname?: string | null;
-          gender?: string | null;
-          age?: number | null;
-          city?: string | null;
-          country?: string | null;
-          phone?: string | null;
-          vehicle?: string | null;
-          awards?: string | null;
-        };
-        Update: {
-          avatar_url?: string | null;
-          bio?: string | null;
-          created_at?: string | null;
-          id?: string;
-          role?: string | null;
-          updated_at?: string | null;
-          user_id?: string;
-          username?: string | null;
-          // New fields as requested
-          first_name?: string | null;
-          last_name?: string | null;
-          nickname?: string | null;
-          gender?: string | null;
-          age?: number | null;
-          city?: string | null;
-          country?: string | null;
-          phone?: string | null;
-          vehicle?: string | null;
-          awards?: string | null;
-        };
+       profiles: {
+         Row: {
+           avatar_url: string | null;
+           bio: string | null;
+           created_at: string | null;
+           id: string;
+           role: string | null;
+           updated_at: string | null;
+           user_id: string;
+           username: string | null;
+           // New fields as requested
+           first_name: string | null;
+           last_name: string | null;
+           nickname: string | null;
+           gender: string | null;
+           age: number | null;
+           city: string | null;
+           country: string | null;
+           phone: string | null;
+           vehicle: string | null;
+           awards: string | null;
+           // Statistics fields
+           posts_count: number;
+           followers_count: number;
+           following_count: number;
+           likes_count: number;
+           comments_count: number;
+         };
+         Insert: {
+           avatar_url?: string | null;
+           bio?: string | null;
+           created_at?: string | null;
+           id?: string;
+           role?: string | null;
+           updated_at?: string | null;
+           user_id: string;
+           username?: string | null;
+           // New fields as requested
+           first_name?: string | null;
+           last_name?: string | null;
+           nickname?: string | null;
+           gender?: string | null;
+           age?: number | null;
+           city?: string | null;
+           country?: string | null;
+           phone?: string | null;
+           vehicle?: string | null;
+           awards?: string | null;
+           // Statistics fields (optional for insert)
+           posts_count?: number;
+           followers_count?: number;
+           following_count?: number;
+           likes_count?: number;
+           comments_count?: number;
+         };
+         Update: {
+           avatar_url?: string | null;
+           bio?: string | null;
+           created_at?: string | null;
+           id?: string;
+           role?: string | null;
+           updated_at?: string | null;
+           user_id?: string;
+           username?: string | null;
+           // New fields as requested
+           first_name?: string | null;
+           last_name?: string | null;
+           nickname?: string | null;
+           gender?: string | null;
+           age?: number | null;
+           city?: string | null;
+           country?: string | null;
+           phone?: string | null;
+           vehicle?: string | null;
+           awards?: string | null;
+           // Statistics fields (optional for update)
+           posts_count?: number;
+           followers_count?: number;
+           following_count?: number;
+           likes_count?: number;
+           comments_count?: number;
+         };
         Relationships: [];
       };
       annotations: {
