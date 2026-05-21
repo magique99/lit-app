@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import { toPlainText } from "@/lib/content";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import PostClient from "./PostClient";
 import LikeButton from "@/components/LikeButton";
 import TextAnnotations from "@/components/TextAnnotations";
@@ -20,6 +21,11 @@ type PostPageData = {
   user_id: string | null;
 };
 
+type ProfileData = {
+  username: string;
+  avatar_url: string | null;
+};
+
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
   console.log("POST ID:", id);
@@ -34,7 +40,18 @@ export default async function PostPage({ params }: Props) {
     console.log("POST PAGE ERROR:", error);
     notFound();
   }
-  const authorName = "anonim";
+
+  let profile: ProfileData | null = null;
+  if (post.user_id) {
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("username, avatar_url")
+      .eq("user_id", post.user_id)
+      .single<ProfileData>();
+    profile = profileData;
+  }
+
+  const authorName = profile?.username ?? "anonim";
 
   const publishedAt = new Date(post.created_at).toLocaleDateString(
     "ro-RO",
@@ -66,16 +83,29 @@ export default async function PostPage({ params }: Props) {
               </p>
             </div>
 
-            {/* AUTHOR BOX (simplificat) */}
+{/* AUTHOR BOX (simplificat) */}
 <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-               <p className="text-sm font-semibold">@{authorName}</p>
-               <p className="text-xs text-slate-500">
-                 Publicat {publishedAt}
-               </p>
-               <div className="mt-4">
-                 <LikeButton postId={id} />
+               <div className="flex items-center gap-3">
+                 <div className="relative h-12 w-12 overflow-hidden rounded-full">
+                   <Image
+                     src={profile?.avatar_url ?? "/user.jpg"}
+                     alt={authorName}
+                     fill
+                     sizes="48px"
+                     className="object-cover"
+                   />
+                 </div>
+                 <div>
+                   <p className="text-sm font-semibold">@{authorName}</p>
+                   <p className="text-xs text-slate-500">
+                     Publicat {publishedAt}
+                   </p>
+                 </div>
                </div>
-             </div>
+                <div className="mt-4">
+                  <LikeButton postId={id} />
+                </div>
+              </div>
           </div>
         </section>
 
