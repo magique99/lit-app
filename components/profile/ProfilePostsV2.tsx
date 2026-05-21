@@ -187,9 +187,6 @@ export default function ProfilePostsV2() {
                           <p className="text-sm font-medium text-slate-900">
                             @{profile?.username ?? "anonim"}
                           </p>
-                          <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
-                            Autor
-                          </p>
                         </div>
                       </div>
 
@@ -236,9 +233,6 @@ export default function ProfilePostsV2() {
                               <div>
                                 <p className="text-sm font-medium text-slate-900">
                                   @{profile?.username ?? "anonim"}
-                                </p>
-                                <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
-                                  Autor
                                 </p>
                               </div>
                             </div>
