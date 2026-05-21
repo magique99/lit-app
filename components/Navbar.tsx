@@ -25,7 +25,7 @@ export default function Navbar() {
 
   useEffect(() => {
     let ignore = false;
-    let profileChannel: any = null;
+    const profileChannel: any = null;
     
     async function loadUser() {
       const { data } = await supabase.auth.getUser();

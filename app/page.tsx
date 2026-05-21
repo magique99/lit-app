@@ -40,6 +40,7 @@ export default function HomePage() {
   const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
   const [filterType, setFilterType] = useState("");
   const [filterGenre, setFilterGenre] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const totalLikes = useMemo(
     () => Object.values(likeCounts).reduce((sum, count) => sum + count, 0),
@@ -150,6 +151,9 @@ export default function HomePage() {
     if (filterGenre && filterGenre !== "Toate") {
       query = query.eq("genre", filterGenre);
     }
+    if (searchQuery) {
+      query = query.or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
+    }
 
     const { data, error } = await query;
 
@@ -232,7 +236,7 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
 
     loadingRef.current = false;
     setLoading(false);
-  }, [hasMore, page, filterType, filterGenre]);
+  }, [hasMore, page, filterType, filterGenre, searchQuery]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -252,6 +256,13 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
     setHasMore(true);
     if (type) setFilterType(type);
     if (genre) setFilterGenre(genre);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setPosts([]);
+    setPage(0);
+    setHasMore(true);
   };
 
   async function loadTopPosts() {
@@ -557,61 +568,70 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
            </div>
 
 
-        {/* FILTERS */}
-        <div className="mt-8 rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
-          <div className="flex flex-col gap-6">
-            <div>
-              <div className="flex flex-wrap gap-2">
-                {TEXT_TYPES.map((t) => {
-                  const isActive = (filterType || "Toate") === t;
-                  return (
-                    <button
-                      key={t}
-                      onClick={() => {
-                        setFilterType(t === "Toate" ? "" : t);
-                        setPage(0);
-                        setPosts([]);
-                        setHasMore(true);
-                      }}
-                      className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                        isActive
-                          ? "bg-amber-400 text-slate-950"
-                          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                      }`}
-                    >
-                      {t}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <div>
-              <div className="flex flex-wrap gap-2">
-                {GENRES.map((g) => {
-                  const isActive = (filterGenre || "Toate") === g;
-                  return (
-                    <button
-                      key={g}
-                      onClick={() => {
-                        setFilterGenre(g === "Toate" ? "" : g);
-                        setPage(0);
-                        setPosts([]);
-                        setHasMore(true);
-                      }}
-                      className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                        isActive
-                          ? "bg-amber-400 text-slate-950"
-                          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                      }`}
-                    >
-                      {g}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
+{/* FILTERS */}
+         <div className="mt-8 rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
+           <div className="mb-4">
+             <input
+               type="text"
+               placeholder="Caută texte..."
+               value={searchQuery}
+               onChange={(e) => handleSearch(e.target.value)}
+               className="w-full rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 placeholder-slate-400 focus:border-amber-400 focus:outline-none"
+             />
+           </div>
+           <div className="flex flex-col gap-6">
+             <div>
+               <div className="flex flex-wrap gap-2">
+                 {TEXT_TYPES.map((t) => {
+                   const isActive = (filterType || "Toate") === t;
+                   return (
+                     <button
+                       key={t}
+                       onClick={() => {
+                         setFilterType(t === "Toate" ? "" : t);
+                         setPage(0);
+                         setPosts([]);
+                         setHasMore(true);
+                       }}
+                       className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                         isActive
+                           ? "bg-amber-400 text-slate-950"
+                           : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                       }`}
+                     >
+                       {t}
+                     </button>
+                   );
+                 })}
+               </div>
+             </div>
+             <div>
+               <div className="flex flex-wrap gap-2">
+                 {GENRES.map((g) => {
+                   const isActive = (filterGenre || "Toate") === g;
+                   return (
+                     <button
+                       key={g}
+                       onClick={() => {
+                         setFilterGenre(g === "Toate" ? "" : g);
+                         setPage(0);
+                         setPosts([]);
+                         setHasMore(true);
+                       }}
+                       className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                         isActive
+                           ? "bg-amber-400 text-slate-950"
+                           : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                       }`}
+                     >
+                       {g}
+                     </button>
+                   );
+                 })}
+               </div>
+             </div>
+           </div>
+         </div>
 
          <div className="mt-12 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
            <section className="space-y-6">
