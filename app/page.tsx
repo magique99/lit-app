@@ -597,34 +597,41 @@ export default function HomePage() {
              </h2>
           </div>
 
-           {post.user_id === currentUserId && (
-             <div className="flex gap-2">
-               <Link 
-                 href={`/post/${post.id}/edit`}
-                 className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
-               >
-                 Modifica Text
-               </Link>
-               <button
-                 onClick={async (e) => {
-                   e.preventDefault();
-                   e.stopPropagation();
-                   if (window.confirm('Sigur vrei să ștergi acest post?')) {
-                     try {
-                       await supabase.from('posts').delete().eq('id', post.id);
-                       // Optimistically remove the post from the list
-                       setPosts(prev => prev.filter(p => p.id !== post.id));
-                     } catch (error) {
-                       console.error('Error deleting post:', error);
-                     }
-                   }
-                 }}
-                 className="inline-flex items-center justify-center rounded-full bg-red-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-red-300"
-               >
-                 Delete
-               </button>
-             </div>
-           )}
+            {post.user_id === currentUserId ? (
+              <div className="flex gap-2">
+                <Link 
+                  href={`/post/${post.id}/edit`}
+                  className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
+                >
+                  Modifica Text
+                </Link>
+                <button
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (window.confirm('Sigur vrei să ștergi acest post?')) {
+                      try {
+                        await supabase.from('posts').delete().eq('id', post.id);
+                        // Optimistically remove the post from the list
+                        setPosts(prev => prev.filter(p => p.id !== post.id));
+                      } catch (error) {
+                        console.error('Error deleting post:', error);
+                      }
+                    }
+                  }}
+                  className="inline-flex items-center justify-center rounded-full bg-red-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-red-300"
+                >
+                  Delete
+                </button>
+              </div>
+            ) : (
+              <Link
+                href={`/post/${post.id}`}
+                className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
+              >
+                Citește acum
+              </Link>
+            )}
         </div>
 
          <p
