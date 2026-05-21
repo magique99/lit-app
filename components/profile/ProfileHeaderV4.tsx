@@ -27,10 +27,31 @@ export default function ProfileHeaderV4() {
       .select("*")
       .eq("user_id", userId)
       .maybeSingle()
-      .then(({ data, error }) => {
+      .then(async ({ data, error }) => {
         if (error) {
           console.error("LOAD PROFILE ERROR:", error);
           setLoadError("Nu am putut încărca profilul.");
+          return;
+        }
+
+        if (!data) {
+          const defaultUsername = `user_${userId.slice(0, 8)}`;
+          const { data: newProfile, error: createError } = await supabase
+            .from("profiles")
+            .insert({
+              user_id: userId,
+              username: defaultUsername,
+            })
+            .select("*")
+            .single();
+
+          if (createError) {
+            console.error("CREATE PROFILE ERROR:", createError);
+            setLoadError("Nu am putut crea profilul.");
+            return;
+          }
+
+          setProfile(toProfile(newProfile));
           return;
         }
 
