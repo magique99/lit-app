@@ -34,7 +34,7 @@ export default function HomePage() {
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>(
     {},
-  );console.log("AAA", posts)
+  );
   const [latestComments, setLatestComments] = useState<Comment[]>([]);
   const [topVotedPosts, setTopVotedPosts] = useState<PostWithProfile[]>([]);
   const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
@@ -104,20 +104,27 @@ export default function HomePage() {
   async function ensureProfiles(userIds: string[]) {
     if (userIds.length === 0) return;
     
-    const { data: existingProfiles } = await supabase
+    const { data: existingProfiles, error: checkError } = await supabase
       .from("profiles")
       .select("user_id")
       .in("user_id", userIds);
+    
+    if (checkError) {
+      console.error("CHECK PROFILES ERROR:", checkError);
+      return;
+    }
     
     const existingIds = new Set(existingProfiles?.map(p => p.user_id) ?? []);
     const missingUserIds = userIds.filter(id => !existingIds.has(id));
     
     if (missingUserIds.length > 0) {
+      console.log("Missing profiles for:", missingUserIds);
       const profilesToCreate = missingUserIds.map(uid => ({
         user_id: uid,
         username: `user_${uid.slice(0, 8)}`,
       }));
-      await supabase.from("profiles").insert(profilesToCreate);
+      const { error: insertError } = await supabase.from("profiles").insert(profilesToCreate);
+      if (insertError) console.error("CREATE PROFILES ERROR:", insertError);
     }
   }
 
@@ -136,7 +143,7 @@ export default function HomePage() {
       .select("*")
       .order("created_at", { ascending: false })
       .range(from, to) as any;
-console.log("QUERY", query)
+
     if (filterType && filterType !== "Toate") {
       query = query.eq("text_type", filterType);
     }
@@ -175,8 +182,11 @@ console.log("QUERY", query)
           .select("user_id, username, avatar_url")
           .in("user_id", userIds);
 
+        console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?.length ?? 0);
+        
         if (profilesError) {
           console.error("LOAD PROFILES ERROR:", profilesError);
+        } else if (profilesData) {
           // Continue with empty profileMap - posts will show default avatar/username
         } else if (profilesData) {
           const typedProfilesData = profilesData as Array<{ user_id: string; username: string; avatar_url: string | null }>;
@@ -278,7 +288,11 @@ console.log("QUERY", query)
         .select("user_id, username, avatar_url")
         .in("user_id", userIds);
 
-      if (!profilesError && profilesData) {
+      console.log("TOP POSTS - PROFILES QUERY - requested:", userIds.length, "got:", profilesData?.length ?? 0);
+
+      if (profilesError) {
+        console.error("LOAD TOP POSTS PROFILES ERROR:", profilesError);
+      } else if (profilesData) {
         const typedProfilesData = profilesData as Array<{ user_id: string; username: string; avatar_url: string | null }>;
         profileMap = typedProfilesData.reduce(
           (map, profile) => ({
