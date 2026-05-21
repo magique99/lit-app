@@ -327,48 +327,46 @@ async function save() {
   return (
     <div className="space-y-4">
         <div className="flex flex-col sm:flex-row items-center gap-4">
-            <div className="shrink-0">
-              <div className="relative w-24 h-24 rounded-full border-2 border-gray-300 bg-gray-200 overflow-hidden">
-                {avatarUrl ? (
-                  <Image
-                    src={avatarUrl}
-                    alt="Avatar"
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <Image
-                    src="/user.jpg"
-                    alt="Default avatar"
-                    fill
-                    className="object-cover"
-                  />
-                )}
-                <label
-                  className="absolute inset-0 flex h-full w-full items-center justify-center bg-white bg-opacity-50 rounded-full text-sm font-medium text-slate-900 hover:bg-white hover:bg-opacity-70 cursor-pointer"
-                >
-                  Upload Avatar
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      setSelectedFile(file);
-                      // Preview the file (optional)
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        setAvatarUrl(reader.result as string);
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }}
-                >
-                </input>
-              </div>
-            </div>
+<div className="shrink-0">
+               <div className="relative w-24 h-24 rounded-full border-2 border-slate-200 bg-slate-100 overflow-hidden group">
+                 {avatarUrl ? (
+                   <Image
+                     src={avatarUrl}
+                     alt="Avatar"
+                     fill
+                     className="object-cover"
+                   />
+                 ) : (
+                   <Image
+                     src="/user.jpg"
+                     alt="Default avatar"
+                     fill
+                     className="object-cover"
+                   />
+                 )}
+                 <label
+                   className="absolute inset-0 flex h-full w-full items-center justify-center bg-white/80 rounded-full text-xs font-medium text-slate-700 opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
+                 >
+                   Schimbă
+                 </label>
+                 <input
+                   type="file"
+                   accept="image/*"
+                   className="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
+                   onChange={(e) => {
+                     const file = e.target.files?.[0];
+                     if (file) {
+                       setSelectedFile(file);
+                       const reader = new FileReader();
+                       reader.onloadend = () => {
+                         setAvatarUrl(reader.result as string);
+                       };
+                       reader.readAsDataURL(file);
+                     }
+                   }}
+                 />
+               </div>
+             </div>
           <div>
             <div className="space-y-3">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
