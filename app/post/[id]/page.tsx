@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { toPlainText } from "@/lib/content";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import PostClient from "./PostClient";
 import LikeButton from "@/components/LikeButton";
 import TextAnnotations from "@/components/TextAnnotations";
@@ -121,21 +122,43 @@ export default async function PostPage({ params }: Props) {
             {/* AUTHOR BOX (simplificat) */}
             <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="relative h-12 w-12 overflow-hidden rounded-full">
-                  <Image
-                    src={profile?.avatar_url ?? "/user.jpg"}
-                    alt={authorName}
-                    fill
-                    sizes="48px"
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">@{authorName}</p>
-                  <p className="text-xs text-slate-500">
-                    Publicat {publishedAt}
-                  </p>
-                </div>
+                {post.user_id ? (
+                  <Link href={`/profile/${post.user_id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <div className="relative h-12 w-12 overflow-hidden rounded-full">
+                      <Image
+                        src={profile?.avatar_url ?? "/user.jpg"}
+                        alt={authorName}
+                        fill
+                        sizes="48px"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">@{authorName}</p>
+                      <p className="text-xs text-slate-500">
+                        Publicat {publishedAt}
+                      </p>
+                    </div>
+                  </Link>
+                ) : (
+                  <>
+                    <div className="relative h-12 w-12 overflow-hidden rounded-full">
+                      <Image
+                        src={profile?.avatar_url ?? "/user.jpg"}
+                        alt={authorName}
+                        fill
+                        sizes="48px"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">@{authorName}</p>
+                      <p className="text-xs text-slate-500">
+                        Publicat {publishedAt}
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
                 <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-500 sm:mt-5">
                   <LikeButton postId={id} />

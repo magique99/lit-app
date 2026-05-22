@@ -677,18 +677,39 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
             <div className="p-4 sm:p-6 lg:p-7">
             <div className="flex items-center justify-between gap-4">
            <div className="flex flex-col items-start gap-1">
-             <div className="flex items-center gap-3">
-               <img
-                 src={post.profile?.avatar_url ?? "/user.jpg"}
-                 alt={post.profile?.username ?? "Author avatar"}
-                 className="h-10 w-10 rounded-full object-cover"
-               />
-               <div>
-                 <p className="text-sm font-medium text-slate-900">
-                   @{post.profile?.username ?? "anonim"}
-                 </p>
-               </div>
-             </div>
+              <div className="flex items-center gap-3">
+                {post.user_id ? (
+                  <Link href={`/profile/${post.user_id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <Image
+                      src={post.profile?.avatar_url ?? "/user.jpg"}
+                      alt={post.profile?.username ?? "Author avatar"}
+                      width={40}
+                      height={40}
+                      className="rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">
+                        @{post.profile?.username ?? "anonim"}
+                      </p>
+                    </div>
+                  </Link>
+                ) : (
+                  <>
+                    <Image
+                      src={post.profile?.avatar_url ?? "/user.jpg"}
+                      alt={post.profile?.username ?? "Author avatar"}
+                      width={40}
+                      height={40}
+                      className="rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">
+                        @{post.profile?.username ?? "anonim"}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
             <Link href={`/post/${post.id}`} className="hover:underline hover:text-amber-600 transition-colors">
               <h2 className="text-lg font-semibold leading-none text-slate-950 lg:text-xl cursor-pointer">
                 {post.title}
