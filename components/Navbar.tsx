@@ -193,18 +193,21 @@ export default function Navbar() {
              {user ? "Adaugă text" : "Înregistrează-te"}
            </button>
 
-             {user ? (
-               <>
-                 <Link href="/notifications" className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
-                   🔔 Notificări
-                 </Link>
-                 <Link href="/about" className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
-                   ℹ️ Despre
-                 </Link>
-                 <Link href="/contact" className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
-                   📞 Contact
-                 </Link>
-               </>
+              {user ? (
+                <>
+                  <Link href="/notifications" className="hidden md:block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
+                    🔔 Notificări
+                  </Link>
+                  <Link href="/about" className="hidden md:block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
+                    ℹ️ Despre
+                  </Link>
+                  <Link href="/contact" className="hidden md:block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
+                    📞 Contact
+                  </Link>
+
+                  {/* --- USER AVATAR MENU --- */}
+                  <UserMenu profile={profile} />
+                </>
              ) : (
                <>
                  <Link href="/login" className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
