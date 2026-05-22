@@ -25,7 +25,10 @@ const C = {
    ===================================================== */
 
 /* ---- HERO ---- */
-function Hero() {
+function Hero({ currentUserId }: { currentUserId: string | null }) {
+  const href = currentUserId ? "/create" : "/login";
+  const label = currentUserId ? "Scrie un text" : "Conectare";
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Imagine de fundal */}
@@ -63,10 +66,10 @@ function Hero() {
         {/* CTA principal */}
         <div className="mt-10 sm:mt-12">
           <Link
-            href="/create"
+            href={href}
             className="inline-flex items-center gap-3 rounded-full bg-[#B87D4B] px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#9E6538] hover:shadow-[0_8px_30px_rgba(184,125,75,0.35)] active:scale-[0.97]"
           >
-            <span>Scrie un text</span>
+            <span>{label}</span>
             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 8h6M8 5l3 3-3 3"/></svg>
           </Link>
         </div>
@@ -193,7 +196,10 @@ function Features() {
 }
 
 /* ---- CTA ---- */
-function CTA() {
+function CTA({ currentUserId }: { currentUserId: string | null }) {
+  const primaryHref = currentUserId ? "/create" : "/login";
+  const primaryLabel = currentUserId ? "Scrie un text" : "Conectare";
+
   return (
     <section className="py-28 sm:py-36 md:py-44 px-6" style={{ background: C.bg }}>
       <div className="max-w-2xl mx-auto text-center">

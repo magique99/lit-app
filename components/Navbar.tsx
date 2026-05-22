@@ -46,12 +46,15 @@ export default function Navbar() {
 
   return (
     <header
-      className="sticky top-0 z-50 bg-[#fffaf3]/95 backdrop-blur-xl shadow-sm border-b border-slate-200/70"
+      className="sticky top-0 z-50"
+      style={{ background: "rgba(247,243,238,0.95)", backdropFilter: "blur-xl" }}
     >
       <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4">
         {/* LOGO */}
-        <Link href="/"
-              className="font-serif text-lg tracking-[0.35em] text-slate-900 transition hover:text-slate-950"
+        <Link
+          href="/"
+          className="font-serif text-lg tracking-[0.35em] transition"
+          style={{ color: C.text }}
         >
           Literatura9
         </Link>
@@ -59,32 +62,26 @@ export default function Navbar() {
         {/* RIGHT: TWO BUTTONS */}
         <div className="flex items-center gap-3">
           {/* Butonul Texte */}
-          <Link href="/texte"
-                className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
-                style={{
-                  color: C.text,
-                  border: `1.5px solid ${C.text}`,
-                }}
+          <Link
+            href="/texte"
+            className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
+            style={{
+              color: C.text,
+              border: `1.5px solid ${C.border}`,
+              background: C.surface,
+            }}
           >
             Texte
           </Link>
 
           {/* Butonul Conectare */}
-          {user ? (
-            <Link href="/create"
-                  className="rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:shadow-[0_8px_30px_rgba(184,125,75,0.3)] active:scale-[0.97]"
-                  style={{ backgroundColor: C.accent }}
-            >
-              Conectare
-            </Link>
-          ) : (
-            <Link href="/login"
-                  className="rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:shadow-[0_8px_30px_rgba(184,125,75,0.3)] active:scale-[0.97]"
-                  style={{ backgroundColor: C.accent }}
-            >
-              Conectare
-            </Link>
-          )}
+          <Link
+            href={user ? "/create" : "/login"}
+            className="rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:shadow-[0_8px_30px_rgba(184,125,75,0.3)] active:scale-[0.97]"
+            style={{ backgroundColor: C.accent }}
+          >
+            Conectare
+          </Link>
         </div>
       </div>
     </header>
