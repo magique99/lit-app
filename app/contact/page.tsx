@@ -81,7 +81,7 @@ export default function ContactPage() {
                 value={formState.message}
                 onChange={handleChange}
                 required
-                rows="5"
+                rows={5}
                 className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-200"
               />
             </div>
