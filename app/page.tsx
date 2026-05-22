@@ -551,41 +551,41 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
        </section>
 
 
-           {/* Stats grid: moved here so it appears after the banner */}
-           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
-             <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-amber-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(251,191,36,0.1)]">
-               <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-                 Texte
-               </p>
-               <p className="mt-1 text-xl font-semibold text-slate-950 sm:text-2xl">
-                 {posts.length}
-               </p>
-             </div>
-             <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-cyan-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(56,189,248,0.1)]">
-               <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-                 Comentarii
-               </p>
-               <p className="mt-1 text-xl font-semibold text-slate-950 sm:text-2xl">
-                 {latestComments.length}
-               </p>
-             </div>
-             <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-emerald-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(16,185,129,0.1)]">
-               <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-                 Reacții
-               </p>
-               <p className="mt-1 text-xl font-semibold text-slate-950 sm:text-2xl">
-                 {totalLikes}
-               </p>
-             </div>
-             <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-violet-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(139,92,246,0.1)]">
-               <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-                 Autori
-               </p>
-               <p className="mt-1 text-xl font-semibold text-slate-950 sm:text-2xl">
-                 {authorsCount}
-               </p>
-             </div>
-           </div>
+{/* Stats grid: moved here so it appears after the banner */}
+            <div className="mt-6 grid grid-cols-4 gap-2">
+              <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-amber-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(251,191,36,0.1)]">
+                <p className="text-[8px] xs:text-[10px] sm:text-xs uppercase tracking-[0.2em] text-slate-500">
+                  Texte
+                </p>
+                <p className="mt-0.5 text-sm sm:text-base font-semibold text-slate-950">
+                  {posts.length}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-cyan-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(56,189,248,0.1)]">
+                <p className="text-[8px] xs:text-[10px] sm:text-xs uppercase tracking-[0.2em] text-slate-500">
+                  Comentarii
+                </p>
+                <p className="mt-0.5 text-sm sm:text-base font-semibold text-slate-950">
+                  {latestComments.length}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-emerald-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(16,185,129,0.1)]">
+                <p className="text-[8px] xs:text-[10px] sm:text-xs uppercase tracking-[0.2em] text-slate-500">
+                  Reacții
+                </p>
+                <p className="mt-0.5 text-sm sm:text-base font-semibold text-slate-950">
+                  {totalLikes}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-violet-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(139,92,246,0.1)]">
+                <p className="text-[8px] xs:text-[10px] sm:text-xs uppercase tracking-[0.2em] text-slate-500">
+                  Autori
+                </p>
+                <p className="mt-0.5 text-sm sm:text-base font-semibold text-slate-950">
+                  {authorsCount}
+                </p>
+              </div>
+            </div>
 
 
 {/* FILTERS */}
