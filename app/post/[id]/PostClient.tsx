@@ -69,6 +69,41 @@ export default function PostClient({ postId }: { postId: string }) {
     });
   }, [loadComments]);
 
+  // Scroll to comment if hash is present in URL
+  useEffect(() => {
+    const handleScrollToComment = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith("#comment-")) {
+        const commentId = hash.substring(9); // Remove "#comment-"
+        const commentElement = document.getElementById(`comment-${commentId}`);
+        if (commentElement) {
+          // Add a small delay to ensure DOM is updated
+          setTimeout(() => {
+            commentElement.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 100);
+        }
+      }
+    };
+
+    // Run on initial load
+    handleScrollToComment();
+
+    // Also run when comments state changes
+    const handleCommentsChange = () => {
+      requestAnimationFrame(handleScrollToComment);
+    };
+
+    // Watch for comments changes
+    let isMounted = true;
+    if (isMounted) {
+      handleCommentsChange();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [postId, comments]);
+
   // =========================
   // REALTIME COMMENTS
   // =========================
@@ -243,7 +278,7 @@ export default function PostClient({ postId }: { postId: string }) {
         </div>
       )}
 
-       <section id="comments" className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+      <section id="comments" className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Comentarii</h2>
@@ -285,39 +320,39 @@ export default function PostClient({ postId }: { postId: string }) {
       </section>
 
       <section className="space-y-4">
-           {comments.length === 0 ? (
-             <div className="rounded-[2rem] border border-slate-200 bg-[#fcf5ec] p-8 text-center text-sm text-slate-600 shadow-sm">
-               Fii primul care lasă un comentariu pentru acest text.
-             </div>
-           ) : (
-             comments.map((c) => (
-               <div key={c.id} id={`comment-${c.id}`} className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                 <div className="flex items-start gap-3">
-                   <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#f5ece1]">
-                     {c.profiles?.avatar_url ? (
-                       <Image
-                         src={c.profiles.avatar_url}
-                         alt={c.profiles?.username ?? "Avatar"}
-                         fill
-                         sizes="44px"
-                         className="object-cover"
-                       />
-                     ) : (
-                       <span className="flex h-full w-full items-center justify-center text-sm text-slate-500">{c.profiles?.username?.[0]?.toUpperCase() ?? "U"}</span>
-                     )}
-                   </div>
-                   <div className="min-w-0 flex-1">
-                     <div className="flex flex-wrap items-center gap-2 text-sm text-slate-700">
-                       <span className="font-semibold">{c.profiles?.username ?? "Utilizator"}</span>
-                       <span className="text-slate-400">•</span>
-                       <span className="text-slate-400">{new Date(c.created_at).toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" })}</span>
-                     </div>
-                     <p className="mt-3 text-sm leading-7 text-slate-700 whitespace-pre-wrap">{c.content}</p>
-                   </div>
-                 </div>
-               </div>
-             ))
-           )}
+        {comments.length === 0 ? (
+          <div className="rounded-[2rem] border border-slate-200 bg-[#fcf5ec] p-8 text-center text-sm text-slate-600 shadow-sm">
+            Fii primul care lasă un comentariu pentru acest text.
+          </div>
+        ) : (
+          comments.map((c) => (
+            <div key={c.id} id={`comment-${c.id}`} className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#f5ece1]">
+                  {c.profiles?.avatar_url ? (
+                    <Image
+                      src={c.profiles.avatar_url}
+                      alt={c.profiles?.username ?? "Avatar"}
+                      fill
+                      sizes="44px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-sm text-slate-500">{c.profiles?.username?.[0]?.toUpperCase() ?? "U"}</span>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-slate-700">
+                    <span className="font-semibold">{c.profiles?.username ?? "Utilizator"}</span>
+                    <span className="text-slate-400">•</span>
+                    <span className="text-slate-400">{new Date(c.created_at).toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" })}</span>
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-slate-700 whitespace-pre-wrap">{c.content}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </section>
     </div>
   );
