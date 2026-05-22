@@ -10,7 +10,7 @@ export default function ProfileTabsV4({
   error,
 }: {
   postsSlot: React.ReactNode;
-  profile: Profile;
+  profile: Profile | null;
   loading: boolean;
   error: string | null;
 }) {

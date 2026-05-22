@@ -69,7 +69,7 @@ export default function ViewProfileClient({ userId }: Props) {
             .select("id")
             .eq("follower_id", uid)
             .eq("following_id", userId)
-            .maybeSingle()) as unknown as { id: string } | null;
+            .maybeSingle()) as unknown as { data: { id: string } | null; error: unknown };
 
           setIsFollowing(!!followRecord);
         }
