@@ -1,15 +1,67 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: local("Playfair Display");
+}
+
 :root {
-  --background: #f6f4f1;
-  --foreground: #111827;
+  --surface: #F7F3EE;
+  --text: #2A2520;
+  --muted: #7A7268;
+  --border: #E8E0D8;
+}
+
+@theme inline {
+  --font-heading: "Playfair Display", Georgia, Cambria, serif;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  color: var(--text);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Serif: ONLY for headings ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+p,
+button,
+input,
+textarea {
+  font-feature-settings: "liga" 1, "kern" 1;
+}
+
+::selection {
+  background: var(--text);
+  color: #f8fafc;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-playfair);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,26 +73,23 @@
 
 body {
   min-height: 100vh;
-  background: radial-gradient(circle at top, rgba(255,255,255,0.8), transparent 25%), #f4ede4;
-  color: #111827;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  color: #2A2520;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-html {
-  scroll-behavior: smooth;
+/* ── Serif: ONLY for headings ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair), "Playfair Display", Georgia, Cambria, "Times New Roman", serif;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: Georgia, Cambria, "Times New Roman", serif;
-  letter-spacing: 0.01em;
+html {
+  scroll-behavior: smooth;
 }
 
 p,
@@ -51,6 +100,6 @@ textarea {
 }
 
 ::selection {
-  background: #111827;
+  background: #2A2520;
   color: #f8fafc;
 }

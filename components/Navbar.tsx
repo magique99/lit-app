@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import type { User } from "@supabase/supabase-js";
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -21,7 +23,10 @@ export default function Navbar() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!ignore) setUser(session?.user ?? null);
+      if (!ignore) {
+        setUser(session?.user ?? null);
+        setAvatarUrl(null);
+      }
     });
 
     return () => {
@@ -29,6 +34,24 @@ export default function Navbar() {
       subscription.unsubscribe();
     };
   }, []);
+
+  // Load avatar from profile when user is available
+  useEffect(() => {
+    if (!user?.id) { setAvatarUrl(null); return; }
+
+    let ignore = false;
+    (async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (!ignore) setAvatarUrl(data?.avatar_url ?? null);
+    })();
+
+    return () => { ignore = true; };
+  }, [user]);
 
   // close on click outside
   useEffect(() => {
@@ -82,13 +105,23 @@ export default function Navbar() {
                   active:scale-[0.97] transition
                 "
               >
-                <img
-                  src={`https://ui-avatars.com/api/?background=2A2520&color=fcf5ec&name=${encodeURIComponent(
-                    user.email ?? "user"
-                  )}`}
-                  alt={user.email ?? "avatar"}
-                  className="h-full w-full object-cover"
-                />
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={user.email ?? "avatar"}
+                    width={40}
+                    height={40}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={`https://ui-avatars.com/api/?background=2A2520&color=fcf5ec&name=${encodeURIComponent(
+                      user.email ?? "user"
+                    )}`}
+                    alt={user.email ?? "avatar"}
+                    className="h-full w-full object-cover"
+                  />
+                )}
               </button>
 
               {menuOpen && (

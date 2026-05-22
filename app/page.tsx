@@ -11,13 +11,13 @@ import { htmlToPlainTextWithNewlines } from "@/lib/content";
     COLOANE
     ===================================================== */
 const C = {
-  bg:           "#F7F3EE",   // cream, cald
-  surface:      "#FFFCF7",   // alb-crem pentru carduri
-  text:         "#2A2520",   // cafenie închis, nu negru pur
-  muted:        "#7A7268",   // cafenie moderată
-  accent:       "#B87D4B",   // teracotă / aramiu — singurul accent
-  accentHover:  "#9E6538",
-  border:       "#E8E0D8",   // linii foarte discrete
+  bg:        "#F7F3EE",
+  surface:   "#FFFCF7",
+  text:      "#2A2520",
+  muted:     "#7A7268",
+  border:    "#E8E0D8",
+  accent:    "#B87D4B",
+  accentHover: "#9E6538",
 };
 
 /* =====================================================
@@ -119,7 +119,7 @@ function Manifest() {
 
 /* ---- ULTIMELE 3 TEXT ---- */
 function LatestTexts() {
-  const [texts, setTexts] = useState<Array<{ id: string; title: string; content: string; user_id: string; created_at: string; profile?: Pick<Profile, "username" | "avatar_url"> | null }>>([]);
+  const [texts, setTexts] = useState<Array<{ id: string; title: string; content: string; user_id: string; created_at: string; text_type?: string | null; genre?: string | null; uses_ai?: boolean | null; profile?: Pick<Profile, "username" | "avatar_url"> | null }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -129,13 +129,12 @@ function LatestTexts() {
         setLoading(true);
         const { data, error } = await supabase
           .from("posts")
-          .select("id, title, content, user_id, created_at")
+          .select("id, title, content, user_id, created_at, text_type, genre, uses_ai")
           .order("created_at", { ascending: false })
           .limit(3);
 
         if (error) throw error;
 
-        // Fetch profiles for these posts
         const userIds = Array.from(new Set((data ?? []).map(post => post.user_id).filter(Boolean)));
         let profileMap: Record<string, Pick<Profile, "username" | "avatar_url"> | null> = {};
 
@@ -177,7 +176,7 @@ function LatestTexts() {
     return (
       <section className="py-28 sm:py-36 md:py-44 px-6" style={{ background: C.surface }}>
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-sm text-center">Încărcare...</p>
+          <p className="text-sm text-center text-slate-400">Încărcare…</p>
         </div>
       </section>
     );
@@ -187,7 +186,7 @@ function LatestTexts() {
     return (
       <section className="py-28 sm:py-36 md:py-44 px-6" style={{ background: C.surface }}>
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-sm text-center text-red-500">{error}</p>
+          <p className="text-sm text-center text-rose-500/70">{error}</p>
         </div>
       </section>
     );
@@ -196,7 +195,7 @@ function LatestTexts() {
   return (
     <section className="py-28 sm:py-36 md:py-44 px-6" style={{ background: C.surface }}>
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-16 sm:mb-20">
+        <div className="text-center mb-20 sm:mb-28">
           <span className="text-[10px] sm:text-xs uppercase tracking-[0.35em]" style={{ color: C.accent }}>
             Ultimele texte
           </span>
@@ -205,56 +204,44 @@ function LatestTexts() {
           </h2>
         </div>
 
-        <div className="space-y-6">
-          {texts.map((text, index) => (
-            <article key={text.id} className="group rounded-3xl border p-8 transition-all duration-500 hover:-translate-y-1" style={{
-              background: C.bg,
-              borderColor: C.border,
-            }}>
-              <div className="h-px w-8 mb-4" style={{ background: C.accent }} />
-              
-              <h3 className="font-serif text-xl sm:text-2xl font-medium leading-snug" style={{ color: C.text }}>
-                {text.title}
-              </h3>
+        <div className="space-y-0">
+          {texts.map((text) => {
+            const preview = htmlToPlainTextWithNewlines(text.content.substring(0, 180));
+            const metaParts: string[] = [];
+            if (text.profile?.username) metaParts.push(`@${text.profile.username}`);
+            if (text.text_type) metaParts.push(text.text_type);
+            metaParts.push(new Date(text.created_at).toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" }));
+            const meta = metaParts.join(" · ");
 
-              <p className="mt-3 text-sm leading-[1.85]" style={{ color: C.muted, whiteSpace: "pre-line" }}>
-                {htmlToPlainTextWithNewlines(text.content.substring(0, 200))}${text.content.length > 200 ? '...' : ''}
-              </p>
+            return (
+              <article key={text.id} className="group py-10 sm:py-12 first:pt-0 last:pb-0 border-b border-slate-200/60 last:border-none">
+                <Link href={`/post/${text.id}`}>
+                  <h3 className="font-serif text-[28px] sm:text-[32px] md:text-[36px] leading-[1.2] transition-opacity duration-300 group-hover:opacity-50" style={{ color: C.text }}>
+                    {text.title}
+                  </h3>
+                </Link>
 
-              <div className="mt-4 flex items-center gap-3 text-sm text-slate-500">
-                {text.profile ? (
-                  <>
-                    <Image
-                      src={text.profile.avatar_url ?? "/user.jpg"}
-                      alt={text.profile.username ?? "Author avatar"}
-                      width={32}
-                      height={32}
-                      className="rounded-full object-cover"
-                    />
-                    <span>@{text.profile.username ?? "anonim"}</span>
-                  </>
-                ) : (
-                  <>
-                    <Image
-                      src="/user.jpg"
-                      alt="Author avatar"
-                      width={32}
-                      height={32}
-                      className="rounded-full object-cover"
-                    />
-                    <span>@anonim</span>
-                  </>
-                )}
-                <span>•</span>
-                <span className="text-xs">{new Date(text.created_at).toLocaleDateString('ro-RO', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              </div>
+                <p className="mt-3 text-[18px] leading-[1.7]" style={{ color: C.muted, whiteSpace: "pre-line" }}>
+                  {preview}{text.content.length > 180 ? "…" : ""}
+                </p>
 
-              <Link href={`/post/${text.id}`} className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#B87D4B] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#9E6538]">
-                Citește textul complet
-                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7h8M7 4l3 3-3 3"/></svg>
-              </Link>
-            </article>
-          ))}
+                <p className="mt-2.5 text-[14px] text-slate-500" style={{ opacity: 0.7 }}>
+                  {meta}
+                </p>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="mt-16 text-center">
+          <Link
+            href="/texte"
+            className="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.25em] font-medium transition-colors"
+            style={{ color: C.accent, borderBottom: `1px solid ${C.accent}40` }}
+          >
+            Toate textele
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7h8M7 4l3 3-3 3"/></svg>
+          </Link>
         </div>
       </div>
     </section>
