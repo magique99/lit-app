@@ -860,22 +860,6 @@ export default function TextePage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-20 pt-12 border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-          <div className="flex flex-wrap justify-center gap-8 text-sm text-slate-600">
-            <Link href="/about" className="hover:text-amber-600 transition-colors">
-              Despre
-            </Link>
-            <Link href="/contact" className="hover:text-amber-600 transition-colors">
-              Contact
-            </Link>
-          </div>
-          <p className="mt-6 text-xs text-slate-500">
-            © {new Date().getFullYear()} Literatura9. Toate drepturile rezervate.
-          </p>
-        </div>
-      </footer>
     </main>
   );
 }
