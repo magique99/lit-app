@@ -730,6 +730,7 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
             <Link
               href={`/post/${post.id}#comments`}
               className="inline-flex items-center gap-2 hover:underline hover:text-amber-600 transition-colors cursor-pointer"
+              scroll
             >
               💬<span>{getComments(post.id)}</span>
             </Link>
