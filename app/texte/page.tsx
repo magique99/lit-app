@@ -7,6 +7,19 @@ import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
 import type { Comment, Post, Profile, LikeInsert } from "@/lib/types";
 
+/* =====================================================
+    COLOANE
+    ===================================================== */
+const C = {
+  bg:           "#F7F3EE",   // cream, cald
+  surface:      "#FFFCF7",   // alb-crem pentru carduri
+  text:         "#2A2520",   // cafenie închis, nu negru pur
+  muted:        "#7A7268",   // cafenie moderată
+  accent:       "#B87D4B",   // teracotă / aramiu — singurul accent
+  accentHover:  "#9E6538",
+  border:       "#E8E0D8",   // linii foarte discrete
+};
+
 type PostWithProfile = Post & {
   profile?: Pick<Profile, "username" | "avatar_url"> | null;
   likesCount?: number;
