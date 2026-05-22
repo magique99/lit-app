@@ -756,23 +756,23 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
                  Ultimele comentarii
                </h2>
 
-              <div className="space-y-3 py-[10px]">
-                {latestComments.slice(0, 3).map((comment) => (
-                  <Link key={comment.id} href={`/post/${comment.post_id}`}>
-                    <div className="cursor-pointer rounded-3xl border border-slate-200 bg-[#fef8f1] p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-                      <p
-                        className="text-sm leading-7 text-slate-700 line-clamp-2"
-                        style={{ whiteSpace: "pre-line" }}
-                      >
-                        {htmlToPlainTextWithNewlines(comment.content)}
-                      </p>
-                      <span className="mt-2 block text-xs uppercase tracking-[0.24em] text-slate-500">
-                        Vezi comentariul →
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+               <div className="space-y-3 py-[10px]">
+                 {latestComments.slice(0, 3).map((comment) => (
+                   <Link key={comment.id} href={`/post/${comment.post_id}#comment-${comment.id}`}>
+                     <div className="cursor-pointer rounded-3xl border border-slate-200 bg-[#fef8f1] p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+                       <p
+                         className="text-sm leading-7 text-slate-700 line-clamp-2"
+                         style={{ whiteSpace: "pre-line" }}
+                       >
+                         {htmlToPlainTextWithNewlines(comment.content)}
+                       </p>
+                       <span className="mt-2 block text-xs uppercase tracking-[0.24em] text-slate-500">
+                         Vezi comentariul →
+                       </span>
+                     </div>
+                   </Link>
+                 ))}
+               </div>
             </div>
 
             <div className="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
