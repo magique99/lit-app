@@ -676,7 +676,7 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
 {posts.map((post, index) => (
   <article key={post.id} className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
             <div className="p-4 sm:p-6 lg:p-7">
-         <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-4">
            <div className="flex flex-col items-start gap-1">
              <div className="flex items-center gap-3">
                <img
@@ -690,8 +690,8 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
                  </p>
                </div>
              </div>
-            <Link href={`/post/${post.id}`}>
-              <h2 className="text-lg font-semibold leading-none text-slate-950 lg:text-xl">
+            <Link href={`/post/${post.id}`} className="hover:underline hover:text-amber-600 transition-colors">
+              <h2 className="text-lg font-semibold leading-none text-slate-950 lg:text-xl cursor-pointer">
                 {post.title}
               </h2>
             </Link>
