@@ -25,36 +25,32 @@ export function useComments(postId: string) {
 
     let removeChannel: (() => void) | undefined;
 
-    (async () => {
-      try {
-        const channel = supabase
-          .channel(`comments-realtime-${postId}`)
-          .on(
-            "postgres_changes",
-            {
-              event: "INSERT",
-              schema: "public",
-              table: "comments",
-              filter: `post_id=eq.${postId}`,
-            },
-            (payload) => {
-              setComments((prev) => [...prev, payload.new as Comment]);
-            },
-          );
+     (async () => {
+       try {
+         const channel = supabase
+           .channel(`comments-realtime-${postId}`)
+           .on(
+             "postgres_changes",
+             {
+               event: "INSERT",
+               schema: "public",
+               table: "comments",
+               filter: `post_id=eq.${postId}`,
+             },
+             (payload) => {
+               setComments((prev) => [...prev, payload.new as Comment]);
+             },
+           );
 
-        const { error } = await channel.subscribe();
-        if (error) {
-          console.warn("Comments realtime error:", error);
-          return;
-        }
+         await channel.subscribe();
 
-        removeChannel = () => {
-          void supabase.removeChannel(channel).catch(() => {});
-        };
-      } catch (err) {
-        console.error("Comments realtime setup failed:", err);
-      }
-    })();
+         removeChannel = () => {
+           void supabase.removeChannel(channel).catch(() => {});
+         };
+       } catch (err) {
+         console.error("Comments realtime setup failed:", err);
+       }
+     })();
 
     return () => {
       removeChannel?.();
