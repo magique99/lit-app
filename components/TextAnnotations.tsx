@@ -94,6 +94,8 @@ export default function TextAnnotations({ postId, postContent }: { postId: strin
   }, [loadAnnotations]);
 
   useEffect(() => {
+
+  useEffect(() => {
     function handleMouseUp() {
       const selection = window.getSelection();
       if (!selection || !selection.toString().trim()) return;
