@@ -537,8 +537,10 @@ export default function TextePage() {
           />
         </div>
 
-        {/* ── FILTER TAGS ── */}
-        <div className="mb-5">
+        {/* ── FILTER ROW ── */}
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mb-16">
+
+          {/* tip text */}
           <div className="flex flex-wrap gap-2">
             {TEXT_TYPES.map((t) => {
               const active = (filterType || "Toate") === t;
@@ -563,33 +565,40 @@ export default function TextePage() {
               );
             })}
           </div>
-        </div>
 
-        <div className="mb-16">
-          <div className="flex flex-wrap gap-2">
-            {GENRES.map((g) => {
-              const active = (filterGenre || "Toate") === g;
-              return (
-                <button
-                  key={g}
-                  onClick={() => {
-                    setFilterGenre(g === "Toate" ? "" : g);
-                    setPage(0); setPosts([]); setHasMore(true);
-                  }}
-                  className={`
-                    rounded-full px-4 py-[6px] text-[12px] font-medium tracking-wide
-                    transition-colors duration-150
-                    ${active
-                      ? "bg-slate-900 text-white"
-                      : "bg-slate-100/70 text-slate-500 hover:bg-slate-200/70 hover:text-slate-700"
-                    }
-                  `}
-                >
-                  {g}
-                </button>
-              );
-            })}
+          {/* separator */}
+          <span className="text-slate-200 select-none">|</span>
+
+          {/* genre dropdown */}
+          <div className="relative">
+            <select
+              value={filterGenre}
+              onChange={(e) => {
+                setFilterGenre(e.target.value);
+                setPage(0); setPosts([]); setHasMore(true);
+              }}
+              className="
+                appearance-none
+                rounded-full px-4 pr-8 py-[6px]
+                text-[12px] font-medium tracking-wide
+                bg-slate-100/70 text-slate-500
+                hover:bg-slate-200/70 hover:text-slate-700
+                transition-colors duration-150
+                cursor-pointer
+                focus:outline-none
+              "
+            >
+              <option value="">Genuri</option>
+              {GENRES.filter((g) => g !== "Toate").map((g) => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+            {/* chevron */}
+            <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] text-slate-400">
+              ▾
+            </span>
           </div>
+
         </div>
 
         {/* ── LIVE STATS ── */}
@@ -681,7 +690,7 @@ export default function TextePage() {
                       {htmlToPlainTextWithNewlines(post.content).length > 220 ? "…" : ""}
                     </p>
 
-                    <div className="flex items-center gap-5 text-[11px] text-slate-300">
+                    <div className="flex items-center gap-5 text-[11px]">
                       <button
                         type="button"
                         onClick={(e) => {
@@ -689,19 +698,19 @@ export default function TextePage() {
                           void handleLike(post.id);
                         }}
                         disabled={likingIds.has(post.id) || !currentUserId}
-                        className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="inline-flex items-center gap-1.5 text-slate-300 transition-colors hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed"
                       >
                         <span>♥</span>
-                        <span className="tabular-nums">{getLikes(post.id)}</span>
+                        <span className="tabular-nums text-slate-500">{getLikes(post.id)}</span>
                       </button>
 
                       <Link
                         href={`/post/${post.id}#comments`}
                         scroll
-                        className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-500"
+                        className="inline-flex items-center gap-1.5 text-slate-300 transition-colors hover:text-slate-600"
                       >
                         <span>✦</span>
-                        <span className="tabular-nums">{getComments(post.id)}</span>
+                        <span className="tabular-nums text-slate-500">{getComments(post.id)}</span>
                       </Link>
                     </div>
                   </div>
