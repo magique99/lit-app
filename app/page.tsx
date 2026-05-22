@@ -214,20 +214,16 @@ function CTA() {
             Scrie un text
           </Link>
           <Link
-            href="/signup"
+            href="/texte"
             className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
             style={{
               color: C.accent,
               border: `1.5px solid ${C.accent}`,
             }}
           >
-            Creează cont
+            Texte
           </Link>
         </div>
-
-        <p className="mt-4 text-xs" style={{ color: C.border }}>
-          Explorațiile utilizatorilor sunt disponibile după autentificare.
-        </p>
       </div>
     </section>
   );

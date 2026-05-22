@@ -190,7 +190,7 @@ export default function Navbar() {
                }
              }}
            >
-             {user ? "Adaugă text" : "Înregistrează-te"}
+             {user && "Adaugă text"}
            </button>
 
               {user ? (
