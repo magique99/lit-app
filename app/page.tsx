@@ -316,6 +316,9 @@ export default function HomePage() {
       {/* DESPRE / MANIFEST */}
       <Manifest />
 
+      {/* ULTIMELE 3 TEXT */}
+      <LatestTexts />
+
       {/* FEATURES */}
       <Features />
 
