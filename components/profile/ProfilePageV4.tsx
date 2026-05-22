@@ -1,6 +1,5 @@
 "use client";
 
-import ProfileHeaderV4 from "@/components/profile/ProfileHeaderV4";
 import ProfileTabsV4 from "@/components/profile/ProfileTabsV4";
 import ProfilePostsV2 from "@/components/profile/ProfilePostsV2";
 import { useEffect, useState } from "react";
@@ -44,7 +43,7 @@ export default function ProfilePage() {
         setLoading(false);
       } catch (err) {
         console.error("LOAD PROFILE ERROR:", err);
-        setError("Nu am putut încărca informațiile de profil.");
+        setError("A apărut o eroare la încărcarea profilului.");
         setLoading(false);
       }
     }
@@ -52,16 +51,61 @@ export default function ProfilePage() {
     loadProfile();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="text-center py-12 text-slate-400 text-sm">
+        Încărcare…
+      </div>
+    );
+  }
+
+  if (error || !profile) {
+    return (
+      <div className="text-center py-12 text-slate-500 text-sm">
+        <p>{error || "Acest utilizator nu are un profil configurat."}</p>
+      </div>
+    );
+  }
+
   return (
-    <main className="max-w-screen-2xl mx-auto p-6 space-y-6">
-      <ProfileHeaderV4 />
-      
+    <div className="space-y-8">
+      {/* ── SECTION HEADER ── */}
+      <h2
+        className="font-serif text-[28px] sm:text-[32px] leading-tight"
+        style={{ color: "#2A2520" }}
+      >
+        @{profile.username}
+      </h2>
+
+      {/* ── STATE TAGS ── */}
+      <div className="flex flex-wrap items-center gap-4 text-[13px]">
+        {profile.bio && (
+          <span className="text-slate-500">{profile.bio}</span>
+        )}
+        <span className="text-slate-300">·</span>
+        <span className="text-slate-400">
+          {profile.city && profile.country
+            ? `${profile.city}, ${profile.country}`
+            : profile.city || profile.country || "Locatie necunoscuta"}
+        </span>
+        <span className="text-slate-300">·</span>
+        <span className="text-slate-400">
+          Inregistrat {profile.created_at
+            ? new Date(profile.created_at).toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" })
+            : "—"}
+        </span>
+      </div>
+
+      {/* ── SEPARATOR ── */}
+      <div className="h-px bg-slate-200/70" />
+
+      {/* ── TABS + CONTENT ── */}
       <ProfileTabsV4
         postsSlot={<ProfilePostsV2 />}
         profile={profile}
         loading={loading}
         error={error}
       />
-    </main>
+    </div>
   );
 }

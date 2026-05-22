@@ -2,17 +2,17 @@ import ProfilePageV4 from "@/components/profile/ProfilePageV4";
 
 export default function ProfilePage() {
   return (
-     <main className="max-w-7xl mx-auto p-6">
-      
-      <h1 className="text-3xl font-bold mb-8">
-        Profilul meu
-      </h1>
+    <main className="min-h-screen" style={{ background: "#F7F3EE" }}>
+      <div className="max-w-[760px] mx-auto px-6 sm:px-8 pt-16 pb-28">
 
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+        <p
+          className="text-[11px] uppercase tracking-[0.3em] mb-12"
+          style={{ color: "#B87D4B" }}
+        >
+          Setările contului
+        </p>
 
-        <section className="border rounded-xl p-5">
-          <ProfilePageV4 />
-        </section>
+        <ProfilePageV4 />
 
       </div>
     </main>

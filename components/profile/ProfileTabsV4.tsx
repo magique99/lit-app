@@ -10,93 +10,109 @@ export default function ProfileTabsV4({
   error,
 }: {
   postsSlot: React.ReactNode;
-  profile: Profile | null;
+  profile: Profile;
   loading: boolean;
   error: string | null;
 }) {
   const [tab, setTab] = useState<
     "about" | "posts" | "settings"
-  >("posts");
+  >("about");
 
   return (
     <div className="w-full">
 
-      {/* TAB NAV */}
+      {/* TAB NAV — minimal border-bottom line */}
       <div
         className="
-          flex
-          justify-around
-          sm:justify-start
-          gap-6
-          border-b
-          border-gray-100
-          mb-4
+          flex gap-10
+          border-b border-slate-200/70
+          mb-10
         "
       >
-
         <TabButton
           active={tab === "about"}
           onClick={() => setTab("about")}
         >
           About
         </TabButton>
-
         <TabButton
           active={tab === "posts"}
           onClick={() => setTab("posts")}
         >
-          Posts
+          Texte
         </TabButton>
-
         <TabButton
           active={tab === "settings"}
           onClick={() => setTab("settings")}
         >
-          Settings
+          Setări
         </TabButton>
-
       </div>
 
       {/* CONTENT */}
-      <div>
+      {tab === "about" && (
+        <div className="space-y-8">
+          {loading ? (
+            <div className="text-sm text-slate-400">Încărcare…</div>
+          ) : error ? (
+            <div className="text-sm text-rose-500">{error}</div>
+          ) : profile ? (
+            <AboutContent profile={profile} />
+          ) : (
+            <div className="text-sm text-slate-400">Niciun profil configurat.</div>
+          )}
+        </div>
+      )}
 
-        {tab === "about" && (
+      {tab === "posts" && postsSlot}
+
+      {tab === "settings" && (
+        <div className="space-y-8">
+          <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
+            Setările contului
+          </p>
           <div className="space-y-6">
-            {loading ? (
-              <div className="text-sm text-gray-600 px-1">
-                Loading profile...
-              </div>
-            ) : error ? (
-              <div className="text-sm text-red-600 px-1">
-                {error}
-              </div>
-            ) : profile ? (
-              <AboutContent profile={profile} />
-            ) : (
-              <div className="text-sm text-gray-600 px-1">
-                No profile data available
-              </div>
-            )}
+            {/* username */}
+            <div>
+              <label className="block text-[12px] uppercase tracking-[0.2em] text-slate-400 mb-2">
+                Nume utilizator
+              </label>
+              <p className="text-[15px] font-medium text-slate-700">
+                @{profile.username || "—"}
+              </p>
+            </div>
+            {/* email */}
+            <div>
+              <label className="block text-[12px] uppercase tracking-[0.2em] text-slate-400 mb-2">
+                Email
+              </label>
+              <p className="text-[15px] text-slate-500">
+                {profile.user_id}
+              </p>
+            </div>
+            {/* password change link */}
+            <div className="pt-4">
+              <button
+                onClick={() => alert("Reset password — needs implementation")}
+                className="
+                  text-[14px] font-medium
+                  border-b border-slate-300 pb-0.5
+                  text-slate-600 hover:text-slate-900
+                  transition-colors
+                "
+              >
+                Schimbă parola
+              </button>
+            </div>
           </div>
-        )}
-
-        {tab === "posts" && postsSlot}
-
-        {tab === "settings" && (
-          <div className="text-sm text-gray-600 px-1">
-            Settings coming soon
-          </div>
-        )}
-
-      </div>
+        </div>
+      )}
 
     </div>
   );
 }
 
-/* =========================
-    TAB BUTTON (Instagram-like)
-======================= */
+/* ── TAB BUTTON ── */
 
 function TabButton({
   children,
@@ -111,170 +127,133 @@ function TabButton({
     <button
       onClick={onClick}
       className={`
-        relative
-        pb-3
-        text-sm
-        transition
-        ${
-          active
-            ? "text-black font-medium"
-            : "text-gray-500 hover:text-black"
+        pb-3 text-[13px] tracking-wide transition-colors duration-150
+        ${active
+          ? "text-slate-900 font-medium border-b-2 border-[#B87D4B]"
+          : "text-slate-400 hover:text-slate-600"
         }
       `}
     >
       {children}
-
-      {/* ACTIVE INDICATOR */}
-      <span
-        className={`
-          absolute left-0 bottom-0
-          h-[2px] w-full
-          transition
-          ${
-            active
-              ? "bg-black"
-              : "bg-transparent"
-          }
-        `}
-      />
     </button>
   );
 }
 
-/* =========================
-    ABOUT CONTENT
-======================= */
+/* ── ABOUT CONTENT ── */
 
 function AboutContent({ profile }: { profile: Profile }) {
-  // Format date function
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "Not available";
-    return new Date(dateString).toLocaleDateString("ro-RO", {
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    });
-  };
+  const fmtDate = (s: string | null) =>
+    !s ? "—" : new Date(s).toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" });
 
   return (
-    <div className="space-y-8">
-        {/* STATISTICS */}
-        <div className="border-t pt-6">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">
-            Statistici
-          </h3>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-center px-4 sm:px-6">
-            <div className="flex flex-col items-center gap-1">
-              <p className="text-2xl font-bold text-gray-900">{profile.posts_count ?? 0}</p>
-              <p className="text-sm text-gray-500">Posts</p>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <p className="text-2xl font-bold text-gray-900">{profile.followers_count ?? 0}</p>
-              <p className="text-sm text-gray-500">Followers</p>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <p className="text-2xl font-bold text-gray-900">{profile.following_count ?? 0}</p>
-              <p className="text-sm text-gray-500">Following</p>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <p className="text-2xl font-bold text-gray-900">{profile.likes_count ?? 0}</p>
-              <p className="text-sm text-gray-500">Likes</p>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <p className="text-2xl font-bold text-gray-900">{profile.comments_count ?? 0}</p>
-              <p className="text-sm text-gray-500">Comments</p>
-            </div>
-          </div>
-        </div>
+    <div className="space-y-10">
 
-      {/* ADDITIONAL INFO */}
-      <div className="border-t pt-6">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900">
-          Mai multe detalii
-        </h3>
-        <div className="space-y-4 text-sm">
-          <div className="flex items-center space-x-3">
-            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
-              📍
-            </span>
-            <span>
-              {profile.city && profile.country ? (
-                <>
-                  {profile.city}, {profile.country}
-                </>
-              ) : !profile.city && profile.country ? (
-                <span>{profile.country}</span>
-              ) : profile.city && !profile.country ? (
-                <span>{profile.city}</span>
-              ) : (
-                <span className="text-gray-400">Not specified</span>
-              )}
-            </span>
+      {/* STATISTICS */}
+      <div className="grid grid-cols-3 gap-8">
+        {[
+          ["Texte",      profile.posts_count ?? 0],
+          ["Urmaritori", profile.followers_count ?? 0],
+          ["Urmariti",   profile.following_count ?? 0],
+          ["Aprecieri",   profile.likes_count ?? 0],
+          ["Comentarii",  profile.comments_count ?? 0],
+        ].map(([label, value]) => (
+          <div key={label as string} className="text-center">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-1.5">
+              {label}
+            </p>
+            <p className="font-serif text-2xl font-medium tabular-nums" style={{ color: "#2A2520" }}>
+              {value}
+            </p>
           </div>
-          
-          <div className="flex items-center space-x-3">
-            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
-              📞
-            </span>
-            <span>
-              {profile.phone || <span className="text-gray-400">Not specified</span>}
-            </span>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
-              🏍️
-            </span>
-            <span>
-              {profile.vehicle || <span className="text-gray-400">Not specified</span>}
-            </span>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
-              🏆
-            </span>
-            <span>
-              {profile.awards || <span className="text-gray-400">Not specified</span>}
-            </span>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
-              🎂
-            </span>
-            <span>
-              {profile.age ? (
-                <>
-                  {profile.age} ani
-                  {profile.gender && (
-                    <span className="ml-1 text-xs text-gray-500">
-                      ({profile.gender === 'masculin' ? 'M' : 
-                       profile.gender === 'feminin' ? 'F' : 'O'})
-                    </span>
-                  )}
-                </>
-              ) : (
-                <span className="text-gray-400">Not specified</span>
-              )}
-            </span>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs font-medium text-gray-600">
-              📅
-            </span>
-            <span>
-              {profile.created_at ? (
-                <span>{formatDate(profile.created_at)}</span>
-              ) : (
-                <span className="text-gray-400">Not specified</span>
-              )}
-            </span>
-          </div>
-        </div>
+        ))}
       </div>
+
+      <div className="h-px bg-slate-200/70" />
+
+      {/* BI0 */}
+      {profile.bio && (
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-2">
+            Despre
+          </p>
+          <p
+            className="text-[15px] leading-[1.8] text-slate-500"
+            style={{ whiteSpace: "pre-line" }}
+          >
+            {profile.bio}
+          </p>
+        </div>
+      )}
+
+      <div className="h-px bg-slate-200/70" />
+
+      {/* ADDITIONAL DETAILS */}
+      <div className="space-y-4 text-[14px]">
+        <Detail // Location
+          icon="📍"
+          label="Locatie"
+          value={profile.city && profile.country
+            ? `${profile.city}, ${profile.country}`
+            : profile.city || profile.country || "Nespecificat"
+          }
+        />
+        <Detail // Joined
+          icon="📅"
+          label="Inregistrat"
+          value={fmtDate(profile.created_at)}
+        />
+        <Detail // Gender
+          icon="○"
+          label="Gen"
+          value={profile.gender
+            ? (profile.gender === "masculin" ? "Masculin"
+              : profile.gender === "feminin" ? "Feminin"
+              : profile.gender)
+            : "Nespecificat"
+          }
+        />
+        {profile.age && (
+          <Detail
+            icon="🎂"
+            label="Varsta"
+            value={`${profile.age} ani`}
+          />
+        )}
+        {profile.phone && (
+          <Detail
+            icon="⊡"
+            label="Telefon"
+            value={profile.phone}
+          />
+        )}
+        {profile.vehicle && (
+          <Detail
+            icon="◈"
+            label="Moto"
+            value={profile.vehicle}
+          />
+        )}
+        {profile.awards && (
+          <Detail
+            icon="✦"
+            label="Premii"
+            value={profile.awards}
+          />
+        )}
+      </div>
+
     </div>
   );
 }
 
+/* ── DETAIL ROW ── */
+
+function Detail({ icon, label, value }: { icon: string; label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-4">
+      <span className="text-[13px] w-5 text-center text-slate-400">{icon}</span>
+      <span className="text-[11px] uppercase tracking-[0.15em] text-slate-400 w-28 shrink-0">{label}</span>
+      <span className="text-slate-600">{value}</span>
+    </div>
+  );
+}
