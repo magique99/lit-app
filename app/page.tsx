@@ -505,12 +505,17 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
       } as LikeInsert);
 
     if (!error && postData && postData.user_id && postData.user_id !== currentUserId) {
-      await supabase.from("notifications").insert({
+      const { error: notifError } = await supabase.from("notifications").insert({
         user_id: postData.user_id,
         actor_id: currentUserId,
         post_id: postId,
         type: "like_post",
       });
+      if (notifError) {
+        console.error("NOTIFICATION ERROR:", notifError);
+      } else {
+        console.log("NOTIFICATION CREATED for user:", postData.user_id);
+      }
     }
   }
 
