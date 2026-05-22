@@ -7,19 +7,6 @@ import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
 import type { Comment, Post, Profile, LikeInsert } from "@/lib/types";
 
-/* =====================================================
-    COLOANE
-    ===================================================== */
-const C = {
-  bg:           "#F7F3EE",   // cream, cald
-  surface:      "#FFFCF7",   // alb-crem pentru carduri
-  text:         "#2A2520",   // cafenie închis, nu negru pur
-  muted:        "#7A7268",   // cafenie moderată
-  accent:       "#B87D4B",   // teracotă / aramiu — singurul accent
-  accentHover:  "#9E6538",
-  border:       "#E8E0D8",   // linii foarte discrete
-};
-
 type PostWithProfile = Post & {
   profile?: Pick<Profile, "username" | "avatar_url"> | null;
   likesCount?: number;
@@ -30,6 +17,7 @@ type PostWithProfile = Post & {
   likes?: { id: string }[] | null;
   comments?: { id: string }[] | null;
 };
+
 
 const PAGE_SIZE = 5;
 
@@ -113,7 +101,7 @@ export default function TextePage() {
     setCommentCounts((prev) => ({ ...prev, ...nextComments }));
   }
 
-  async function ensureProfiles(userIds: string[]) {
+  const ensureProfiles = useCallback(async (userIds: string[]) => {
     if (userIds.length === 0) return;
 
     const { data: existingProfiles, error: checkError } = await supabase
@@ -140,7 +128,7 @@ export default function TextePage() {
         .insert(profilesToCreate);
       if (insertError) console.error("CREATE PROFILES ERROR:", insertError);
     }
-  }
+  }, []);
 
   const loadPosts = useCallback(async () => {
     if (loadingRef.current || !hasMore) return;
@@ -249,7 +237,7 @@ export default function TextePage() {
 
     loadingRef.current = false;
     setLoading(false);
-  }, [hasMore, page, filterType, filterGenre, searchQuery]);
+  }, [ensureProfiles, hasMore, page, filterType, filterGenre, searchQuery]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -530,378 +518,335 @@ export default function TextePage() {
   const getComments = (postId: string) => commentCounts[postId] ?? 0;
 
   return (
-    <main className="relative min-h-screen bg-[#f7efe4] text-slate-950 pt-8 lg:pt-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <section className="relative overflow-hidden rounded-[3rem] bg-[#fcf5ec] text-slate-950 shadow-[0_60px_120px_rgba(15,23,42,0.12)] ring-1 ring-slate-200/70">
-          <div className="relative min-h-[20vh] sm:min-h-[25vh] lg:min-h-[35vh] max-h-[620px]">
-            <Image
-              src="/Literatura9-1.png"
-              alt="Literatura banner"
-              fill
-              priority
-              className="object-cover object-center opacity-90"
-            />
+    <main className="min-h-screen" style={{ background: "#faf8f5" }}>
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 pt-14 pb-24">
 
-            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-[#f8efe4]/40 to-[#f1e2d5]/90" />
-            <div className="absolute inset-0 flex items-center">
-              <div className="max-w-4xl px-6 py-10 sm:px-10 lg:px-16">
-                {/* banner content */}
-              </div>
-            </div>
+        {/* ── PAGE LABEL ── */}
+        <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-12">
+          Texte
+        </p>
+
+        {/* ── SEARCH ── */}
+        <div className="mb-14">
+          <input
+            type="text"
+            placeholder="Caută după titlu sau conținut…"
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full rounded-2xl border border-slate-200 bg-white/60 px-5 py-3.5 text-[15px] text-slate-800 placeholder:text-slate-300 focus:border-slate-400 focus:bg-white focus:outline-none transition-colors"
+          />
+        </div>
+
+        {/* ── FILTER TAGS ── */}
+        <div className="mb-5">
+          <div className="flex flex-wrap gap-2">
+            {TEXT_TYPES.map((t) => {
+              const active = (filterType || "Toate") === t;
+              return (
+                <button
+                  key={t}
+                  onClick={() => {
+                    setFilterType(t === "Toate" ? "" : t);
+                    setPage(0); setPosts([]); setHasMore(true);
+                  }}
+                  className={`
+                    rounded-full px-4 py-[6px] text-[12px] font-medium tracking-wide
+                    transition-colors duration-150
+                    ${active
+                      ? "bg-slate-900 text-white"
+                      : "bg-slate-100/70 text-slate-500 hover:bg-slate-200/70 hover:text-slate-700"
+                    }
+                  `}
+                >
+                  {t}
+                </button>
+              );
+            })}
           </div>
+        </div>
+
+        <div className="mb-16">
+          <div className="flex flex-wrap gap-2">
+            {GENRES.map((g) => {
+              const active = (filterGenre || "Toate") === g;
+              return (
+                <button
+                  key={g}
+                  onClick={() => {
+                    setFilterGenre(g === "Toate" ? "" : g);
+                    setPage(0); setPosts([]); setHasMore(true);
+                  }}
+                  className={`
+                    rounded-full px-4 py-[6px] text-[12px] font-medium tracking-wide
+                    transition-colors duration-150
+                    ${active
+                      ? "bg-slate-900 text-white"
+                      : "bg-slate-100/70 text-slate-500 hover:bg-slate-200/70 hover:text-slate-700"
+                    }
+                  `}
+                >
+                  {g}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── LIVE STATS ── */}
+        <div className="grid grid-cols-4 gap-px rounded-2xl overflow-hidden mb-20 bg-slate-200/60">
+          {[
+            { label: "Texte",   value: posts.length },
+            { label: "Comentarii", value: latestComments.length },
+            { label: "Reacții", value: totalLikes },
+            { label: "Autori",  value: authorsCount },
+          ].map(({ label, value }) => (
+            <div
+              key={label}
+              className="bg-white/40 px-4 py-6 text-center"
+            >
+              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-1.5">
+                {label}
+              </p>
+              <p className="text-2xl font-light text-slate-800 tabular-nums">
+                {value}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* ── ERRORS ── */}
+        {error && (
+          <p className="mb-10 text-sm text-rose-500/80">{error}</p>
+        )}
+        {likeError && (
+          <p className="mb-10 text-sm text-amber-600/80">{likeError}</p>
+        )}
+
+        {/* ── POSTS LIST ── */}
+        <section className="mb-28">
+          <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-10">
+            Ultimele postări
+          </p>
+
+          <div className="flex flex-col">
+            {posts.map((post) => (
+              <article
+                key={post.id}
+                className="group py-8 first:pt-0 last:pb-0"
+              >
+                <div className="flex items-start gap-5">
+
+                  {/* avatar */}
+                  <Link
+                    href={post.user_id ? `/profile/${post.user_id}` : "#"}
+                    className="mt-0.5 shrink-0"
+                  >
+                    <Image
+                      src={post.profile?.avatar_url ?? "/user.jpg"}
+                      alt={post.profile?.username ?? "author"}
+                      width={34}
+                      height={34}
+                      className="rounded-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
+                    />
+                  </Link>
+
+                  {/* content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2 mb-1">
+                      {post.profile?.username ? (
+                        <Link
+                          href={`/profile/${post.user_id}`}
+                          className="text-[11px] font-medium text-slate-500 hover:text-slate-800 transition-colors"
+                        >
+                          @{post.profile.username}
+                        </Link>
+                      ) : (
+                        <span className="text-[11px] text-slate-400">
+                          anonim
+                        </span>
+                      )}
+                    </div>
+
+                    <Link href={`/post/${post.id}`}>
+                      <h2 className="text-[17px] font-medium text-slate-900 leading-snug mb-2 group-hover:text-slate-600 transition-colors">
+                        {post.title}
+                      </h2>
+                    </Link>
+
+                    <p
+                      className="text-[13px] leading-relaxed text-slate-400 max-w-xl mb-4"
+                      style={{ whiteSpace: "pre-line" }}
+                    >
+                      {htmlToPlainTextWithNewlines(post.content).slice(0, 220)}
+                      {htmlToPlainTextWithNewlines(post.content).length > 220 ? "…" : ""}
+                    </p>
+
+                    <div className="flex items-center gap-5 text-[11px] text-slate-300">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault(); e.stopPropagation();
+                          void handleLike(post.id);
+                        }}
+                        disabled={likingIds.has(post.id) || !currentUserId}
+                        className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        <span>♥</span>
+                        <span className="tabular-nums">{getLikes(post.id)}</span>
+                      </button>
+
+                      <Link
+                        href={`/post/${post.id}#comments`}
+                        scroll
+                        className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-500"
+                      >
+                        <span>✦</span>
+                        <span className="tabular-nums">{getComments(post.id)}</span>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+                {/* divider */}
+                <div className="mt-8 border-b border-slate-100/80 last:border-none" />
+              </article>
+            ))}
+          </div>
+
+          <div ref={observerRef} className="h-4" />
+
+          {loading && posts.length > 0 && (
+            <p className="mt-10 text-center text-[12px] text-slate-300 tracking-wider uppercase">
+              Încărcare…
+            </p>
+          )}
         </section>
 
-        <div className="mt-6 grid grid-cols-4 gap-2">
-          <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3 shadow-[0_6px_12px_rgba(15,23,42,0.04)]">
-            <p className="text-[8px] xs:text-[10px] sm:text-xs uppercase tracking-[0.2em] text-slate-500">
-              Texte
-            </p>
-            <p className="mt-0.5 text-sm sm:text-base font-semibold text-slate-950">
-              {posts.length}
-            </p>
-          </div>
-          <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3 shadow-[0_6px_12px_rgba(15,23,42,0.04)]">
-            <p className="text-[8px] xs:text-[10px] sm:text-xs uppercase tracking-[0.2em] text-slate-500">
-              Comentarii
-            </p>
-            <p className="mt-0.5 text-sm sm:text-base font-semibold text-slate-950">
-              {latestComments.length}
-            </p>
-          </div>
-          <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3 shadow-[0_6px_12px_rgba(15,23,42,0.04)]">
-            <p className="text-[8px] xs:text-[10px] sm:text-xs uppercase tracking-[0.2em] text-slate-500">
-              Reacții
-            </p>
-            <p className="mt-0.5 text-sm sm:text-base font-semibold text-slate-950">
-              {totalLikes}
-            </p>
-          </div>
-          <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3 shadow-[0_6px_12px_rgba(15,23,42,0.04)]">
-            <p className="text-[8px] xs:text-[10px] sm:text-xs uppercase tracking-[0.2em] text-slate-500">
-              Autori
-            </p>
-            <p className="mt-0.5 text-sm sm:text-base font-semibold text-slate-950">
-              {authorsCount}
-            </p>
-          </div>
-        </div>
+        {/* ── ASIDE ── */}
+        <aside className="space-y-16">
 
-        {/* FILTERS */}
-        <div className="mt-8 rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
-          <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Caută texte..."
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="w-full rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 placeholder-slate-400 focus:border-amber-400 focus:outline-none"
-            />
-          </div>
-          <div className="flex flex-col gap-6">
-            <div>
-              <div className="flex flex-wrap gap-2">
-                {TEXT_TYPES.map((t) => {
-                  const isActive = (filterType || "Toate") === t;
-                  return (
-                    <button
-                      key={t}
-                      onClick={() => {
-                        setFilterType(t === "Toate" ? "" : t);
-                        setPage(0);
-                        setPosts([]);
-                        setHasMore(true);
-                      }}
-                      className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                        isActive
-                          ? "bg-amber-400 text-slate-950"
-                          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                      }`}
-                    >
-                      {t}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <div>
-              <div className="flex flex-wrap gap-2">
-                {GENRES.map((g) => {
-                  const isActive = (filterGenre || "Toate") === g;
-                  return (
-                    <button
-                      key={g}
-                      onClick={() => {
-                        setFilterGenre(g === "Toate" ? "" : g);
-                        setPage(0);
-                        setPosts([]);
-                        setHasMore(true);
-                      }}
-                      className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                        isActive
-                          ? "bg-amber-400 text-slate-950"
-                          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                      }`}
-                    >
-                      {g}
-                    </button>
-                  );
-                })}
-              </div>
+          {/* Latest comments */}
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-8">
+              Ultimele comentarii
+            </p>
+            <div className="flex flex-col gap-1">
+              {latestComments.slice(0, 3).map((comment) => (
+                <Link
+                  key={comment.id}
+                  href={`/post/${comment.post_id}#comment-${comment.id}`}
+                  className="group/link block py-5 border-b border-slate-100/80 last:border-none"
+                >
+                  <p
+                    className="text-[13px] leading-relaxed text-slate-400 group-hover/link:text-slate-600 transition-colors line-clamp-2"
+                    style={{ whiteSpace: "pre-line" }}
+                  >
+                    {htmlToPlainTextWithNewlines(comment.content)}
+                  </p>
+                  <p className="mt-2 text-[10px] text-slate-300 group-hover/link:text-slate-400 transition-colors">
+                    Vezi comentariul →
+                  </p>
+                </Link>
+              ))}
             </div>
           </div>
-        </div>
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-          <section className="space-y-6">
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 sm:p-8 shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
-              <div className="mb-3 text-xs sm:text-sm uppercase tracking-[0.22em] text-slate-500">
-                Ultimele postări
-              </div>
+          {/* Separator */}
+          <div className="border-t border-slate-100" />
 
-              {error && (
-                <div className="mb-6 rounded-3xl border border-rose-200/60 bg-rose-50/80 px-5 py-4 text-sm text-rose-700">
-                  {error}
-                </div>
-              )}
+          {/* Top posts */}
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-8">
+              Top texte
+            </p>
 
-              {likeError && (
-                <div className="mb-6 rounded-3xl border border-amber-200/70 bg-amber-50/80 px-5 py-4 text-sm text-amber-700">
-                  {likeError}
-                </div>
-              )}
-
-              <div className="space-y-[10px] py-[10px] sm:space-y-[16px] sm:py-[16px] lg:space-y-[20px] lg:py-[20px]">
-                {posts.map((post, index) => (
-                  <article key={post.id} className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
-                    <div className="p-4 sm:p-6 lg:p-7">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex flex-col items-start gap-1">
-                          <div className="flex items-center gap-3">
-                            {post.user_id ? (
-                              <Link href={`/profile/${post.user_id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                                <Image
-                                  src={post.profile?.avatar_url ?? "/user.jpg"}
-                                  alt={post.profile?.username ?? "Author avatar"}
-                                  width={40}
-                                  height={40}
-                                  className="rounded-full object-cover"
-                                />
-                                <div>
-                                  <p className="text-sm font-medium text-slate-900">
-                                    @{post.profile?.username ?? "anonim"}
-                                  </p>
-                                </div>
-                              </Link>
-                            ) : (
-                              <>
-                                <Image
-                                  src={post.profile?.avatar_url ?? "/user.jpg"}
-                                  alt={post.profile?.username ?? "Author avatar"}
-                                  width={40}
-                                  height={40}
-                                  className="rounded-full object-cover"
-                                />
-                                <div>
-                                  <p className="text-sm font-medium text-slate-900">
-                                    @{post.profile?.username ?? "anonim"}
-                                  </p>
-                                </div>
-                              </>
-                            )}
+            {/* most voted */}
+            <div className="mb-10">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-300 mb-4">
+                Cele mai votate
+              </p>
+              <div className="flex flex-col gap-1">
+                {topVotedPosts.length === 0 ? (
+                  <p className="text-[12px] text-slate-300 py-3">
+                    Nu sunt încă date.
+                  </p>
+                ) : (
+                  topVotedPosts.slice(0, 3).map((post, idx) => {
+                    const rankColor = ["text-amber-500/50", "text-slate-400/50", "text-amber-700/30"];
+                    return (
+                      <Link
+                        key={post.id}
+                        href={`/post/${post.id}`}
+                        className="group/link flex items-start gap-3 py-4 border-b border-slate-100/70 last:border-none"
+                      >
+                        <span className={`text-[13px] font-light mt-0.5 shrink-0 tabular-nums ${rankColor[idx]}`}>
+                          {String(idx + 1).padStart(2, "0")}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-medium text-slate-600 group-hover/link:text-slate-900 transition-colors leading-snug">
+                            {post.title}
+                          </p>
+                          <div className="mt-1 flex flex-wrap gap-2 text-[10px] text-slate-300">
+                            {post.text_type && <span>{post.text_type}</span>}
+                            {post.genre && <span>· {post.genre}</span>}
+                            {post.uses_ai && <span>· AI</span>}
                           </div>
-                          <Link href={`/post/${post.id}`} className="hover:underline hover:text-amber-600 transition-colors">
-                            <h2 className="text-lg font-semibold leading-none text-slate-950 lg:text-xl cursor-pointer">
-                              {post.title}
-                            </h2>
-                          </Link>
+                          <p className="mt-1 text-[10px] text-slate-300 tabular-nums">
+                            {post.likesCount ?? getLikes(post.id)} voturi
+                          </p>
                         </div>
+                      </Link>
+                    );
+                  })
+                )}
+              </div>
+            </div>
 
-                        <Link
-                          href={`/post/${post.id}`}
-                          className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
-                        >
-                          Citește acum
-                        </Link>
-                      </div>
-
-                      <p
-                        className={`mt-3 text-sm leading-6 text-slate-600 ${index < PAGE_SIZE ? "line-clamp-2" : "line-clamp-3"} max-w-xs sm:max-w-sm lg:max-w-md`}
-                        style={{ whiteSpace: "pre-line" }}
+            {/* most commented */}
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-300 mb-4">
+                Cele mai comentate
+              </p>
+              <div className="flex flex-col gap-1">
+                {topViewedPosts.length === 0 ? (
+                  <p className="text-[12px] text-slate-300 py-3">
+                    Nu sunt încă date.
+                  </p>
+                 ) : (
+                  topViewedPosts.slice(0, 3).map((post, idx) => {
+                    const rankColor2 = ["text-amber-500/50", "text-slate-400/50", "text-amber-700/30"];
+                    return (
+                      <Link
+                        key={post.id}
+                        href={`/post/${post.id}`}
+                        className="group/link flex items-start gap-3 py-4 border-b border-slate-100/70 last:border-none"
                       >
-                        {htmlToPlainTextWithNewlines(post.content)}
-                      </p>
-
-                      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-500 sm:mt-5">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            void handleLike(post.id);
-                          }}
-                          disabled={likingIds.has(post.id) || !currentUserId}
-                          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          ❤️
-                          <span>{getLikes(post.id)}</span>
-                        </button>
-
-                        <Link
-                          href={`/post/${post.id}#comments`}
-                          className="inline-flex items-center gap-2 hover:underline hover:text-amber-600 transition-colors cursor-pointer"
-                          scroll
-                        >
-                          💬<span>{getComments(post.id)}</span>
-                        </Link>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-
-              <div ref={observerRef} className="h-10" />
-
-              {loading && (
-                <p className="mt-6 text-center text-sm text-slate-500">
-                  Loading...
-                </p>
-              )}
-            </div>
-          </section>
-
-          <aside className="space-y-6">
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 sm:p-8 shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
-              <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.24em] text-slate-600 mb-4">
-                Ultimele comentarii
-              </h2>
-
-              <div className="space-y-3 py-[10px]">
-                {latestComments.slice(0, 3).map((comment) => (
-                  <Link key={comment.id} href={`/post/${comment.post_id}#comment-${comment.id}`}>
-                    <div className="cursor-pointer rounded-3xl border border-slate-200 bg-[#fef8f1] p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-                      <p
-                        className="text-sm leading-7 text-slate-700 line-clamp-2"
-                        style={{ whiteSpace: "pre-line" }}
-                      >
-                        {htmlToPlainTextWithNewlines(comment.content)}
-                      </p>
-                      <span className="mt-2 block text-xs uppercase tracking-[0.24em] text-slate-500">
-                        Vezi comentariul →
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-600 mb-5">
-                Top texte
-              </h2>
-
-              <div className="space-y-6">
-                <div>
-                  <div className="mb-3 text-xs sm:text-xs uppercase tracking-[0.2em] text-slate-500">
-                    Cele mai votate
-                  </div>
-
-                  <div className="space-y-3 py-[10px]">
-                    {topVotedPosts.length === 0 ? (
-                      <div className="text-sm text-gray-400">
-                        Nu sunt încă date.
-                      </div>
-                    ) : (
-                      topVotedPosts.slice(0, 3).map((post) => (
-                        <Link key={post.id} href={`/post/${post.id}`}>
-                          <div className="cursor-pointer rounded-3xl border border-slate-200/80 bg-slate-50 p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300/80 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-                            <div className="text-sm font-semibold text-slate-900">
-                              {post.title}
-                            </div>
-                            <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500">
-                              {post.text_type && <span>{post.text_type}</span>}
-                              {post.genre && <span>• {post.genre}</span>}
-                              {post.uses_ai && <span>• AI</span>}
-                            </div>
-                            <div className="mt-1 text-xs text-slate-400">
-                              {post.likesCount ?? getLikes(post.id)} voturi
-                            </div>
+                        <span className={`text-[13px] font-light mt-0.5 shrink-0 tabular-nums ${rankColor2[idx]}`}>
+                          {String(idx + 1).padStart(2, "0")}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-medium text-slate-600 group-hover/link:text-slate-900 transition-colors leading-snug">
+                            {post.title}
+                          </p>
+                          <div className="mt-1 flex flex-wrap gap-2 text-[10px] text-slate-300">
+                            {post.text_type && <span>{post.text_type}</span>}
+                            {post.genre && <span>· {post.genre}</span>}
+                            {post.uses_ai && <span>· AI</span>}
                           </div>
-                        </Link>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="mb-3 text-xs sm:text-xs uppercase tracking-[0.2em] text-gray-500">
-                    Cele mai vizualizate
-                  </div>
-
-                  <div className="space-y-3 py-[10px]">
-                    {topViewedPosts.length === 0 ? (
-                      <div className="text-sm text-gray-400">
-                        Nu sunt încă date.
-                      </div>
-                    ) : (
-                      topViewedPosts.slice(0, 3).map((post) => (
-                        <Link key={post.id} href={`/post/${post.id}`}>
-                          <div className="cursor-pointer rounded-3xl border border-slate-200/80 bg-slate-50 p-4 transition duration-300 hover:-translate-y-1 hover:border-slate-300/80 hover:bg-white hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-                            <div className="text-sm font-semibold text-slate-900">
-                              {post.title}
-                            </div>
-                            <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500">
-                              {post.text_type && <span>{post.text_type}</span>}
-                              {post.genre && <span>• {post.genre}</span>}
-                              {post.uses_ai && <span>• AI</span>}
-                            </div>
-                            <div className="mt-1 text-xs text-slate-400">
-                              {post.commentsCount ?? getComments(post.id)}{" "}
-                              replies
-                            </div>
-                          </div>
-                        </Link>
-                      ))
-                    )}
-                  </div>
-                </div>
+                          <p className="mt-1 text-[10px] text-slate-300 tabular-nums">
+                            {post.commentsCount ?? getComments(post.id)} replies
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })
+                )}
               </div>
             </div>
-          </aside>
-         </div>
-       </div>
+          </div>
+        </aside>
 
-       {/* SOCIAL PROOF */}
-       <section className="py-20" style={{ background: C.surface }}>
-         <div className="max-w-4xl mx-auto text-center px-6">
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-             <div>
-               <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
-                 Texte publicate
-               </p>
-               <p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
-                 {posts.length}
-               </p>
-             </div>
-             <div>
-               <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
-                 Autori activi
-               </p>
-               <p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
-                 {authorsCount}
-               </p>
-             </div>
-             <div>
-               <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
-                 Platformă pentru literatură digitală
-               </p>
-               <p className="mt-2 font-serif text-2xl font-medium" style={{ color: C.text }}>
-                 Nouă și în creștere
-               </p>
-             </div>
-           </div>
-         </div>
-       </section>
-
-     </main>
-   );
+      </div>
+    </main>
+  );
 }
