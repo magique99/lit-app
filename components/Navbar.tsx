@@ -37,10 +37,11 @@ export default function Navbar() {
 
   // Load avatar from profile when user is available
   useEffect(() => {
-    if (!user?.id) { setAvatarUrl(null); return; }
+    if (!user?.id) return;
 
     let ignore = false;
-    (async () => {
+
+    const load = async () => {
       const { data } = await supabase
         .from("profiles")
         .select("avatar_url")
@@ -48,7 +49,9 @@ export default function Navbar() {
         .maybeSingle();
 
       if (!ignore) setAvatarUrl(data?.avatar_url ?? null);
-    })();
+    };
+
+    load();
 
     return () => { ignore = true; };
   }, [user]);
