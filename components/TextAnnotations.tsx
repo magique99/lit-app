@@ -25,7 +25,9 @@ export default function TextAnnotations({ postId, postContent }: { postId: strin
   const showPopupRef = useRef(showPopup);
   const lastSelectionKeyRef = useRef<string | null>(null);
 
-  showPopupRef.current = showPopup;
+  useEffect(() => {
+    showPopupRef.current = showPopup;
+  }, [showPopup]);
 
   const loadAnnotations = useCallback(async () => {
     console.log("LOAD ANNOTATIONS - postId:", postId);
