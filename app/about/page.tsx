@@ -41,7 +41,6 @@ export default function AboutPage() {
            - cei care încă subliniază fraze doar pentru că le-a rămas ceva în piept
           </p>
         </div>
-        <div className="bg-white rounded-2xl p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"> 
           <h2 className="mt-8 mb-4 text-2xl font-semibold text-slate-950">Misiunea noastră</h2>
           <p className="text-slate-600 leading-relaxed">
             Literatura9 s-a născut din dorința de a face loc acestor texte.
@@ -55,7 +54,6 @@ export default function AboutPage() {
           <p className="text-slate-600 leading-relaxed">  
             Important este să fie vie.
           </p>
-        </div>
         <div className="mt-10 text-center">
           <Link href="/" className="inline-flex items-center justify-center rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300">
             Înapoi la pagină de început
