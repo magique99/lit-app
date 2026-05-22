@@ -9,7 +9,7 @@ export default function ContactPage() {
     email: "",
     message: "",
   });
-  const [submitStatus, setSubmitStatus] = useState(null); // null, 'success', 'error'
+  const [submitStatus, setSubmitStatus] = useState<null | 'success' | 'error' | 'submitting'>(null); // null, 'success', 'error'
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
