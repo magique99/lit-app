@@ -93,14 +93,11 @@ export default function PostClient({ postId }: { postId: string }) {
       requestAnimationFrame(handleScrollToComment);
     };
 
-    // Watch for comments changes
-    let isMounted = true;
-    if (isMounted) {
-      handleCommentsChange();
-    }
+    // Call it once when comments change
+    handleCommentsChange();
 
     return () => {
-      isMounted = false;
+      // Cleanup if needed
     };
   }, [postId, comments]);
 
