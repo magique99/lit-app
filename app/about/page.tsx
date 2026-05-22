@@ -6,17 +6,22 @@ export default function AboutPage() {
       <div className="max-w-4xl mx-auto px-6">
         <h1 className="mb-6 text-4xl font-bold text-center">Despre Literatura9</h1>
         <p className="mb-8 text-lg leading-relaxed text-slate-700 max-w-2xl mx-auto">
-          Literatura9 este o platformă dedicată creatului literar, unde pasionaţii de scris pot să publiceze, să citească și să interacționeze cu o comunitate de cititori și autori. 
-          Platforma susține diverse genuri literarî, de la proză și poezie până la teatru și jurnal, oferind un spațiu sigur și inspirant pentru expresia creativă.
+          Literatura9 este un spațiu pentru literatura contemporană care încă îndrăznește să caute.
+          Un loc pentru texte noi, autori emergenți și cititori care nu se grăbesc.
         </p>
         <div className="bg-white rounded-2xl p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-          <h2 className="mb-4 text-2xl font-semibold text-slate-950">Misiunea noastră</h2>
+          <h2 className="mb-4 text-2xl font-semibold text-slate-950">Credința noastră</h2>
           <p className="mb-6 text-slate-600 leading-relaxed">
-            Să conectăm autori și cititori printr-o experiență intuitivă și atractivă, promovând diversitatea literară și încurajând discuții ponderate despre opere.
-          </p>
+            Credem în textele imperfecte care încearcă ceva.
+            În imaginile care rămân în minte fără explicații.
+            În feedback sincer, fără cruzime.
+            În literatura care nu se teme să fie fragilă, stranie sau incomodă.          </p>
           <h2 className="mb-4 text-2xl font-semibold text-slate-950">Cum funcționează</h2>
           <p className="text-slate-600 leading-relaxed">
-            Orice utilizator înregistrat poate publica texte, să lase comentarii și să dă like la lucrările pe care le apreciază. Comentariile sunt moderețate pentru a menține un mediu respetuos și constructiv.
+            Literatura9 s-a născut din dorința de a face loc acestor texte.
+            Un spațiu pentru autori care încă încearcă, pentru cititori care încă ascultă și pentru povești care refuză să plece imediat după ultima propoziție.
+            Aici literatura poate fi stranie, fragilă, imperfectă, intensă sau neterminată.
+            Important este să fie vie.
           </p>
         </div>
         <div className="mt-10 text-center">

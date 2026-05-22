@@ -199,24 +199,34 @@ export default function Navbar() {
              {user ? "Adaugă text" : "Înregistrează-te"}
            </button>
 
-          {user ? (
-            <>
-              <NotificationsDropdown userId={user.id} />
-              <UserMenu profile={profile} />
-            </>
-          ) : (
-            <div className="hidden md:flex items-center gap-4 text-sm text-slate-700">
-              <Link href="/login" className="transition hover:text-slate-950">
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                className="rounded-full border border-amber-300 bg-amber-400 px-4 py-2 text-sm font-semibold text-slate-950 transition duration-200 hover:bg-amber-300"
-              >
-                Sign up
-              </Link>
-            </div>
-          )}
+             {user ? (
+               <>
+                 <Link href="/notifications" className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
+                   🔔 Notificări
+                 </Link>
+                 <Link href="/about" className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
+                   ℹ️ Despre
+                 </Link>
+                 <Link href="/contact" className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
+                   📞 Contact
+                 </Link>
+               </>
+             ) : (
+               <>
+                 <Link href="/login" className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
+                   Login
+                 </Link>
+                 <Link href="/signup" className="block rounded-2xl border border-amber-300 bg-amber-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-300">
+                   Sign up
+                 </Link>
+                 <Link href="/about" className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
+                   ℹ️ Despre
+                 </Link>
+                 <Link href="/contact" className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-[#fff4e5]">
+                   📞 Contact
+                 </Link>
+               </>
+             )}
 
           {/* MOBILE MENU BTN */}
           <button
