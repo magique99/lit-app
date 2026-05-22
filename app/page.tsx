@@ -551,11 +551,10 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
                 </div>
               </div>
             </div>
-         </div>
-       </section>
+          </div>
+        </section>
 
 
-{/* Stats grid: moved here so it appears after the banner */}
             <div className="mt-6 grid grid-cols-4 gap-2">
               <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-amber-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(251,191,36,0.1)]">
                 <p className="text-[8px] xs:text-[10px] sm:text-xs uppercase tracking-[0.2em] text-slate-500">
