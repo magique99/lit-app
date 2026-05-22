@@ -1,41 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import type { User } from "@supabase/supabase-js";
 
-// Color theme (copied from app/page.tsx)
-const C = {
-  bg:           "#F7F3EE",   // cream, cald
-  surface:      "#FFFCF7",   // alb-crem pentru carduri
-  text:         "#2A2520",   // cafenie închis, nu negru pur
-  muted:        "#7A7268",   // cafenie moderată
-  accent:       "#B87D4B",   // teracotă / aramiu — singurul accent
-  accentHover:  "#9E6538",
-  border:       "#E8E0D8",   // linii foarte discrete
-};
-
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let ignore = false;
     const loadUser = async () => {
       const { data } = await supabase.auth.getUser();
-      if (!ignore) {
-        setUser(data.user ?? null);
-      }
+      if (!ignore) setUser(data.user ?? null);
     };
-
     loadUser();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!ignore) {
-        setUser(session?.user ?? null);
-      }
+      if (!ignore) setUser(session?.user ?? null);
     });
 
     return () => {
@@ -44,44 +30,156 @@ export default function Navbar() {
     };
   }, []);
 
+  // close on click outside
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [menuOpen]);
+
   return (
-    <header
-      className="sticky top-0 z-50"
-      style={{ background: "rgba(247,243,238,0.95)", backdropFilter: "blur-xl" }}
-    >
+    <header className="sticky top-0 z-50" style={{ background: "rgba(247,243,238,0.95)", backdropFilter: "blur-xl" }}>
       <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4">
         {/* LOGO */}
         <Link
           href="/"
           className="font-serif text-lg tracking-[0.35em] transition"
-          style={{ color: C.text }}
+          style={{ color: "#2A2520" }}
         >
           Literatura9
         </Link>
 
-        {/* RIGHT: TWO BUTTONS */}
+        {/* RIGHT */}
         <div className="flex items-center gap-3">
-          {/* Butonul Texte */}
+
+          {/* Texte */}
           <Link
             href="/texte"
             className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
             style={{
-              color: C.text,
-              border: `1.5px solid ${C.border}`,
-              background: C.surface,
+              color: "#2A2520",
+              border: "1.5px solid #E8E0D8",
+              background: "#FFFCF7",
             }}
           >
             Texte
           </Link>
 
-          {/* Butonul Conectare */}
-          <Link
-            href={user ? "/create" : "/login"}
-            className="rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:shadow-[0_8px_30px_rgba(184,125,75,0.3)] active:scale-[0.97]"
-            style={{ backgroundColor: C.accent }}
-          >
-            Conectare
-          </Link>
+          {user ? (
+            /* ── PROFILUL CONECTAT ── */
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setMenuOpen((o) => !o)}
+                className="
+                  h-10 w-10 rounded-full overflow-hidden
+                  border border-slate-300/80
+                  focus:outline-none focus:ring-1 focus:ring-slate-400
+                  active:scale-[0.97] transition
+                "
+              >
+                <img
+                  src={`https://ui-avatars.com/api/?background=2A2520&color=fcf5ec&name=${encodeURIComponent(
+                    user.email ?? "user"
+                  )}`}
+                  alt={user.email ?? "avatar"}
+                  className="h-full w-full object-cover"
+                />
+              </button>
+
+              {menuOpen && (
+                <div
+                  className="
+                    absolute right-0 top-full mt-2
+                    w-48
+                    bg-white/95 backdrop-blur-md
+                    border border-slate-200/80
+                    rounded-xl shadow-[0_12px_40px_rgba(15,23,42,0.10)]
+                    py-2
+                    z-50
+                    animate-in fade-in slide-in-from-top-2 duration-150
+                  "
+                >
+                  {/* header: email */}
+                  <p className="px-4 py-2 text-[11px] font-medium text-slate-500 truncate border-b border-slate-100">
+                    {user.email}
+                  </p>
+
+                  <Link
+                    href="/create"
+                    onClick={() => setMenuOpen(false)}
+                    className="
+                      block px-4 py-2.5 text-sm text-slate-700
+                      hover:bg-slate-50 hover:text-slate-900
+                      transition-colors
+                    "
+                  >
+                    Octresc
+                  </Link>
+
+                  <Link
+                    href="/notifications"
+                    onClick={() => setMenuOpen(false)}
+                    className="
+                      block px-4 py-2.5 text-sm text-slate-700
+                      hover:bg-slate-50 hover:text-slate-900
+                      transition-colors
+                    "
+                  >
+                    Notificări
+                  </Link>
+
+                  <Link
+                    href="/profile"
+                    onClick={() => setMenuOpen(false)}
+                    className="
+                      block px-4 py-2.5 text-sm text-slate-700
+                      hover:bg-slate-50 hover:text-slate-900
+                      transition-colors
+                    "
+                  >
+                    Setările contului
+                  </Link>
+
+                  <div className="my-1.5 border-t border-slate-100" />
+
+                  <button
+                    onClick={async () => {
+                      setMenuOpen(false);
+                      await supabase.auth.signOut();
+                      window.location.href = "/";
+                    }}
+                    className="
+                      block w-full text-left px-4 py-2.5 text-sm text-rose-600/80
+                      hover:bg-rose-50 hover:text-rose-700
+                      transition-colors
+                    "
+                  >
+                    Deconectare
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* ── CONECTARE ── */
+            <Link
+              href="/login"
+              className="
+                rounded-full px-7 py-3.5 text-sm font-semibold text-white
+                transition-all duration-300
+                hover:shadow-[0_8px_30px_rgba(184,125,75,0.3)]
+                active:scale-[0.97]
+              "
+              style={{ backgroundColor: "#B87D4B" }}
+            >
+              Conectare
+            </Link>
+          )}
+
         </div>
       </div>
     </header>
