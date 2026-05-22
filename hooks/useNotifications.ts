@@ -37,23 +37,43 @@ export function useNotifications() {
     // =========================
     // REALTIME SUBSCRIPTION ⚡
     // =========================
-    const channel = supabase
-      .channel("notifications-realtime")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "notifications",
-        },
-        (payload) => {
-          setNotifications((prev) => [payload.new as Notification, ...prev]);
+    let removeChannel: (() => void) | undefined;
+
+    (async () => {
+      try {
+        const channel = supabase
+          .channel("notifications-realtime")
+          .on(
+            "postgres_changes",
+            {
+              event: "INSERT",
+              schema: "public",
+              table: "notifications",
+            },
+            (payload) => {
+              setNotifications((prev) => [
+                payload.new as Notification,
+                ...prev,
+              ]);
+            },
+          );
+
+        const { error } = await channel.subscribe();
+        if (error) {
+          console.warn("Notifications realtime subscription error:", error);
+          return;
         }
-      )
-      .subscribe();
+
+        removeChannel = () => {
+          void supabase.removeChannel(channel).catch(() => {});
+        };
+      } catch (err) {
+        console.error("Notifications realtime setup failed:", err);
+      }
+    })();
 
     return () => {
-      supabase.removeChannel(channel);
+      removeChannel?.();
     };
   }, [loadNotifications]);
 

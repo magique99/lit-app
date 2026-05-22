@@ -229,26 +229,6 @@ function CTA() {
   );
 }
 
-/* ---- FOOTER ---- */
-function SiteFooter() {
-  return (
-    <footer className="py-12 px-6" style={{ background: C.text }}>
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <span className="font-serif text-lg tracking-wide text-white/60">
-          Literatura<span style={{ color: C.accent }}>9</span>
-        </span>
-        <div className="flex items-center gap-6 text-xs text-white/35">
-          <Link href="/about" className="hover:text-white/60 transition-colors">Despre</Link>
-          <Link href="/contact" className="hover:text-white/60 transition-colors">Contact</Link>
-        </div>
-        <span className="text-[10px] text-white/25">
-          © {new Date().getFullYear()} Literatura9
-        </span>
-      </div>
-    </footer>
-  );
-}
-
 /* =====================================================
    PAGINA PRINCIPALĂ
    ===================================================== */
@@ -274,9 +254,6 @@ export default function HomePage() {
 
       {/* CALL-TO-ACTION */}
       <CTA />
-
-      {/* FOOTER */}
-      <SiteFooter />
     </main>
   );
 }
