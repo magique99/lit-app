@@ -37,9 +37,6 @@ export default function AboutPage() {
           <p className="text-slate-600 leading-relaxed">  
            - oameni care caută literatură contemporană vie
           </p>  
-          <p className="text-slate-600 leading-relaxed">  
-           - cei care încă subliniază fraze doar pentru că le-a rămas ceva în piept
-          </p>
         </div>
           <h2 className="mt-8 mb-4 text-2xl font-semibold text-slate-950">Misiunea noastră</h2>
           <p className="text-slate-600 leading-relaxed">
