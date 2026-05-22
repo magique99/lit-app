@@ -545,10 +545,6 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
              <div className="absolute inset-0 flex items-center">
                <div className="max-w-4xl px-6 py-10 sm:px-10 lg:px-16">
                  {/* stats grid moved below hero to appear after the banner */}
-                 <div className="mt-6 flex justify-between items-center">
-                   <Link href="/about" className="rounded-full px-4 py-2 text-sm font-medium bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-all duration-200 border border-white/20">Despre</Link>
-                   <Link href="/contact" className="rounded-full px-4 py-2 text-sm font-medium bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-all duration-200 border border-white/20 ml-4">Contact</Link>
-                 </div>
                </div>
              </div>
           </div>
@@ -850,9 +846,22 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
                 </div>
               </div>
             </div>
-          </aside>
-        </div>
-      </div>
-    </main>
-  );
+           </aside>
+         </div>
+       </div>
+     
+     {/* Footer */}
+     <footer className="mt-20 pt-12 border-t border-slate-200">
+       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+         <div className="flex flex-wrap justify-center gap-8 text-sm text-slate-600">
+           <Link href="/about" className="hover:text-amber-600 transition-colors">Despre</Link>
+           <Link href="/contact" className="hover:text-amber-600 transition-colors ml-4">Contact</Link>
+         </div>
+         <p className="mt-6 text-xs text-slate-500">
+           © {new Date().getFullYear()} Literatura9. Toate drepturile rezervate.
+         </p>
+       </div>
+     </footer>
+   </main>
+ );
 }

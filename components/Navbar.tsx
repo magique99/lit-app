@@ -178,20 +178,26 @@ export default function Navbar() {
         </div>
       </div>
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-3">
-          <button
-            className="hidden md:inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-[#fff4e5]"
-            onClick={() => {
-              if (user) {
-                window.location.href = "/create";
-              } else {
-                window.location.href = "/signup";
-              }
-            }}
-          >
-            {user ? "Adaugă text" : "Înregistrează-te"}
-          </button>
+         {/* RIGHT */}
+         <div className="flex items-center gap-3">
+           <Link href="/about" className="hidden md:inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-[#fff4e5]">
+             Despre
+           </Link>
+           <Link href="/contact" className="hidden md:inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-[#fff4e5] ml-4">
+             Contact
+           </Link>
+           <button
+             className="hidden md:inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-[#fff4e5]"
+             onClick={() => {
+               if (user) {
+                 window.location.href = "/create";
+               } else {
+                 window.location.href = "/signup";
+               }
+             }}
+           >
+             {user ? "Adaugă text" : "Înregistrează-te"}
+           </button>
 
           {user ? (
             <>
