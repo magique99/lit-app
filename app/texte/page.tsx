@@ -124,7 +124,7 @@ export default function TextePage() {
       return;
     }
 
-    const existingIds = new Set(existingProfiles?.map((p: any) => p.user_id) ?? []);
+    const existingIds = new Set(existingProfiles?.map((p) => p.user_id) ?? []);
     const missingUserIds = userIds.filter((id) => !existingIds.has(id));
 
     if (missingUserIds.length > 0) {
