@@ -26,10 +26,7 @@ export default function ViewProfileClient({ userId }: Props) {
     setIsFollowing(false);
 
     try {
-      const {
-        data: profileData,
-        error: profileError,
-      } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("*")
         .eq("user_id", userId)
@@ -59,7 +56,7 @@ export default function ViewProfileClient({ userId }: Props) {
 
       setPosts(postsData ?? []);
 
-      // === check follow state ===
+      // Check current user / follow state
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id ?? null;
 
@@ -67,46 +64,26 @@ export default function ViewProfileClient({ userId }: Props) {
         setIsOwnProfile(uid === userId);
 
         if (uid !== userId) {
-          const followQuery = supabase
+          // The follows table row type is not in generated types yet — cast required
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: followRecord } = (await supabase
             .from("follows")
             .select("id")
             .eq("follower_id", uid)
             .eq("following_id", userId)
-            .maybeSingle();
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { data: followRecord } = (await followQuery) as any;
+            .maybeSingle()) as any;
 
           setIsFollowing(!!followRecord);
         }
       }
 
       setLoading(false);
-      } catch (err) {
-        console.error("LOAD PROFILE ERROR:", err);
-        setError("A apărut o eroare la încărcarea profilului.");
-        setLoading(false);
-      }
+    } catch (err) {
+      console.error("LOAD PROFILE ERROR:", err);
+      setError("A apărut o eroare la încărcarea profilului.");
+      setLoading(false);
     }
   }, [userId]);
-}
-
-// Supabase RPC helpers — rpc() is untyped in the local client
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function rpc_any(s: any, fn: string, args: Record<string, unknown>) {
-  return (s as any).rpc(fn, args);
-}
-
-async function incrementProfileFollowers(
-  uid: string,
-  count: number,
-) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase.from("profiles").update as any)({
-    followers_count: count + 1,
-  })
-    .eq("user_id", uid);
-}
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -123,7 +100,7 @@ async function incrementProfileFollowers(
     setFollowBusy(true);
 
     if (isFollowing) {
-      // === UNFOLLOW: delete the follow row + decrement counters ===
+      // === UNFOLLOW ===
       const { error: delError } = await supabase
         .from("follows")
         .delete()
@@ -132,7 +109,6 @@ async function incrementProfileFollowers(
 
       if (!delError) {
         setIsFollowing(false);
-        // Refresh profile to update counters
         const { data: refreshed } = await supabase
           .from("profiles")
           .select("*")
@@ -141,35 +117,28 @@ async function incrementProfileFollowers(
         if (refreshed) setProfile(toProfile(refreshed));
       }
     } else {
-      // === FOLLOW: insert row + increment counters + create notification ===
+      // === FOLLOW ===
       const { error: followError } = await supabase
         .from("follows")
-        .insert({
-          follower_id: uid,
-          following_id: userId,
-        });
+        .insert({ follower_id: uid, following_id: userId });
 
       if (!followError) {
         setIsFollowing(true);
 
-        // Increment followers on the profile owner
+        // Increment followers_count via RPC
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase.rpc as any)("increment_followers", {
+        (supabase.rpc as any)("increment_followers_fn", {
           p_user_id: userId,
-        }).catch((rpcError: any) => {
-          console.error("increment_followers RPC failed:", rpcError);
-        });
+        }).catch((e: any) => console.error("increment_followers_fn failed:", e));
 
-        // Increment following on the current user
+        // Increment following_count on the current user via RPC
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase.rpc as any)("increment_following", {
+        (supabase.rpc as any)("increment_following_fn", {
           p_user_id: uid,
-        }).catch((rpcError: any) => {
-          console.error("increment_following RPC failed:", rpcError);
-        });
+        }).catch((e: any) => console.error("increment_following_fn failed:", e));
 
-        // Notify the profile owner that someone followed them
-        const { error: notifError } = await supabase
+        // Notify the profile owner
+        const { error: notifErr } = await supabase
           .from("notifications")
           .insert({
             user_id: userId,
@@ -177,12 +146,11 @@ async function incrementProfileFollowers(
             type: "follow",
             message: "cineva te urmează acum.",
           });
-
-        if (notifError) {
-          console.error("FOLLOW NOTIFICATION ERROR:", notifError);
+        if (notifErr) {
+          console.error("FOLLOW NOTIFICATION ERROR:", notifErr);
         }
 
-        // Refresh profile to update counters
+        // Refresh profile counters
         const { data: refreshed } = await supabase
           .from("profiles")
           .select("*")
@@ -205,10 +173,7 @@ async function incrementProfileFollowers(
         <p className="text-slate-600 mb-4">
           {error || "Acest utilizator nu are un profil configurat."}
         </p>
-        <Link
-          href="/"
-          className="text-amber-600 hover:text-amber-700 underline"
-        >
+        <Link href="/" className="text-amber-600 hover:text-amber-700 underline">
           Înapoi la pagina principală
         </Link>
       </div>
@@ -220,10 +185,7 @@ async function incrementProfileFollowers(
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-4">
-        <Link
-          href="/"
-          className="text-sm text-slate-500 hover:text-amber-600 transition-colors"
-        >
+        <Link href="/" className="text-sm text-slate-500 hover:text-amber-600 transition-colors">
           ← Înapoi la pagina principală
         </Link>
       </div>
@@ -275,10 +237,9 @@ async function incrementProfileFollowers(
                 className={`
                   inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
                   transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-60
-                  ${
-                    isFollowing
-                      ? "bg-slate-200 text-slate-800 hover:bg-slate-300"
-                      : "bg-black text-white hover:bg-slate-800"
+                  ${isFollowing
+                    ? "bg-slate-200 text-slate-800 hover:bg-slate-300"
+                    : "bg-black text-white hover:bg-slate-800"
                   }
                 `}
               >
@@ -293,27 +254,19 @@ async function incrementProfileFollowers(
 
           <div className="flex flex-wrap justify-center sm:justify-start gap-4 text-sm">
             <div className="flex flex-col items-center py-2 px-4 bg-slate-50 rounded-xl min-w-[80px]">
-              <span className="text-xl font-bold text-slate-900">
-                {profile.posts_count ?? 0}
-              </span>
+              <span className="text-xl font-bold text-slate-900">{profile.posts_count ?? 0}</span>
               <span className="text-xs text-slate-500">Texte</span>
             </div>
             <div className="flex flex-col items-center py-2 px-4 bg-slate-50 rounded-xl min-w-[80px]">
-              <span className="text-xl font-bold text-slate-900">
-                {profile.followers_count ?? 0}
-              </span>
+              <span className="text-xl font-bold text-slate-900">{profile.followers_count ?? 0}</span>
               <span className="text-xs text-slate-500">Urmăritori</span>
             </div>
             <div className="flex flex-col items-center py-2 px-4 bg-slate-50 rounded-xl min-w-[80px]">
-              <span className="text-xl font-bold text-slate-900">
-                {profile.likes_count ?? 0}
-              </span>
+              <span className="text-xl font-bold text-slate-900">{profile.likes_count ?? 0}</span>
               <span className="text-xs text-slate-500">Aprecieri</span>
             </div>
             <div className="flex flex-col items-center py-2 px-4 bg-slate-50 rounded-xl min-w-[80px]">
-              <span className="text-xl font-bold text-slate-900">
-                {profile.comments_count ?? 0}
-              </span>
+              <span className="text-xl font-bold text-slate-900">{profile.comments_count ?? 0}</span>
               <span className="text-xs text-slate-500">Comentarii</span>
             </div>
           </div>
@@ -337,10 +290,7 @@ async function incrementProfileFollowers(
                 className="group overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80 hover:shadow-[0_20px_60px_rgba(15,23,42,0.1)]"
               >
                 <div className="p-5 sm:p-6">
-                  <Link
-                    href={`/post/${post.id}`}
-                    className="inline-block"
-                  >
+                  <Link href={`/post/${post.id}`} className="inline-block">
                     <h3 className="text-lg font-semibold leading-none text-slate-950 hover:text-amber-700 transition-colors">
                       {post.title}
                     </h3>
@@ -357,9 +307,7 @@ async function incrementProfileFollowers(
                   <p className="mt-3 text-xs text-slate-400">
                     Publicat{" "}
                     {new Date(post.created_at).toLocaleDateString("ro-RO", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
+                      day: "numeric", month: "long", year: "numeric",
                     })}
                   </p>
                 </div>
