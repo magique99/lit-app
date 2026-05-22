@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import type { Post, Profile } from "@/lib/types";
+import { htmlToPlainTextWithNewlines } from "@/lib/content";
 
 /* =====================================================
    COLOANE
@@ -230,8 +232,67 @@ function CTA() {
 }
 
 /* =====================================================
-   PAGINA PRINCIPALĂ
-   ===================================================== */
+    COMPONENTELE NOUĚ ADAUGATE
+    ===================================================== */
+
+function SocialProof() {
+  return (
+    <section className="py-20" style={{ background: C.surface }}>
+      <div className="max-w-4xl mx-auto text-center px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
+              Texte publicate
+            </p>
+            <p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
+              124
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
+              Autori activi
+            </p>
+            <p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
+              37
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
+              Platformă pentru literatură digitală
+            </p>
+            <p className="mt-2 font-serif text-2xl font-medium" style={{ color: C.text }}>
+              Nouă și în creștere
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="py-12" style={{ background: C.bg }}>
+      <div className="max-w-4xl mx-auto text-center px-6">
+        <p className="text-sm text-muted" style={{ color: C.muted }}>
+          © {new Date().getFullYear()} Literatura9. Toate drepturile rezervate.
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-4">
+          <Link href="/about" className="text-sm font-medium transition hover:text-accent">
+            Despre
+          </Link>
+          <Link href="/contact" className="text-sm font-medium transition hover:text-accent">
+            Contact
+          </Link>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* =====================================================
+    PAGINA PRINCIPALĂ
+    ===================================================== */
 export default function HomePage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
@@ -254,6 +315,12 @@ export default function HomePage() {
 
       {/* CALL-TO-ACTION */}
       <CTA />
+
+      {/* SOCIAL PROOF */}
+      <SocialProof />
+
+      {/* FOOTER */}
+      <Footer />
     </main>
   );
 }
