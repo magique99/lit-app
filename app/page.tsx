@@ -727,9 +727,12 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
              <span>{getLikes(post.id)}</span>
            </button>
  
-           <span className="inline-flex items-center gap-2">
-             💬<span>{getComments(post.id)}</span>
-           </span>
+            <Link
+              href={`/post/${post.id}#comments`}
+              className="inline-flex items-center gap-2 hover:underline hover:text-amber-600 transition-colors cursor-pointer"
+            >
+              💬<span>{getComments(post.id)}</span>
+            </Link>
          </div>
        </div>
      </article>
