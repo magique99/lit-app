@@ -672,69 +672,69 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
                 </div>
               )}
 
-              <div className="space-y-[10px] py-[10px] sm:space-y-[16px] sm:py-[16px] lg:space-y-[20px] lg:py-[20px]">
+               <div className="space-y-[10px] py-[10px] sm:space-y-[16px] sm:py-[16px] lg:space-y-[20px] lg:py-[20px]">
 {posts.map((post, index) => (
-  <Link key={post.id} href={`/post/${post.id}`}>
-    <article className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
-           <div className="p-4 sm:p-6 lg:p-7">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex flex-col items-start gap-1">
-            <div className="flex items-center gap-3">
-              <img
-                src={post.profile?.avatar_url ?? "/user.jpg"}
-                alt={post.profile?.username ?? "Author avatar"}
-                className="h-10 w-10 rounded-full object-cover"
-              />
-              <div>
-                <p className="text-sm font-medium text-slate-900">
-                  @{post.profile?.username ?? "anonim"}
-                </p>
-              </div>
-            </div>
-           <h2 className="text-lg font-semibold leading-none text-slate-950 lg:text-xl">
-               {post.title}
-             </h2>
-          </div>
-
-           <Link
-             href={`/post/${post.id}`}
-             className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
-           >
-             Citește acum
-           </Link>
-        </div>
-
-         <p
-           className={`mt-3 text-sm leading-6 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'} max-w-xs sm:max-w-sm lg:max-w-md`}
-           style={{ whiteSpace: "pre-line" }}
-         >
-           {htmlToPlainTextWithNewlines(post.content)}
-         </p>
-
-         <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-500 sm:mt-5">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              void handleLike(post.id);
-            }}
-            disabled={likingIds.has(post.id) || !currentUserId}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
+  <article key={post.id} className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-slate-300/80">
+            <div className="p-4 sm:p-6 lg:p-7">
+         <div className="flex items-center justify-between gap-4">
+           <div className="flex flex-col items-start gap-1">
+             <div className="flex items-center gap-3">
+               <img
+                 src={post.profile?.avatar_url ?? "/user.jpg"}
+                 alt={post.profile?.username ?? "Author avatar"}
+                 className="h-10 w-10 rounded-full object-cover"
+               />
+               <div>
+                 <p className="text-sm font-medium text-slate-900">
+                   @{post.profile?.username ?? "anonim"}
+                 </p>
+               </div>
+             </div>
+            <Link href={`/post/${post.id}`}>
+              <h2 className="text-lg font-semibold leading-none text-slate-950 lg:text-xl">
+                {post.title}
+              </h2>
+            </Link>
+           </div>
+ 
+            <Link
+              href={`/post/${post.id}`}
+              className="inline-flex items-center justify-center rounded-full bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-amber-300"
+            >
+              Citește acum
+            </Link>
+         </div>
+ 
+          <p
+            className={`mt-3 text-sm leading-6 text-slate-600 ${index < PAGE_SIZE ? 'line-clamp-2' : 'line-clamp-3'} max-w-xs sm:max-w-sm lg:max-w-md`}
+            style={{ whiteSpace: "pre-line" }}
           >
-            ❤️
-            <span>{getLikes(post.id)}</span>
-          </button>
-
-          <span className="inline-flex items-center gap-2">
-            💬<span>{getComments(post.id)}</span>
-          </span>
-        </div>
-      </div>
-    </article>
-  </Link>
+            {htmlToPlainTextWithNewlines(post.content)}
+          </p>
+ 
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-500 sm:mt-5">
+           <button
+             type="button"
+             onClick={(e) => {
+               e.preventDefault();
+               e.stopPropagation();
+               void handleLike(post.id);
+             }}
+             disabled={likingIds.has(post.id) || !currentUserId}
+             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 active:scale-95 transition disabled:cursor-not-allowed disabled:opacity-60"
+           >
+             ❤️
+             <span>{getLikes(post.id)}</span>
+           </button>
+ 
+           <span className="inline-flex items-center gap-2">
+             💬<span>{getComments(post.id)}</span>
+           </span>
+         </div>
+       </div>
+     </article>
 ))}
-              </div>
+               </div>
 
               <div ref={observerRef} className="h-10" />
 
