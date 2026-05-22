@@ -12,8 +12,14 @@ export default function AboutPage() {
           <h2 className="mb-4 text-2xl font-semibold text-slate-950">Credința noastră</h2>
           <p className="mb-6 text-slate-600 leading-relaxed">
             Credem în textele imperfecte care încearcă ceva.
+          </p>  
+          <p className="mb-6 text-slate-600 leading-relaxed">
             În imaginile care rămân în minte fără explicații.
+          </p>  
+          <p className="mb-6 text-slate-600 leading-relaxed">
             În feedback sincer, fără cruzime.
+          </p>  
+          <p className="mb-6 text-slate-600 leading-relaxed">
             În literatura care nu se teme să fie fragilă, stranie sau incomodă.          
           </p>
         </div> 
@@ -21,9 +27,17 @@ export default function AboutPage() {
           <h2 className="mb-4 text-2xl font-semibold text-slate-950">Comunitate</h2>
           <p className="text-slate-600 leading-relaxed">
            - autori la început de drum
+          </p>  
+          <p className="text-slate-600 leading-relaxed">
            - scriitori care vor feedback real
+          </p>  
+          <p className="text-slate-600 leading-relaxed">  
            - cititori curioși
+          </p>  
+          <p className="text-slate-600 leading-relaxed">  
            - oameni care caută literatură contemporană vie
+          </p>  
+          <p className="text-slate-600 leading-relaxed">  
            - cei care încă subliniază fraze doar pentru că le-a rămas ceva în piept
           </p>
         </div>
@@ -31,8 +45,14 @@ export default function AboutPage() {
           <h2 className="mt-8 mb-4 text-2xl font-semibold text-slate-950">Misiunea noastră</h2>
           <p className="text-slate-600 leading-relaxed">
             Literatura9 s-a născut din dorința de a face loc acestor texte.
+          </p>
+          <p className="text-slate-600 leading-relaxed">  
             Un spațiu pentru autori care încă încearcă, pentru cititori care încă ascultă și pentru povești care refuză să plece imediat după ultima propoziție.
+          </p>
+          <p className="text-slate-600 leading-relaxed">  
             Aici literatura poate fi stranie, fragilă, imperfectă, intensă sau neterminată.
+          </p>
+          <p className="text-slate-600 leading-relaxed">  
             Important este să fie vie.
           </p>
         </div>
