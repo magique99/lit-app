@@ -11,12 +11,12 @@ export default function ContactPage() {
   });
   const [submitStatus, setSubmitStatus] = useState(null); // null, 'success', 'error'
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormState(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitStatus('submitting');
     // Simulate an API call
