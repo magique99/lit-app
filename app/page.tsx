@@ -542,11 +542,15 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
            />
 
            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-[#f8efe4]/40 to-[#f1e2d5]/90" />
-           <div className="absolute inset-0 flex items-center">
-             <div className="max-w-4xl px-6 py-10 sm:px-10 lg:px-16">
-               {/* stats grid moved below hero to appear after the banner */}
-             </div>
-           </div>
+            <div className="absolute inset-0 flex items-center">
+              <div className="max-w-4xl px-6 py-10 sm:px-10 lg:px-16">
+                {/* stats grid moved below hero to appear after the banner */}
+                <div className="mt-6 flex justify-between items-center">
+                  <Link href="/about" className="text-sm text-slate-600 hover:text-amber-600 transition-colors">Despre</Link>
+                  <Link href="/contact" className="text-sm text-slate-600 hover:text-amber-600 transition-colors">Contact</Link>
+                </div>
+              </div>
+            </div>
          </div>
        </section>
 
