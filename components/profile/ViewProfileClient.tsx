@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabaseClient";
@@ -14,54 +14,172 @@ type Props = {
 export default function ViewProfileClient({ userId }: Props) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [followBusy, setFollowBusy] = useState(false);
+
+  const loadProfile = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setIsFollowing(false);
+
+    try {
+      const {
+        data: profileData,
+        error: profileError,
+      } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (profileError && !profileError?.message?.includes("No rows")) {
+        console.error("LOAD PROFILE ERROR:", profileError);
+        setError("Nu am putut încărca profilul utilizatorului.");
+        setLoading(false);
+        return;
+      }
+
+      setProfile(profileData ? toProfile(profileData) : null);
+
+      const { data: postsData, error: postsError } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (postsError) {
+        console.error("LOAD POSTS ERROR:", postsError);
+        setError("Nu am putut încărca postările utilizatorului.");
+        setLoading(false);
+        return;
+      }
+
+      setPosts(postsData ?? []);
+
+      // === check follow state ===
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id ?? null;
+
+      if (uid) {
+        setIsOwnProfile(uid === userId);
+
+        if (uid !== userId) {
+          const followQuery = supabase
+            .from("follows")
+            .select("id")
+            .eq("follower_id", uid)
+            .eq("following_id", userId)
+            .maybeSingle();
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: followRecord } = (await followQuery) as any;
+
+          setIsFollowing(!!followRecord);
+        }
+      }
+
+      setLoading(false);
+    } catch (err) {
+      console.error("LOAD PROFILE ERROR:", err);
+      setError("A apărut o eroare la încărcarea profilului.");
+      setLoading(false);
+    }
+  }, [userId]);
 
   useEffect(() => {
-    async function loadProfile() {
-      setLoading(true);
-      setError(null);
+    queueMicrotask(() => {
+      void loadProfile();
+    });
+  }, [loadProfile]);
 
-      try {
-        const { data: profileData, error: profileError } = await supabase
+  async function toggleFollow() {
+    if (followBusy) return;
+    const { data: userData } = await supabase.auth.getUser();
+    const uid = userData.user?.id;
+    if (!uid) return;
+
+    setFollowBusy(true);
+
+    if (isFollowing) {
+      // === UNFOLLOW: delete the follow row + decrement counters ===
+      const { error: delError } = await supabase
+        .from("follows")
+        .delete()
+        .eq("follower_id", uid)
+        .eq("following_id", userId);
+
+      if (!delError) {
+        setIsFollowing(false);
+        // Refresh profile to update counters
+        const { data: refreshed } = await supabase
           .from("profiles")
           .select("*")
           .eq("user_id", userId)
           .maybeSingle();
+        if (refreshed) setProfile(toProfile(refreshed));
+      }
+    } else {
+      // === FOLLOW: insert row + increment counters + create notification ===
+      const { error: followError } = await supabase
+        .from("follows")
+        .insert({
+          follower_id: uid,
+          following_id: userId,
+        });
 
-        if (profileError && !profileError?.message?.includes("No rows")) {
-          console.error("LOAD PROFILE ERROR:", profileError);
-          setError("Nu am putut încărca profilul utilizatorului.");
-          setLoading(false);
-          return;
-        }
+      if (!followError) {
+        setIsFollowing(true);
 
-        setProfile(profileData ? toProfile(profileData) : null);
+        // Increment counters — RPCs are custom SQL functions not yet in the generated types
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (supabase.rpc as any)("increment_followers", {
+          p_user_id: userId,
+        }).catch(() => {
+          // Fallback: direct update if RPC does not exist
+          supabase
+            .from("profiles")
+            .update({
+              followers_count: (profile?.followers_count ?? 0) + 1,
+            })
+            .eq("user_id", userId);
+        });
 
-        const { data: postsData, error: postsError } = await supabase
-          .from("posts")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (supabase.rpc as any)("increment_following", {
+          p_user_id: uid,
+        }).catch(() => {
+          supabase
+            .from("profiles")
+            .update({
+              following_count: (profile?.following_count ?? 0) + 1,
+            })
+            .eq("user_id", userId);
+        });
+
+        // Notify the profile owner that someone followed them
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (supabase.from("notifications").insert as any)({
+          user_id: userId,
+          actor_id: uid,
+          type: "follow",
+          message: "cineva te urmează acum.",
+        }).catch(() => console.error("FOLLOW NOTIFICATION ERROR:"));
+
+        // Refresh profile to update counters
+        const { data: refreshed } = await supabase
+          .from("profiles")
           .select("*")
           .eq("user_id", userId)
-          .order("created_at", { ascending: false });
-
-        if (postsError) {
-          console.error("LOAD POSTS ERROR:", postsError);
-          setError("Nu am putut încărca postările utilizatorului.");
-          setLoading(false);
-          return;
-        }
-
-        setPosts(postsData ?? []);
-        setLoading(false);
-      } catch (err) {
-        console.error("LOAD PROFILE ERROR:", err);
-        setError("A apărut o eroare la încărcarea profilului.");
-        setLoading(false);
+          .maybeSingle();
+        if (refreshed) setProfile(toProfile(refreshed));
       }
     }
 
-    loadProfile();
-  }, [userId]);
+    setFollowBusy(false);
+  }
 
   if (loading) {
     return <div className="text-center py-20">Se încarcă profilul...</div>;
@@ -134,6 +252,29 @@ export default function ViewProfileClient({ userId }: Props) {
                 )}
               </div>
             </div>
+
+            {/* Follow / Unfollow button */}
+            {!isOwnProfile && (
+              <button
+                onClick={() => void toggleFollow()}
+                disabled={followBusy}
+                className={`
+                  inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
+                  transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-60
+                  ${
+                    isFollowing
+                      ? "bg-slate-200 text-slate-800 hover:bg-slate-300"
+                      : "bg-black text-white hover:bg-slate-800"
+                  }
+                `}
+              >
+                {followBusy
+                  ? "Se procesează..."
+                  : isFollowing
+                    ? "Nu mai urmări"
+                    : "Urmărește"}
+              </button>
+            )}
           </div>
 
           <div className="flex flex-wrap justify-center sm:justify-start gap-4 text-sm">
