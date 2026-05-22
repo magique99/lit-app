@@ -116,7 +116,7 @@ export default function ProfileHeaderV4() {
                     )}
                     {!profile.first_name && !profile.last_name && profile.nickname && (
                         <span className="text-slate-700">
-                            "{profile.nickname}"
+                            &ldquo;{profile.nickname}&rdquo;
                         </span>
                     )}
                 </div>

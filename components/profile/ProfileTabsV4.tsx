@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import type { Profile } from "@/lib/types";
 
 export default function ProfileTabsV4({
   postsSlot,
@@ -11,7 +10,7 @@ export default function ProfileTabsV4({
   error,
 }: {
   postsSlot: React.ReactNode;
-  profile: any; // Using any temporarily until we fix the type
+  profile: Profile;
   loading: boolean;
   error: string | null;
 }) {
@@ -146,7 +145,7 @@ function TabButton({
     ABOUT CONTENT
 ======================= */
 
-function AboutContent({ profile }: { profile: any }) {
+function AboutContent({ profile }: { profile: Profile }) {
   // Format date function
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Not available";

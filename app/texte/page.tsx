@@ -27,6 +27,8 @@ type PostWithProfile = Post & {
   text_type?: string | null;
   genre?: string | null;
   uses_ai?: boolean | null;
+  likes?: { id: string }[] | null;
+  comments?: { id: string }[] | null;
 };
 
 const PAGE_SIZE = 5;
@@ -154,7 +156,7 @@ export default function TextePage() {
       .from("posts")
       .select("*")
       .order("created_at", { ascending: false })
-      .range(from, to) as any;
+      .range(from, to);
 
     if (filterType && filterType !== "Toate") {
       query = query.eq("text_type", filterType);
@@ -261,13 +263,6 @@ export default function TextePage() {
     });
   }, []);
 
-  const handleFilterChange = (type: string | null, genre: string | null) => {
-    setPosts([]);
-    setPage(0);
-    setHasMore(true);
-    if (type) setFilterType(type);
-    if (genre) setFilterGenre(genre);
-  };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -276,7 +271,7 @@ export default function TextePage() {
     setHasMore(true);
   };
 
-  async function loadTopPosts() {
+  const loadTopPosts = useCallback(async () => {
     const { data, error } = await supabase
       .from("posts")
       .select("*, likes(id), comments(id)");
@@ -290,7 +285,7 @@ export default function TextePage() {
 
     const userIds = Array.from(
       new Set(
-        (data as any[]).map((p) => p.user_id).filter(Boolean) as string[],
+        (data as PostWithProfile[]).map((p) => p.user_id).filter(Boolean) as string[],
       ),
     );
 
@@ -339,7 +334,7 @@ export default function TextePage() {
       console.warn("No profiles found for userIds:", userIds);
     }
 
-    const postsWithCounts: PostWithProfile[] = (data as any[]).map((post) => ({
+    const postsWithCounts: PostWithProfile[] = (data as PostWithProfile[]).map((post) => ({
       ...post,
       profile: post.user_id ? (profileMap[post.user_id] ?? null) : null,
       likesCount: Array.isArray(post.likes) ? post.likes.length : 0,
@@ -355,11 +350,13 @@ export default function TextePage() {
 
     setTopVotedPosts(sortedByLikes.slice(0, 3));
     setTopViewedPosts(sortedByComments.slice(0, 3));
-  }
+  }, [ensureProfiles, setTopVotedPosts, setTopViewedPosts]);
 
   useEffect(() => {
-    void loadTopPosts();
-  }, []);
+    queueMicrotask(() => {
+      void loadTopPosts();
+    });
+  }, [loadTopPosts]);
 
   useEffect(() => {
     async function load() {

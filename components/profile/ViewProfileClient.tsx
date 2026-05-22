@@ -64,14 +64,12 @@ export default function ViewProfileClient({ userId }: Props) {
         setIsOwnProfile(uid === userId);
 
         if (uid !== userId) {
-          // The follows table row type is not in generated types yet — cast required
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const { data: followRecord } = (await supabase
             .from("follows")
             .select("id")
             .eq("follower_id", uid)
             .eq("following_id", userId)
-            .maybeSingle()) as any;
+            .maybeSingle()) as unknown as { id: string } | null;
 
           setIsFollowing(!!followRecord);
         }
@@ -126,16 +124,14 @@ export default function ViewProfileClient({ userId }: Props) {
         setIsFollowing(true);
 
         // Increment followers_count via RPC
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase.rpc as any)("increment_followers_fn", {
+        (supabase.rpc as unknown as (fn: string, params: Record<string, unknown>) => Promise<unknown>)("increment_followers_fn", {
           p_user_id: userId,
-        }).catch((e: any) => console.error("increment_followers_fn failed:", e));
+        }).catch((_e: unknown) => console.error("increment_followers_fn failed:", _e));
 
         // Increment following_count on the current user via RPC
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase.rpc as any)("increment_following_fn", {
+        (supabase.rpc as unknown as (fn: string, params: Record<string, unknown>) => Promise<unknown>)("increment_following_fn", {
           p_user_id: uid,
-        }).catch((e: any) => console.error("increment_following_fn failed:", e));
+        }).catch((_e: unknown) => console.error("increment_following_fn failed:", _e));
 
         // Notify the profile owner
         const { error: notifErr } = await supabase

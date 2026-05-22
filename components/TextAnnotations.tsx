@@ -21,7 +21,6 @@ export default function TextAnnotations({ postId, postContent }: { postId: strin
   const [popupPos, setPopupPos] = useState({ x: 0, y: 0 });
   const [newAnnotation, setNewAnnotation] = useState("");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const popupId = useRef(0);
   const showPopupRef = useRef(showPopup);
   const lastSelectionKeyRef = useRef<string | null>(null);
 
@@ -90,12 +89,13 @@ export default function TextAnnotations({ postId, postContent }: { postId: strin
       setCurrentUserId(data.user?.id ?? null);
     });
 
-    void loadAnnotations();
+    queueMicrotask(() => {
+      void loadAnnotations();
+    });
   }, [loadAnnotations]);
 
   useEffect(() => {
 
-  useEffect(() => {
     function handleMouseUp() {
       const selection = window.getSelection();
       if (!selection || !selection.toString().trim()) return;
