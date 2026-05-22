@@ -870,9 +870,41 @@ export default function TextePage() {
               </div>
             </div>
           </aside>
-        </div>
-      </div>
+         </div>
+       </div>
 
-    </main>
-  );
+       {/* SOCIAL PROOF */}
+       <section className="py-20" style={{ background: C.surface }}>
+         <div className="max-w-4xl mx-auto text-center px-6">
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+             <div>
+               <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
+                 Texte publicate
+               </p>
+               <p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
+                 {posts.length}
+               </p>
+             </div>
+             <div>
+               <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
+                 Autori activi
+               </p>
+               <p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
+                 {authorsCount}
+               </p>
+             </div>
+             <div>
+               <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
+                 Platformă pentru literatură digitală
+               </p>
+               <p className="mt-2 font-serif text-2xl font-medium" style={{ color: C.text }}>
+                 Nouă și în creștere
+               </p>
+             </div>
+           </div>
+         </div>
+       </section>
+
+     </main>
+   );
 }
