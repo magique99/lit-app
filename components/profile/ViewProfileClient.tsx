@@ -82,12 +82,31 @@ export default function ViewProfileClient({ userId }: Props) {
       }
 
       setLoading(false);
-    } catch (err) {
-      console.error("LOAD PROFILE ERROR:", err);
-      setError("A apărut o eroare la încărcarea profilului.");
-      setLoading(false);
+      } catch (err) {
+        console.error("LOAD PROFILE ERROR:", err);
+        setError("A apărut o eroare la încărcarea profilului.");
+        setLoading(false);
+      }
     }
   }, [userId]);
+}
+
+// Supabase RPC helpers — rpc() is untyped in the local client
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function rpc_any(s: any, fn: string, args: Record<string, unknown>) {
+  return (s as any).rpc(fn, args);
+}
+
+async function incrementProfileFollowers(
+  uid: string,
+  count: number,
+) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase.from("profiles").update as any)({
+    followers_count: count + 1,
+  })
+    .eq("user_id", uid);
+}
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -133,40 +152,35 @@ export default function ViewProfileClient({ userId }: Props) {
       if (!followError) {
         setIsFollowing(true);
 
-        // Increment counters — RPCs are custom SQL functions not yet in the generated types
+        // Increment followers on the profile owner
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (supabase.rpc as any)("increment_followers", {
           p_user_id: userId,
-        }).catch(() => {
-          // Fallback: direct update if RPC does not exist
-          supabase
-            .from("profiles")
-            .update({
-              followers_count: (profile?.followers_count ?? 0) + 1,
-            })
-            .eq("user_id", userId);
+        }).catch((rpcError: any) => {
+          console.error("increment_followers RPC failed:", rpcError);
         });
 
+        // Increment following on the current user
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (supabase.rpc as any)("increment_following", {
           p_user_id: uid,
-        }).catch(() => {
-          supabase
-            .from("profiles")
-            .update({
-              following_count: (profile?.following_count ?? 0) + 1,
-            })
-            .eq("user_id", userId);
+        }).catch((rpcError: any) => {
+          console.error("increment_following RPC failed:", rpcError);
         });
 
         // Notify the profile owner that someone followed them
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase.from("notifications").insert as any)({
-          user_id: userId,
-          actor_id: uid,
-          type: "follow",
-          message: "cineva te urmează acum.",
-        }).catch(() => console.error("FOLLOW NOTIFICATION ERROR:"));
+        const { error: notifError } = await supabase
+          .from("notifications")
+          .insert({
+            user_id: userId,
+            actor_id: uid,
+            type: "follow",
+            message: "cineva te urmează acum.",
+          });
+
+        if (notifError) {
+          console.error("FOLLOW NOTIFICATION ERROR:", notifError);
+        }
 
         // Refresh profile to update counters
         const { data: refreshed } = await supabase
