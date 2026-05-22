@@ -519,7 +519,7 @@ export default function TextePage() {
 
   return (
     <main className="min-h-screen" style={{ background: "#faf8f5" }}>
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 pt-14 pb-24">
+      <div className="max-w-[760px] mx-auto px-5 sm:px-8 pt-14 pb-24">
 
         {/* ── PAGE LABEL ── */}
         <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-12">
