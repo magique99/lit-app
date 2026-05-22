@@ -550,7 +550,7 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
              <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-amber-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(251,191,36,0.1)]">
                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-                 Texte recente
+                 Texte
                </p>
                <p className="mt-1 text-xl font-semibold text-slate-950 sm:text-2xl">
                  {posts.length}
@@ -558,7 +558,7 @@ console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?
              </div>
              <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 shadow-[0_6px_12px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-cyan-300/40 hover:bg-[#fffdf8] hover:shadow-[0_15px_30px_rgba(56,189,248,0.1)]">
                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-                 Comentarii recente
+                 Comentarii
                </p>
                <p className="mt-1 text-xl font-semibold text-slate-950 sm:text-2xl">
                  {latestComments.length}

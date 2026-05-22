@@ -225,7 +225,8 @@ export default function PostClient({ postId }: { postId: string }) {
         type: "comment",
       });
       if (notifError) {
-        console.error("NOTIFICATION ERROR:", notifError);
+        console.error("NOTIFICATION INSERT ERROR:", notifError);
+        setErrorMessage("Notificarea nu a fost trimisă. Încearcă din nou.");
       }
     }
   }
