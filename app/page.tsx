@@ -116,6 +116,7 @@ function Manifest() {
   );
 }
 
+
 /* ---- ULTIMELE 3 TEXT ---- */
 function LatestTexts() {
   const [texts, setTexts] = useState<Array<{ id: string; title: string; content: string; user_id: string; created_at: string; profile?: Pick<Profile, "username" | "avatar_url"> | null }>>([]);
