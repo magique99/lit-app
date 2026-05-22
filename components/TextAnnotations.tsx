@@ -162,11 +162,11 @@ export default function TextAnnotations({ postId, postContent }: { postId: strin
 
       {showPopup && selectedText && (
         <div
-          key={popupId.current}
+          key="annotation-popup"
           className="fixed z-50 bg-white border border-slate-200 rounded-lg shadow-lg p-3 w-64"
           style={{ left: popupPos.x, top: popupPos.y }}
         >
-          <p className="text-xs text-slate-600 mb-2 line-clamp-2">"{selectedText.text}"</p>
+          <p className="text-xs text-slate-600 mb-2 line-clamp-2">&ldquo;{selectedText.text}&rdquo;</p>
           <textarea
             value={newAnnotation}
             onChange={(e) => setNewAnnotation(e.target.value)}
@@ -200,7 +200,7 @@ export default function TextAnnotations({ postId, postContent }: { postId: strin
             const previewText = postContent?.substring(previewStart, previewEnd) || "N/A";
             return (
               <div key={a.id} className="border-l-2 border-amber-400 pl-3">
-                <p className="text-xs text-slate-500">Fragment: "...{previewText}..."</p>
+                <p className="text-xs text-slate-500">Fragment: &ldquo;...{previewText}...&rdquo;</p>
                 <p className="text-xs text-slate-400">Offset: {a.start_offset}-{a.end_offset}</p>
                 <p className="text-sm text-slate-700">{a.content}</p>
               </div>
