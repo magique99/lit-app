@@ -309,9 +309,9 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="min-h-screen" style={{ background: C.bg }}>
-      {/* HERO */}
-      <Hero />
+     <main className="min-h-screen" style={{ background: C.bg }}>
+       {/* HERO */}
+       <Hero currentUserId={currentUserId} />
 
       {/* DESPRE / MANIFEST */}
       <Manifest />
