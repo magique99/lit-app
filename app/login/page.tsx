@@ -117,6 +117,8 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full rounded-xl px-6 py-4 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
               style={{ backgroundColor: C.accent }}
+              onMouseEnter={(e) => !loading && (e.currentTarget.style.backgroundColor = C.accentHover)}
+              onMouseLeave={(e) => !loading && (e.currentTarget.style.backgroundColor = C.accent)}
             >
               {loading ? "Se procesează..." : mode === "login" ? "Intră în cont" : "Creează cont"}
             </button>
