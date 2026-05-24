@@ -7,8 +7,10 @@ import { supabase } from "@/lib/supabaseClient";
 function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error" | "pending">("loading");
   const [message, setMessage] = useState("");
+
+  const sent = searchParams.get("sent");
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -41,7 +43,13 @@ function VerifyEmailContent() {
           setTimeout(() => router.push("/profile"), 1500);
         }
       } else {
-        setStatus("loading");
+        if (sent === "true") {
+          setStatus("pending");
+          setMessage("Email-ul de confirmare a fost trimis. Verifică inbox-ul și folderul spam.");
+        } else {
+          setStatus("pending");
+          setMessage("Se așteptă confirmarea email-ului. Verifică inbox-ul pentru link-ul de confirmare.");
+        }
       }
     };
 
@@ -69,6 +77,12 @@ function VerifyEmailContent() {
       {status === "loading" && (
         <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
           Se verifică email-ul...
+        </div>
+      )}
+
+      {status === "pending" && (
+        <div className="rounded-xl border border-yellow-100 bg-yellow-50 px-4 py-3 text-sm text-yellow-700">
+          {message}
         </div>
       )}
 

@@ -16,7 +16,7 @@ export async function requireEmailVerification(): Promise<{
     user: {
       id: user.id,
       email: user.email || "",
-      email_confirmed_at: user.email_confirmed_at,
+      email_confirmed_at: user.email_confirmed_at ?? null,
     },
   };
 }
