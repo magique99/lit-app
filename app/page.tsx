@@ -26,9 +26,6 @@ const C = {
 
 /* ---- HERO ---- */
 function Hero({ currentUserId }: { currentUserId: string | null }) {
-  const href = currentUserId ? "/create" : "/login";
-  const label = currentUserId ? "Scrie un text" : "Conectare";
-
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Imagine de fundal */}
@@ -48,29 +45,46 @@ function Hero({ currentUserId }: { currentUserId: string | null }) {
 
       {/* Conținut */}
       <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
-        {/* Titlu înalt, cu literă L decorativă */}
+        {/* Titlu înalt */}
         <h1 className="font-serif text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-medium tracking-tight text-white/95 leading-[0.85]">
           Literatura<span className="text-[#B87D4B]">9</span>
         </h1>
 
-        {/* Tagline / brand statement */}
-        <p className="mt-6 sm:mt-8 md:mt-10 text-base sm:text-lg md:text-xl font-light italic text-white/70 max-w-xl mx-auto leading-relaxed">
-          &ldquo;Puține semne, fiecare ales cu răbdarea cu care se deschide o rană sau un vis.&rdquo;
+        {/* Descriere clară */}
+        <p className="mt-6 text-base sm:text-lg md:text-xl font-light italic text-white/80 max-w-xl mx-auto leading-relaxed">
+          Citește proză, poezie și texte simbolice independente. Publică, descoperă și discută literatură contemporană.
         </p>
 
-        {/* Sub-text explicativ scurt */}
-        <p className="mt-5 text-sm sm:text-base text-white/50 max-w-md mx-auto leading-relaxed">
-          O platformă pentru scriitorii care cred că fiecare cuvânt contează.
-        </p>
-
-        {/* CTA principal */}
-        <div className="mt-10 sm:mt-12">
+        {/* CTA-uri clare */}
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <Link
-            href={href}
-            className="inline-flex items-center gap-3 rounded-full bg-[#B87D4B] px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#9E6538] hover:shadow-[0_8px_30px_rgba(184,125,75,0.35)] active:scale-[0.97]"
+            href="/texte"
+            className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
+            style={{
+              color: C.text,
+              border: `1.5px solid ${C.border}`,
+              background: C.surface,
+            }}
           >
-            <span>{label}</span>
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 8h6M8 5l3 3-3 3"/></svg>
+            Citește texte
+          </Link>
+          <Link
+            href="/create"
+            className="rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#9E6538] hover:shadow-[0_8px_30px_rgba(184,125,75,0.35)] active:scale-[0.97]"
+            style={{ backgroundColor: C.accent }}
+          >
+            Publică un text
+          </Link>
+          <Link
+            href="/texte"
+            className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
+            style={{
+              color: C.text,
+              border: `1.5px solid ${C.border}`,
+              background: C.surface,
+            }}
+          >
+            Descoperă autori
           </Link>
         </div>
       </div>
@@ -327,51 +341,9 @@ function Features() {
   );
 }
 
-/* ---- CTA ---- */
-function CTA({ currentUserId }: { currentUserId: string | null }) {
-  const primaryHref = currentUserId ? "/create" : "/login";
-  const primaryLabel = currentUserId ? "Scrie un text" : "Conectare";
-
-  return (
-    <section className="py-28 sm:py-36 md:py-44 px-6" style={{ background: C.bg }}>
-      <div className="max-w-2xl mx-auto text-center">
-        <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-medium leading-tight" style={{ color: C.text }}>
-          Primul cuvânt<br />începe astăzi.
-        </h2>
-
-        <p className="mt-6 text-sm sm:text-base leading-[1.9]" style={{ color: C.muted }}>
-          Fie că scrii poezie, nuvele, eseuri sau doar gânduri care nu încap într-un tweet —
-          Literatură9 este locul unde textele lor găsesc un spațiu propriu.
-          Nu algoritmi. Nu jumătăți de atenție. Doar cuvintele tale și cititorii care le merită.
-        </p>
-
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/create"
-            className="rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:shadow-[0_8px_30px_rgba(184,125,75,0.3)] active:scale-[0.97]"
-            style={{ background: C.accent }}
-          >
-            Scrie un text
-          </Link>
-          <Link
-            href="/texte"
-            className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
-            style={{
-              color: C.accent,
-              border: `1.5px solid ${C.accent}`,
-            }}
-          >
-            Texte
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* =====================================================
-    COMPONENTELE NOUĚ ADAUGATE
-    ===================================================== */
+     COMPONENTELE NOUĂ ADAUGATE
+     ===================================================== */
 
 function SocialProof() {
   const [counts, setCounts] = useState({ posts: 0, authors: 0 });
@@ -450,18 +422,10 @@ function Footer() {
     PAGINA PRINCIPALĂ
     ===================================================== */
 export default function HomePage() {
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setCurrentUserId(data.user?.id ?? null);
-    });
-  }, []);
-
   return (
     <main className="min-h-screen" style={{ background: C.bg }}>
       {/* HERO */}
-      <Hero currentUserId={currentUserId} />
+      <Hero />
 
       {/* DESPRE / MANIFEST */}
       <Manifest />
