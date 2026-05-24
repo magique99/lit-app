@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import type { User } from "@supabase/supabase-js";
 
 const C = {
-  bg: "#F7F3EE",
+  bg: "#2a241f",
   surface: "#FFFCF7",
   text: "#2A2520",
   muted: "#7A7268",
