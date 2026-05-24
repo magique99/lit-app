@@ -416,8 +416,15 @@ function CreatePostForm() {
   };
 
   const randomTip = useMemo(
-    () => ATOMIC_TIPS[Math.floor(Math.random() * ATOMIC_TIPS.length)],
-    [],
+    () => {
+      // Create a stable random value using a seeded approach or use useState instead
+      const [tipIndex, setTipIndex] = useState(0);
+      useEffect(() => {
+        setTipIndex(Math.floor(Math.random() * ATOMIC_TIPS.length));
+      }, []); // Empty deps to run once on mount
+      return ATOMIC_TIPS[tipIndex];
+    },
+    []
   );
 
   /* ── Publish ── */
