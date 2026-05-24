@@ -11,14 +11,19 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
   async function signup() {
     setLoading(true);
     setErrorMessage(null);
+    setInfoMessage(null);
 
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/verify-email`,
+      },
     });
 
     if (error) {
@@ -27,21 +32,24 @@ export default function SignupPage() {
       return;
     }
 
+    if (data.user && !data.session) {
+      setInfoMessage("Cont creat cu succes! Verifică email-ul pentru a confirma contul.");
+      setLoading(false);
+      return;
+    }
+
     const userId = data.user?.id;
 
     if (userId) {
-      const { error } = await supabase.from("profiles").insert({
+      const { error: profileError } = await supabase.from("profiles").insert({
         user_id: userId,
         username: email.split("@")[0],
         bio: "",
         role: "user",
       });
 
-      if (error) {
-        console.error("CREATE PROFILE ERROR:", error);
-        setErrorMessage("Contul a fost creat, dar profilul nu a putut fi inițializat.");
-        setLoading(false);
-        return;
+      if (profileError) {
+        console.error("CREATE PROFILE ERROR:", profileError);
       }
     }
 
@@ -57,6 +65,12 @@ export default function SignupPage() {
       {errorMessage && (
         <div className="mb-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
           {errorMessage}
+        </div>
+      )}
+
+      {infoMessage && (
+        <div className="mb-4 rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-sm text-green-700">
+          {infoMessage}
         </div>
       )}
 

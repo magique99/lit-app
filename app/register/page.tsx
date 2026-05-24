@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,15 +17,23 @@ export default function RegisterPage() {
     setMessage(null);
     setErrorMessage(null);
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/verify-email`,
+      },
     });
 
     setLoading(false);
 
     if (error) {
       setErrorMessage(error.message);
+    } else if (data.user && !data.session) {
+      setMessage("Cont creat! Verifică email-ul pentru confirmare.");
+    } else if (data.session) {
+      setMessage("Cont creat cu succes! Vei fi redirecționat...");
+      router.push("/profile");
     } else {
       setMessage("Check email to confirm account.");
     }
