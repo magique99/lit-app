@@ -72,8 +72,7 @@ export default function ProfilePage() {
           return;
         }
 
-        if (profileData) {
-          const p = toProfile(profileData)!;
+        const p = toProfile(profileData)!;
           setProfile(p);
           setUsername(p.username || "");
           setFirstName(p.first_name || "");
