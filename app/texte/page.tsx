@@ -569,343 +569,304 @@ export default function TextePage() {
   const getComments = (postId: string) => commentCounts[postId] ?? 0;
 
   return (
-    <main className="min-h-screen" style={{ background: "#faf8f5" }}>
-      <div className="max-w-[760px] mx-auto px-5 sm:px-8 pt-14 pb-24">
+    <main className="min-h-screen" style={{ background: C.bg }}>
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 pt-14 pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Main content */}
+          <div className="lg:col-span-2">
+            {/* ── PAGE LABEL ── */}
+            <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-12">
+              Texte
+            </p>
 
-        {/* ── PAGE LABEL ── */}
-        <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-12">
-          Texte
-        </p>
+            {/* ── SEARCH ── */}
+            <div className="mb-14">
+              <input
+                type="text"
+                placeholder="Caută după titlu sau conținut…"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-white/60 px-5 py-3.5 text-[15px] text-slate-800 placeholder:text-slate-300 focus:border-slate-400 focus:bg-white focus:outline-none transition-colors"
+              />
+            </div>
 
-        {/* ── SEARCH ── */}
-        <div className="mb-14">
-          <input
-            type="text"
-            placeholder="Caută după titlu sau conținut…"
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-white/60 px-5 py-3.5 text-[15px] text-slate-800 placeholder:text-slate-300 focus:border-slate-400 focus:bg-white focus:outline-none transition-colors"
-          />
-        </div>
+            {/* ── FILTER ROW ── */}
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mb-16">
+              <div className="flex flex-wrap gap-2">
+                {TEXT_TYPES.map((t) => {
+                  const active = (filterType || "Toate") === t;
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => {
+                        setFilterType(t === "Toate" ? "" : t);
+                        setPage(0); setPosts([]); setHasMore(true);
+                      }}
+                      className={`
+                        rounded-full px-4 py-[6px] text-[12px] font-medium tracking-wide
+                        transition-colors duration-150
+                        ${active
+                          ? "bg-slate-900 text-white"
+                          : "bg-slate-100/70 text-slate-500 hover:bg-slate-200/70 hover:text-slate-700"
+                        }
+                      `}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
+              </div>
 
-        {/* ── FILTER ROW ── */}
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mb-16">
+              <span className="text-slate-200 select-none">|</span>
 
-          {/* tip text */}
-          <div className="flex flex-wrap gap-2">
-            {TEXT_TYPES.map((t) => {
-              const active = (filterType || "Toate") === t;
-              return (
-                <button
-                  key={t}
-                  onClick={() => {
-                    setFilterType(t === "Toate" ? "" : t);
+              <div className="relative">
+                <select
+                  value={filterGenre}
+                  onChange={(e) => {
+                    setFilterGenre(e.target.value);
                     setPage(0); setPosts([]); setHasMore(true);
                   }}
-                  className={`
-                    rounded-full px-4 py-[6px] text-[12px] font-medium tracking-wide
+                  className="
+                    appearance-none
+                    rounded-full px-4 pr-8 py-[6px]
+                    text-[12px] font-medium tracking-wide
+                    bg-slate-100/70 text-slate-500
+                    hover:bg-slate-200/70 hover:text-slate-700
                     transition-colors duration-150
-                    ${active
-                      ? "bg-slate-900 text-white"
-                      : "bg-slate-100/70 text-slate-500 hover:bg-slate-200/70 hover:text-slate-700"
-                    }
-                  `}
+                    cursor-pointer
+                    focus:outline-none
+                  "
                 >
-                  {t}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* separator */}
-          <span className="text-slate-200 select-none">|</span>
-
-          {/* genre dropdown */}
-          <div className="relative">
-            <select
-              value={filterGenre}
-              onChange={(e) => {
-                setFilterGenre(e.target.value);
-                setPage(0); setPosts([]); setHasMore(true);
-              }}
-              className="
-                appearance-none
-                rounded-full px-4 pr-8 py-[6px]
-                text-[12px] font-medium tracking-wide
-                bg-slate-100/70 text-slate-500
-                hover:bg-slate-200/70 hover:text-slate-700
-                transition-colors duration-150
-                cursor-pointer
-                focus:outline-none
-              "
-            >
-              <option value="">Genuri</option>
-              {GENRES.filter((g) => g !== "Toate").map((g) => (
-                <option key={g} value={g}>{g}</option>
-              ))}
-            </select>
-            {/* chevron */}
-            <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] text-slate-400">
-              ▾
-            </span>
-          </div>
-
-        </div>
-
-        {/* ── LIVE STATS ── */}
-        <div className="grid grid-cols-4 gap-px rounded-2xl overflow-hidden mb-20 bg-slate-200/60">
-          {[
-            { label: "Texte",   value: posts.length },
-            { label: "Comentarii", value: latestComments.length },
-            { label: "Reacții", value: totalLikes },
-            { label: "Autori",  value: authorsCount },
-          ].map(({ label, value }) => (
-            <div
-              key={label}
-              className="bg-white/40 px-4 py-6 text-center"
-            >
-              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-1.5">
-                {label}
-              </p>
-              <p className="text-2xl font-light text-slate-800 tabular-nums">
-                {value + randomOffset}
-              </p>
+                  <option value="">Genuri</option>
+                  {GENRES.filter((g) => g !== "Toate").map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] text-slate-400">
+                  ▾
+                </span>
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* ── ERRORS ── */}
-        {error && (
-          <p className="mb-10 text-sm text-rose-500/80">{error}</p>
-        )}
-        {likeError && (
-          <p className="mb-10 text-sm text-amber-600/80">{likeError}</p>
-        )}
-
-        {/* ── POSTS LIST ── */}
-        <section className="mb-28">
-          <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-10">
-            Ultimele postări
-          </p>
-
-          <div className="flex flex-col">
-            {posts.map((post) => (
-              <article
-                key={post.id}
-                className="group py-8 first:pt-0 last:pb-0"
-              >
-                <div className="flex items-start gap-5">
-
-                  {/* avatar */}
-                  <Link
-                    href={post.user_id ? `/profile/${post.user_id}` : "#"}
-                    className="mt-0.5 shrink-0"
-                  >
-                    <Image
-                      src={post.profile?.avatar_url ?? "/user.jpg"}
-                      alt={post.profile?.username ?? "author"}
-                      width={34}
-                      height={34}
-                      className="rounded-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
-                    />
-                  </Link>
-
-                  {/* content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline gap-2 mb-1">
-                      {post.profile?.username ? (
-                        <Link
-                          href={`/profile/${post.user_id}`}
-                          className="text-[11px] font-medium text-slate-500 hover:text-slate-800 transition-colors"
-                        >
-                          @{post.profile.username}
-                        </Link>
-                      ) : (
-                        <span className="text-[11px] text-slate-400">
-                          anonim
-                        </span>
-                      )}
-                    </div>
-
-                    <Link href={`/post/${post.id}`}>
-                      <h2 className="text-[17px] font-medium text-slate-900 leading-snug mb-2 group-hover:text-slate-600 transition-colors">
-                        {post.title}
-                      </h2>
-                    </Link>
-
-                    <p
-                      className="text-[13px] leading-relaxed text-slate-400 max-w-xl mb-4"
-                      style={{ whiteSpace: "pre-line" }}
-                    >
-                      {htmlToPlainTextWithNewlines(post.content).slice(0, 220)}
-                      {htmlToPlainTextWithNewlines(post.content).length > 220 ? "…" : ""}
-                    </p>
-
-                    <div className="flex items-center gap-5 text-[11px]">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault(); e.stopPropagation();
-                          void handleLike(post.id);
-                        }}
-                        disabled={likingIds.has(post.id) || !currentUserId}
-                        className="inline-flex items-center gap-1.5 text-slate-300 transition-colors hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed"
-                      >
-                        <span>♥</span>
-                        <span className="tabular-nums text-slate-500">{getLikes(post.id)}</span>
-                      </button>
-
-                      <Link
-                        href={`/post/${post.id}#comments`}
-                        scroll
-                        className="inline-flex items-center gap-1.5 text-slate-300 transition-colors hover:text-slate-600"
-                      >
-                        <span>✦</span>
-                        <span className="tabular-nums text-slate-500">{getComments(post.id)}</span>
-                      </Link>
-                    </div>
-                  </div>
+            {/* ── LIVE STATS ── */}
+            <div className="grid grid-cols-4 gap-px rounded-2xl overflow-hidden mb-20 bg-slate-200/60">
+              {[
+                { label: "Texte", value: posts.length },
+                { label: "Comentarii", value: latestComments.length },
+                { label: "Reacții", value: totalLikes },
+                { label: "Autori", value: authorsCount },
+              ].map(({ label, value }) => (
+                <div
+                  key={label}
+                  className="bg-white/40 px-4 py-6 text-center"
+                >
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-1.5">
+                    {label}
+                  </p>
+                  <p className="text-2xl font-light text-slate-800 tabular-nums">
+                    {value + randomOffset}
+                  </p>
                 </div>
-
-                {/* divider */}
-                <div className="mt-8 border-b border-slate-100/80 last:border-none" />
-              </article>
-            ))}
-          </div>
-
-          <div ref={observerRef} className="h-4" />
-
-          {loading && posts.length > 0 && (
-            <p className="mt-10 text-center text-[12px] text-slate-300 tracking-wider uppercase">
-              Încărcare…
-            </p>
-          )}
-        </section>
-
-        {/* ── ASIDE ── */}
-        <aside className="space-y-16">
-
-          {/* Latest comments */}
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-8">
-              Ultimele comentarii
-            </p>
-            <div className="flex flex-col gap-1">
-              {latestComments.slice(0, 3).map((comment) => (
-                <Link
-                  key={comment.id}
-                  href={`/post/${comment.post_id}#comment-${comment.id}`}
-                  className="group/link block py-5 border-b border-slate-100/80 last:border-none"
-                >
-                  <p
-                    className="text-[13px] leading-relaxed text-slate-400 group-hover/link:text-slate-600 transition-colors line-clamp-2"
-                    style={{ whiteSpace: "pre-line" }}
-                  >
-                    {htmlToPlainTextWithNewlines(comment.content)}
-                  </p>
-                  <p className="mt-2 text-[10px] text-slate-300 group-hover/link:text-slate-400 transition-colors">
-                    Vezi comentariul →
-                  </p>
-                </Link>
               ))}
             </div>
+
+            {/* ── ERRORS ── */}
+            {error && (
+              <p className="mb-10 text-sm text-rose-500/80">{error}</p>
+            )}
+            {likeError && (
+              <p className="mb-10 text-sm text-amber-600/80">{likeError}</p>
+            )}
+
+            {/* ── POSTS LIST ── */}
+            <section className="mb-28">
+              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-10">
+                Ultimele postări
+              </p>
+
+              <div className="flex flex-col">
+                {posts.map((post) => (
+                  <article
+                    key={post.id}
+                    className="group py-8 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex items-start gap-5">
+                      <Link
+                        href={post.user_id ? `/profile/${post.user_id}` : "#"}
+                        className="mt-0.5 shrink-0"
+                      >
+                        <Image
+                          src={post.profile?.avatar_url ?? "/user.jpg"}
+                          alt={post.profile?.username ?? "author"}
+                          width={34}
+                          height={34}
+                          className="rounded-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
+                        />
+                      </Link>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline gap-2 mb-1">
+                          {post.profile?.username ? (
+                            <Link
+                              href={`/profile/${post.user_id}`}
+                              className="text-[11px] font-medium text-slate-500 hover:text-slate-800 transition-colors"
+                            >
+                              @{post.profile.username}
+                            </Link>
+                          ) : (
+                            <span className="text-[11px] text-slate-400">
+                              anonim
+                            </span>
+                          )}
+                        </div>
+
+                        <Link href={`/post/${post.id}`}>
+                          <h2 className="text-[17px] font-medium text-slate-900 leading-snug mb-2 group-hover:text-slate-600 transition-colors">
+                            {post.title}
+                          </h2>
+                        </Link>
+
+                        <p
+                          className="text-[13px] leading-relaxed text-slate-400 max-w-xl mb-4"
+                          style={{ whiteSpace: "pre-line" }}
+                        >
+                          {htmlToPlainTextWithNewlines(post.content).slice(0, 220)}
+                          {htmlToPlainTextWithNewlines(post.content).length > 220 ? "…" : ""}
+                        </p>
+
+                        <div className="flex items-center gap-5 text-[11px]">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault(); e.stopPropagation();
+                              void handleLike(post.id);
+                            }}
+                            disabled={likingIds.has(post.id) || !currentUserId}
+                            className="inline-flex items-center gap-1.5 text-slate-300 transition-colors hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                          >
+                            <span>♥</span>
+                            <span className="tabular-nums text-slate-500">{getLikes(post.id)}</span>
+                          </button>
+
+                          <Link
+                            href={`/post/${post.id}#comments`}
+                            scroll
+                            className="inline-flex items-center gap-1.5 text-slate-300 transition-colors hover:text-slate-600"
+                          >
+                            <span>✦</span>
+                            <span className="tabular-nums text-slate-500">{getComments(post.id)}</span>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 border-b border-slate-100/80 last:border-none" />
+                  </article>
+                ))}
+              </div>
+
+              <div ref={observerRef} className="h-4" />
+
+              {loading && posts.length > 0 && (
+                <p className="mt-10 text-center text-[12px] text-slate-300 tracking-wider uppercase">
+                  Încărcare…
+                </p>
+              )}
+            </section>
           </div>
 
-          {/* Separator */}
-          <div className="border-t border-slate-100" />
-
-          {/* Top posts */}
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-8">
-              Top texte
-            </p>
-
-            {/* most voted */}
-            <div className="mb-10">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-300 mb-4">
-                Cele mai votate
+          {/* Sidebar */}
+          <aside className="space-y-12">
+            {/* Quote */}
+            <div className="rounded-2xl border border-slate-200/60 bg-white/40 p-6 text-center">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400 mb-3">
+                Citat aleatoriu
               </p>
-              <div className="flex flex-col gap-1">
-                {topVotedPosts.length === 0 ? (
-                  <p className="text-[12px] text-slate-300 py-3">
-                    Nu sunt încă date.
-                  </p>
-                ) : (
-                  topVotedPosts.slice(0, 3).map((post, idx) => {
-                    const rankColor = ["text-amber-500/50", "text-slate-400/50", "text-amber-700/30"];
-                    return (
-                      <Link
-                        key={post.id}
-                        href={`/post/${post.id}`}
-                        className="group/link flex items-start gap-3 py-4 border-b border-slate-100/70 last:border-none"
-                      >
-                        <span className={`text-[13px] font-light mt-0.5 shrink-0 tabular-nums ${rankColor[idx]}`}>
-                          {String(idx + 1).padStart(2, "0")}
-                        </span>
-                        <div className="min-w-0">
-                          <p className="text-[13px] font-medium text-slate-600 group-hover/link:text-slate-900 transition-colors leading-snug">
-                            {post.title}
-                          </p>
-                          <div className="mt-1 flex flex-wrap gap-2 text-[10px] text-slate-300">
-                            {post.text_type && <span>{post.text_type}</span>}
-                            {post.genre && <span>· {post.genre}</span>}
-                            {post.uses_ai && <span>· AI</span>}
-                          </div>
-                          <p className="mt-1 text-[10px] text-slate-300 tabular-nums">
-                            {post.likesCount ?? getLikes(post.id)} voturi
-                          </p>
-                        </div>
-                      </Link>
-                    );
-                  })
-                )}
-              </div>
+              <p className="text-xs italic text-slate-600 leading-relaxed">
+                « {sidebarQuote} »
+              </p>
             </div>
 
-            {/* most commented */}
+            {/* Trending Authors */}
             <div>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-300 mb-4">
-                Cele mai comentate
+              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
+                🔥 Trending autori
               </p>
-              <div className="flex flex-col gap-1">
-                {topViewedPosts.length === 0 ? (
-                  <p className="text-[12px] text-slate-300 py-3">
-                    Nu sunt încă date.
-                  </p>
-                 ) : (
-                  topViewedPosts.slice(0, 3).map((post, idx) => {
-                    const rankColor2 = ["text-amber-500/50", "text-slate-400/50", "text-amber-700/30"];
-                    return (
-                      <Link
-                        key={post.id}
-                        href={`/post/${post.id}`}
-                        className="group/link flex items-start gap-3 py-4 border-b border-slate-100/70 last:border-none"
-                      >
-                        <span className={`text-[13px] font-light mt-0.5 shrink-0 tabular-nums ${rankColor2[idx]}`}>
-                          {String(idx + 1).padStart(2, "0")}
-                        </span>
-                        <div className="min-w-0">
-                          <p className="text-[13px] font-medium text-slate-600 group-hover/link:text-slate-900 transition-colors leading-snug">
-                            {post.title}
-                          </p>
-                          <div className="mt-1 flex flex-wrap gap-2 text-[10px] text-slate-300">
-                            {post.text_type && <span>{post.text_type}</span>}
-                            {post.genre && <span>· {post.genre}</span>}
-                            {post.uses_ai && <span>· AI</span>}
-                          </div>
-                          <p className="mt-1 text-[10px] text-slate-300 tabular-nums">
-                            {post.commentsCount ?? getComments(post.id)} replies
-                          </p>
-                        </div>
-                      </Link>
-                    );
-                  })
+              <div className="space-y-2">
+                {trendingAuthors.length === 0 ? (
+                  <p className="text-[11px] text-slate-300">Se încarcă…</p>
+                ) : (
+                  trendingAuthors.map((author) => (
+                    <Link
+                      key={author.user_id}
+                      href={`/profile/${author.user_id}`}
+                      className="block text-[13px] text-slate-600 hover:text-slate-900 transition-colors"
+                    >
+                      @{author.username}
+                    </Link>
+                  ))
                 )}
               </div>
             </div>
-          </div>
-        </aside>
 
+            {/* Most Read */}
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
+                📖 Cele mai citite
+              </p>
+              <div className="space-y-2">
+                {topViewedPosts.length === 0 ? (
+                  <p className="text-[11px] text-slate-300">Se încarcă…</p>
+                ) : (
+                  topViewedPosts.slice(0, 3).map((post, idx) => (
+                    <Link
+                      key={post.id}
+                      href={`/post/${post.id}`}
+                      className="block text-[13px] text-slate-600 hover:text-slate-900 transition-colors truncate"
+                    >
+                      {idx + 1}. {post.title}
+                    </Link>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Categories */}
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
+                🏷 Categorii
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {TAGS.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[11px] px-3 py-1 rounded-full bg-slate-100/60 text-slate-500"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Latest comments */}
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4">
+                Ultimele comentarii
+              </p>
+              <div className="space-y-3">
+                {latestComments.slice(0, 3).map((comment) => (
+                  <Link
+                    key={comment.id}
+                    href={`/post/${comment.post_id}#comment-${comment.id}`}
+                    className="block text-[11px] text-slate-500 hover:text-slate-700 transition-colors line-clamp-2 leading-relaxed"
+                  >
+                    {htmlToPlainTextWithNewlines(comment.content).slice(0, 80)}…
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
     </main>
   );
