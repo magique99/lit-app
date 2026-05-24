@@ -15,6 +15,7 @@ export default function ProEditor({ onChange }: ProEditorProps) {
   const editor = useEditor({
     extensions: [StarterKit],
     content: "<p>Scrie aici...</p>",
+    immediatelyRender: false,
 
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
@@ -25,7 +26,13 @@ export default function ProEditor({ onChange }: ProEditorProps) {
     },
   });
 
-  if (!editor) return null;
+  if (!editor) {
+    return (
+      <div className="border border-gray-200 rounded-xl p-4 min-h-[300px] bg-white">
+        <p className="text-gray-400">Încărcare editor...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="border border-gray-200 rounded-xl p-4 min-h-[300px] relative bg-white">
