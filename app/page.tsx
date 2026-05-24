@@ -57,39 +57,39 @@ function Hero({ user }: { user?: User }) {
         </p>
 
          {/* CTA-uri clare */}
-         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-           <Link
-             href="/texte"
-             className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
-             style={{
-               color: C.text,
-               border: `1.5px solid ${C.border}`,
-               background: C.surface,
-             }}
-           >
-             Citește texte
-           </Link>
-           {user && (
-             <Link
-               href="/create"
-               className="rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#9E6538] hover:shadow-[0_8px_30px_rgba(184,125,75,0.35)] active:scale-[0.97]"
-               style={{ backgroundColor: C.accent }}
-             >
-               Adaugă un text
-             </Link>
-           )}
-           <Link
-             href="/autori"
-             className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
-             style={{
-               color: C.text,
-               border: `1.5px solid ${C.border}`,
-               background: C.surface,
-             }}
-           >
-             Descoperă autori
-           </Link>
-         </div>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <Link
+              href="/texte"
+              className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
+              style={{
+                color: C.text,
+                border: `1.5px solid ${C.border}`,
+                background: C.surface,
+              }}
+            >
+              Citește texte
+            </Link>
+            <Link
+              href="/autori"
+              className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
+              style={{
+                color: C.text,
+                border: `1.5px solid ${C.border}`,
+                background: C.surface,
+              }}
+            >
+              Descoperă autori
+            </Link>
+            {user && (
+              <Link
+                href="/create"
+                className="rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#9E6538] hover:shadow-[0_8px_30px_rgba(184,125,75,0.35)] active:scale-[0.97]"
+                style={{ backgroundColor: C.accent }}
+              >
+                Adaugă un text
+              </Link>
+            )}
+          </div>
       </div>
 
       {/* Indicatori de scroll */}
