@@ -572,7 +572,7 @@ function CreatePostForm() {
         </div>
 
         {/* ── Inline status / error row ── */}
-        {(publishError || (mounted && lastSaved > 0)) && (
+        {(publishError || (mountedRef.current && lastSaved > 0)) && (
           <div className="mt-3 flex items-center gap-4">
             {publishError && (
               <p className="text-[12px] text-rose-500/80">{publishError}</p>
