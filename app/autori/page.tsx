@@ -95,7 +95,6 @@ export default function AutoriPage() {
             postCount: count,
           } as AuthorWithStats;
         })
-        .filter((a) => a.postCount > 0)
         .sort((a, b) => b.postCount - a.postCount);
 
       setAuthors(sorted);
@@ -184,7 +183,7 @@ export default function AutoriPage() {
                       @{author.username ?? "anonim"}
                     </p>
                     <p className="text-[12px] mt-0.5 text-slate-400">
-                      {author.postCount} {author.postCount === 1 ? "text publicat" : "texte publicate"}
+                      {author.postCount === 0 ? "Fără texte" : `${author.postCount} ${author.postCount === 1 ? "text publicat" : "texte publicate"}`}
                     </p>
                   </div>
 

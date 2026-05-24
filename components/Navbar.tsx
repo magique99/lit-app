@@ -103,7 +103,7 @@ export default function Navbar() {
               background: C.surface,
             }}
           >
-            Texte
+            Citeste Texte
           </Link>
 
           {user ? (
