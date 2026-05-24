@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import type { Post, Profile } from "@/lib/types";
+import type { User } from "@supabase/supabase-js";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 
 /* =====================================================
@@ -25,7 +26,7 @@ const C = {
     ===================================================== */
 
 /* ---- HERO ---- */
-function Hero() {
+function Hero({ user }: { user?: User }) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Imagine de fundal */}
@@ -55,38 +56,40 @@ function Hero() {
           Citește proză, poezie și texte simbolice independente. Publică, descoperă și discută literatură contemporană.
         </p>
 
-        {/* CTA-uri clare */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-          <Link
-            href="/texte"
-            className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
-            style={{
-              color: C.text,
-              border: `1.5px solid ${C.border}`,
-              background: C.surface,
-            }}
-          >
-            Citește texte
-          </Link>
-          <Link
-            href="/create"
-            className="rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#9E6538] hover:shadow-[0_8px_30px_rgba(184,125,75,0.35)] active:scale-[0.97]"
-            style={{ backgroundColor: C.accent }}
-          >
-            Publică un text
-          </Link>
-          <Link
-            href="/texte"
-            className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
-            style={{
-              color: C.text,
-              border: `1.5px solid ${C.border}`,
-              background: C.surface,
-            }}
-          >
-            Descoperă autori
-          </Link>
-        </div>
+         {/* CTA-uri clare */}
+         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+           <Link
+             href="/texte"
+             className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
+             style={{
+               color: C.text,
+               border: `1.5px solid ${C.border}`,
+               background: C.surface,
+             }}
+           >
+             Citește texte
+           </Link>
+           {user && (
+             <Link
+               href="/create"
+               className="rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#9E6538] hover:shadow-[0_8px_30px_rgba(184,125,75,0.35)] active:scale-[0.97]"
+               style={{ backgroundColor: C.accent }}
+             >
+               Adaugă un text
+             </Link>
+           )}
+           <Link
+             href="/autori"
+             className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
+             style={{
+               color: C.text,
+               border: `1.5px solid ${C.border}`,
+               background: C.surface,
+             }}
+           >
+             Descoperă autori
+           </Link>
+         </div>
       </div>
 
       {/* Indicatori de scroll */}
@@ -422,10 +425,30 @@ function Footer() {
     PAGINA PRINCIPALĂ
     ===================================================== */
 export default function HomePage() {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    let ignore = false;
+    const loadUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!ignore) setUser(data.user ?? null);
+    };
+    loadUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!ignore) setUser(session?.user ?? null);
+    });
+
+    return () => {
+      ignore = true;
+      subscription.unsubscribe();
+    };
+  }, []);
+
   return (
     <main className="min-h-screen" style={{ background: C.bg }}>
       {/* HERO */}
-      <Hero />
+      <Hero user={user} />
 
       {/* DESPRE / MANIFEST */}
       <Manifest />
