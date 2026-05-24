@@ -67,7 +67,7 @@ export default function ProfilePage() {
         }
 
         // Redirect to onboarding if preferences not set
-        if (!profileData.preferences || profileData.preferences.length === 0) {
+        if (!profileData?.preferences?.genres || profileData.preferences.genres.length === 0) {
           router.push("/onboarding");
           return;
         }

@@ -25,7 +25,7 @@ function OnboardingContent() {
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (!profile?.preferences || profile.preferences.length === 0) {
+      if (!profile?.preferences || !profile.preferences.genres || profile.preferences.genres.length === 0) {
         setNeedsOnboarding(true);
       } else {
         router.push("/");

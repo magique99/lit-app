@@ -28,7 +28,7 @@ export type ProfileUpdate = Omit<Tables["profiles"]["Update"], "role"> & {
   role?: UserRole | null;
 };
 
-export type GenrePreference = 
+export type GenrePreference =
   | "Poezie"
   | "Proză"
   | "Grotesc"
@@ -36,6 +36,15 @@ export type GenrePreference =
   | "SF"
   | "Dramă"
   | "Eseu";
+
+export type UserRole = "reader" | "writer" | "both";
+
+export type UserPreferences = {
+  genres: GenrePreference[];
+  role: UserRole;
+  writes_types: string[];
+  reads_types: string[];
+};
 
 export function toProfile(dbProfile: ProfileRow | null): Profile | null {
   if (!dbProfile) return null;

@@ -212,7 +212,7 @@ profiles: {
             following_count: number;
             likes_count: number;
             comments_count: number;
-            preferences: string[] | null;
+            preferences: import("./types").UserPreferences | null;
           };
 Insert: {
             avatar_url?: string | null;

@@ -50,7 +50,7 @@ export default function LoginPage() {
       .eq("user_id", user.id)
       .maybeSingle();
 
-    if (!profile?.preferences || profile.preferences.length === 0) {
+    if (!profile?.preferences || !profile.preferences.genres || profile.preferences.genres.length === 0) {
       router.push("/onboarding");
     } else {
       router.push("/");
