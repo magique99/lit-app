@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
@@ -10,6 +11,7 @@ import type { Profile } from "@/lib/types";
 import ProfileTabsV4 from "./ProfileTabsV4";
 import ProfilePostsV2 from "./ProfilePostsV2";
 export default function ProfilePage() {
+  const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [edit, setEdit] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -45,6 +47,7 @@ export default function ProfilePage() {
         const uid = userData.user?.id;
         if (!uid) { setLoading(false); return; }
 
+        // Check if user needs onboarding
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
           .select("*")
@@ -55,6 +58,17 @@ export default function ProfilePage() {
           console.error("LOAD PROFILE ERROR:", profileError);
           setError("Nu am putut încărca profilul.");
           setLoading(false);
+          return;
+        }
+
+        if (!profileData) {
+          setLoading(false);
+          return;
+        }
+
+        // Redirect to onboarding if preferences not set
+        if (!profileData.preferences || profileData.preferences.length === 0) {
+          router.push("/onboarding");
           return;
         }
 
