@@ -108,7 +108,7 @@ export default function AutoriPage() {
 
   useEffect(() => {
     loadAuthors();
-  }, [loadAuthors]);
+  }, []);
 
   return (
     <main className="min-h-screen" style={{ background: C.bg }}>
