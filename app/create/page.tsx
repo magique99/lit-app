@@ -304,37 +304,27 @@ function PublishOverlay({
 function CreatePostForm() {
   const router = useRouter();
 
-  /* ── State ── */
-  const [title, setTitle] = useState("");
-  const [textType, setTextType] = useState("");
-  const [genres, setGenres] = useState<string[]>([]);
-  const [publishProgress, setPublishProgress] = useState(0);
-  const [publishLabel, setPublishLabel] = useState("");
-  const [publishing, setPublishing] = useState(false);
-  const [publishDone, setPublishDone] = useState(false);
-  const [publishedId, setPublishedId] = useState<string | null>(null);
-  const [publishError, setPublishError] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+/* ── State ── */
+   const [title, setTitle] = useState("");
+   const [textType, setTextType] = useState("");
+   const [genres, setGenres] = useState<string[]>([]);
+   const [publishProgress, setPublishProgress] = useState(0);
+   const [publishLabel, setPublishLabel] = useState("");
+   const [publishing, setPublishing] = useState(false);
+   const [publishedId, setPublishedId] = useState<string | null>(null);
+   const [publishError, setPublishError] = useState<string | null>(null);
+   const [toast, setToast] = useState<string | null>(null);
 
-  /* autosave */
-  const [lastSaved, setLastSaved] = useState<number>(0);
-  const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const DRAFT_KEY = "lit9_create_draft_v1";
+   /* autosave */
+   const [lastSaved, setLastSaved] = useState<number>(0);
+   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+   const DRAFT_KEY = "lit9_create_draft_v1";
 
-  /* focus mode */
-  const [focusMode, setFocusMode] = useState(false);
+   /* focus mode */
+   const [focusMode, setFocusMode] = useState(false);
 
-  /* reading mode */
-  const [readingMode, setReadingMode] = useState<"edit" | "read">("edit");
-
-  /* saving slug info */
-  const lastSavedRef = useRef(0);
-
-   /* Prevent ssr mismatch */
-   const mountedRef = useRef(false);
-   useEffect(() => {
-     mountedRef.current = true;
-   }, []);
+   /* reading mode */
+   const [readingMode, setReadingMode] = useState<"edit" | "read">("edit");
 
    /* ── tip from localStorage on mount ── */
    useEffect(() => {
@@ -397,7 +387,7 @@ function CreatePostForm() {
       TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
     content: "",
-    onUpdate: ({ editor: ed }) => {
+    onUpdate: () => {
       scheduleAutosave();
     },
   });
@@ -411,7 +401,7 @@ function CreatePostForm() {
   const charCount = editor?.storage.characterCount?.characters() ?? 0;
   const plainText = editor?.getText() ?? "";
   const readTime = estimateReadingTime(plainText);
-  const savedAgo = mountedRef.current && lastSaved > 0 ? formatCountdown(lastSaved) : "";
+  const savedAgo = lastSaved > 0 ? formatCountdown(lastSaved) : "";
 
   const toggleGenre = (g: string) => {
     setGenres((prev) =>
@@ -481,10 +471,9 @@ function CreatePostForm() {
       localStorage.removeItem(DRAFT_KEY);
       setLastSaved(0);
 
-      setPublishProgress(100);
-      setPublishLabel("Publicat.");
-      setPublishDone(true);
-      setPublishedId(post.id);
+setPublishProgress(100);
+       setPublishLabel("Publicat.");
+       setPublishedId(post.id);
 
       setTimeout(() => {
         setFocusMode(false);
@@ -572,7 +561,7 @@ function CreatePostForm() {
         </div>
 
         {/* ── Inline status / error row ── */}
-        {(publishError || (mountedRef.current && lastSaved > 0)) && (
+        {(publishError || lastSaved > 0) && (
           <div className="mt-3 flex items-center gap-4">
             {publishError && (
               <p className="text-[12px] text-rose-500/80">{publishError}</p>
