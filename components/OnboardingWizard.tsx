@@ -133,7 +133,7 @@ export default function OnboardingWizard() {
               ].map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => setUserRole(option.value as UserRole)}
+                  onClick={() => setUserRole(option.value as OnboardingRole)}
                   className={`
                     w-full p-4 rounded-xl border text-left transition-all
                     ${
