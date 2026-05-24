@@ -9,8 +9,19 @@ function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "error" | "pending">("loading");
   const [message, setMessage] = useState("");
+  const [resending, setResending] = useState(false);
 
   const sent = searchParams.get("sent");
+
+  async function handleResend() {
+    setResending(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.email) {
+      await supabase.auth.resend({ type: "signup", email: user.email });
+    }
+    setResending(false);
+    setMessage("Email de confirmare retrimis. Verifică inbox-ul.");
+  }
 
   useEffect(() => {
     const verifyEmail = async () => {
