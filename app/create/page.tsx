@@ -321,6 +321,7 @@ function CreatePostForm() {
    const [lastSaved, setLastSaved] = useState<number>(0);
    const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
    const DRAFT_KEY = "lit9_create_draft_v1";
+   const editorRef = useRef<ReturnType<typeof useEditor> | null>(null);
 
    /* focus mode */
    const [focusMode, setFocusMode] = useState(false);
@@ -328,61 +329,30 @@ function CreatePostForm() {
    /* reading mode */
    const [readingMode, setReadingMode] = useState<"edit" | "read">("edit");
 
-   const handleDocxUpload = useCallback(async (file: File) => {
-     if (!file || !file.name.endsWith(".docx")) {
-       setPublishError("Selectează un fișier .docx valid.");
-       return;
-     }
-
-     setDocxLoading(true);
-     setPublishError(null);
-
-     try {
-       const arrayBuffer = await file.arrayBuffer();
-       const result = await mammoth.convertToHtml({ arrayBuffer });
-       
-       if (editor && result.value) {
-         editor.commands.setContent(result.value);
-         const text = htmlToPlainTextWithNewlines(result.value);
-         const firstLine = text.split("\n")[0] || "";
-         if (firstLine.length > 20 && !title) {
-           setTitle(firstLine.substring(0, 60));
-         }
-         setToast("Conținut încărcat din DOCX.");
-         setTimeout(() => setToast(null), 3000);
-       }
-     } catch (err) {
-       console.error(err);
-       setPublishError("Nu am putut citi fișierul DOCX.");
-     } finally {
-       setDocxLoading(false);
-     }
-   }, [editor, title]);
-
-   /* ── tip from localStorage on mount ── */
-   useEffect(() => {
-     try {
-       const saved = localStorage.getItem(DRAFT_KEY);
-       if (saved) {
-         const d = JSON.parse(saved);
-         queueMicrotask(() => {
-           if (d.title) {
-             setTitle(d.title);
-           }
-           if (d.textType) {
-             setTextType(d.textType);
-           }
-           if (Array.isArray(d.genres)) {
-             setGenres(d.genres);
-           }
-           if (new Date(d.ts).getTime() > Date.now() - 86400000) {
-             setToast("Draft recuperat.");
-             setTimeout(() => setToast(null), 3000);
-           }
-         });
-       }
-     } catch { /* ignore */ }
-   }, [DRAFT_KEY]);
+    /* ── tip from localStorage on mount ── */
+    useEffect(() => {
+      try {
+        const saved = localStorage.getItem(DRAFT_KEY);
+        if (saved) {
+          const d = JSON.parse(saved);
+          queueMicrotask(() => {
+            if (d.title) {
+              setTitle(d.title);
+            }
+            if (d.textType) {
+              setTextType(d.textType);
+            }
+            if (Array.isArray(d.genres)) {
+              setGenres(d.genres);
+            }
+            if (new Date(d.ts).getTime() > Date.now() - 86400000) {
+              setToast("Draft recuperat.");
+              setTimeout(() => setToast(null), 3000);
+            }
+          });
+        }
+      } catch { /* ignore */ }
+    }, [DRAFT_KEY]);
 
   /* ── Autosave to localStorage ── */
   const scheduleAutosave = useCallback(() => {
