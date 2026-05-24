@@ -619,7 +619,7 @@ export default function TextePage() {
                 {label}
               </p>
               <p className="text-2xl font-light text-slate-800 tabular-nums">
-                {value + randomOffset.current}
+                {value + randomOffset}
               </p>
             </div>
           ))}
