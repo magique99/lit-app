@@ -802,7 +802,7 @@ export default function TextePage() {
                       href={`/profile/${author.user_id}`}
                       className="block text-[13px] text-slate-600 hover:text-slate-900 transition-colors"
                     >
-                      @{author.username}
+                      @{author.username ?? "anonim"}
                     </Link>
                   ))
                 )}
