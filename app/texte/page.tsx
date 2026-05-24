@@ -113,7 +113,7 @@ export default function TextePage() {
 
   useEffect(() => {
     loadTrendingAuthors();
-  }, [loadTrendingAuthors]);
+  }, []);
 
   async function loadCounts(postIds: string[]) {
     if (postIds.length === 0) return;
