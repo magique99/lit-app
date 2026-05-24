@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
@@ -111,9 +111,11 @@ export default function TextePage() {
     }
   }, []);
 
-  useEffect(() => {
-    loadTrendingAuthors();
-  }, []);
+useEffect(() => {
+     queueMicrotask(() => {
+       loadTrendingAuthors();
+     });
+   }, [loadTrendingAuthors]);
 
   async function loadCounts(postIds: string[]) {
     if (postIds.length === 0) return;

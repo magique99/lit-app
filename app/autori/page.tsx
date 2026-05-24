@@ -24,91 +24,93 @@ export default function AutoriPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadAuthors = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+   const loadAuthors = useCallback(async () => {
+     try {
+       setLoading(true);
+       setError(null);
 
-      // Get all authors who have at least one post
-      const { data: authorsData, error: authorsError } = await supabase
-        .from("profiles")
-        .select("user_id, username, avatar_url")
-        .order("created_at", { ascending: true });
+       // Get all authors who have at least one post
+       const { data: authorsData, error: authorsError } = await supabase
+         .from("profiles")
+         .select("user_id, username, avatar_url")
+         .order("created_at", { ascending: true });
 
-      if (authorsError) throw authorsError;
+       if (authorsError) throw authorsError;
 
-      if (!authorsData || authorsData.length === 0) {
-        setAuthors([]);
-        setLoading(false);
-        return;
-      }
+       if (!authorsData || authorsData.length === 0) {
+         setAuthors([]);
+         setLoading(false);
+         return;
+       }
 
-      const userIds = authorsData.map((a) => a.user_id);
+       const userIds = authorsData.map((a) => a.user_id);
 
-      // Count posts per user
-      const { data: postsData, error: postsError } = await supabase
-        .from("posts")
-        .select("user_id")
-        .in("user_id", userIds);
+       // Count posts per user
+       const { data: postsData, error: postsError } = await supabase
+         .from("posts")
+         .select("user_id")
+         .in("user_id", userIds);
 
-      if (postsError) throw postsError;
+       if (postsError) throw postsError;
 
-      const postCountMap: Record<string, number> = {};
-      for (const post of (postsData ?? []) as Post[]) {
-        const uid = post.user_id;
-        if (uid) postCountMap[uid] = (postCountMap[uid] ?? 0) + 1;
-      }
+       const postCountMap: Record<string, number> = {};
+       for (const post of (postsData ?? []) as Post[]) {
+         const uid = post.user_id;
+         if (uid) postCountMap[uid] = (postCountMap[uid] ?? 0) + 1;
+       }
 
-      // Count likes per user's posts
-      const { data: allPostsData } = await supabase
-        .from("posts")
-        .select("id, user_id")
-        .in("user_id", userIds);
+       // Count likes per user's posts
+       const { data: allPostsData } = await supabase
+         .from("posts")
+         .select("id, user_id")
+         .in("user_id", userIds);
 
-      const userPostIdsMap: Record<string, string[]> = {};
-      for (const post of (allPostsData ?? []) as Post[]) {
-        if (post.user_id && post.id) {
-          if (!userPostIdsMap[post.user_id]) userPostIdsMap[post.user_id] = [];
-          userPostIdsMap[post.user_id].push(post.id);
-        }
-      }
+       const userPostIdsMap: Record<string, string[]> = {};
+       for (const post of (allPostsData ?? []) as Post[]) {
+         if (post.user_id && post.id) {
+           if (!userPostIdsMap[post.user_id]) userPostIdsMap[post.user_id] = [];
+           userPostIdsMap[post.user_id].push(post.id);
+         }
+       }
 
-      const likesMap: Record<string, number> = {};
-      for (const uid of Object.keys(userPostIdsMap)) {
-        const ids = userPostIdsMap[uid];
-        if (ids.length > 0) {
-          const { data: likesData } = await supabase
-            .from("likes")
-            .select("post_id")
-            .in("post_id", ids);
-          likesMap[uid] = (likesData ?? []).length;
-        } else {
-          likesMap[uid] = 0;
-        }
-      }
+       const likesMap: Record<string, number> = {};
+       for (const uid of Object.keys(userPostIdsMap)) {
+         const ids = userPostIdsMap[uid];
+         if (ids.length > 0) {
+           const { data: likesData } = await supabase
+             .from("likes")
+             .select("post_id")
+             .in("post_id", ids);
+           likesMap[uid] = (likesData ?? []).length;
+         } else {
+           likesMap[uid] = 0;
+         }
+       }
 
-      const sorted = authorsData
-        .map((profile) => {
-          const count = postCountMap[profile.user_id] ?? 0;
-          return {
-            ...profile,
-            postCount: count,
-          } as AuthorWithStats;
-        })
-        .sort((a, b) => b.postCount - a.postCount);
+       const sorted = authorsData
+         .map((profile) => {
+           const count = postCountMap[profile.user_id] ?? 0;
+           return {
+             ...profile,
+             postCount: count,
+           } as AuthorWithStats;
+         })
+         .sort((a, b) => b.postCount - a.postCount);
 
-      setAuthors(sorted);
-    } catch (err) {
-      console.error("Error loading authors:", err);
-      setError("Nu am putut încărca autorii. Încearcă din nou.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-   useEffect(() => {
-     loadAuthors();
+       setAuthors(sorted);
+     } catch (err) {
+       console.error("Error loading authors:", err);
+       setError("Nu am putut încărca autorii. Încearcă din nou.");
+     } finally {
+       setLoading(false);
+     }
    }, []);
+
+    useEffect(() => {
+      queueMicrotask(() => {
+        loadAuthors();
+      });
+    }, [loadAuthors]);
 
   return (
     <main className="min-h-screen" style={{ background: C.bg }}>

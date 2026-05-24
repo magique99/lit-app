@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -743,9 +743,9 @@ function CreatePostForm() {
                  style={{ color: C.accent }}>
                 Sfat de scriitor
               </p>
-              <p className="text-[12px] leading-relaxed italic" style={{ color: C.muted }}>
-                "{randomTip}"
-              </p>
+<p className="text-[12px] leading-relaxed italic" style={{ color: C.muted }}>
+                  {randomTip}
+                </p>
             </div>
 
           </div>
