@@ -59,7 +59,8 @@ export default function LoginPage() {
     text: "#2A2520",
     muted: "#7A7268",
     border: "#E8E0D8",
-    accent: "#B87D4B",
+    accent: "#7D2626",
+    accentHover: "#5D1D1D",
   };
 
   return (
@@ -110,11 +111,11 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            {/* Clear CTA */}
+            {/* Clear CTA - Dominant visual element */}
             <button
               onClick={mode === "login" ? handleLogin : handleRegister}
               disabled={loading}
-              className="w-full rounded-full px-6 py-3.5 text-sm font-medium text-white transition-all duration-300 hover:opacity-90 disabled:cursor-wait disabled:opacity-60"
+              className="w-full rounded-xl px-6 py-4 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
               style={{ backgroundColor: C.accent }}
             >
               {loading ? "Se procesează..." : mode === "login" ? "Intră în cont" : "Creează cont"}
