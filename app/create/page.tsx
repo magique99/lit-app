@@ -559,67 +559,69 @@ setPublishProgress(100);
 
       {/* ── Header bar ── */}
       <div className="max-w-7xl mx-auto px-6 pt-5">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight"
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Header left */}
+          <div className="lg:col-span-2">
+            <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight"
                 style={{ color: C.text }}>
               Adaugă un text
             </h1>
-            <p className="mt-1 text-[12px] italic" style={{ color: C.muted }}>
-              Fiecare cuvânt contează.
+            <p className="mt-2 text-[13px] italic" style={{ color: C.muted }}>
+              Publică poezie, proză scurtă, eseu sau experiment literar
             </p>
           </div>
 
-<div className="flex items-center gap-2.5">
-             {/* Reading mode toggle */}
-             <button
-               onClick={() => setReadingMode(m => m === "edit" ? "read" : "edit")}
-               className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all"
-               style={{
-                 border: `1.5px solid ${readingMode === "read" ? C.accent : C.border}`,
-                 color: readingMode === "read" ? "#fff" : C.muted,
-                 background: readingMode === "read" ? C.accent : "transparent",
-               }}
-             >
-               {readingMode === "edit" ? "Vizualizează 📖" : "Editare ✏️"}
-             </button>
+          {/* Header right - controls */}
+          <div className="flex items-center justify-end gap-2.5">
+            {/* Reading mode toggle */}
+            <button
+              onClick={() => setReadingMode(m => m === "edit" ? "read" : "edit")}
+              className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all"
+              style={{
+                border: `1.5px solid ${readingMode === "read" ? C.accent : C.border}`,
+                color: readingMode === "read" ? "#fff" : C.muted,
+                background: readingMode === "read" ? C.accent : "transparent",
+              }}
+            >
+              {readingMode === "edit" ? "Vizualizează 📖" : "Editare ✏️"}
+            </button>
 
-             {/* Focus mode */}
-             <button
-               onClick={() => setFocusMode((v) => !v)}
-               className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all"
-               style={{
-                 border: `1.5px solid ${focusMode ? C.accent : C.border}`,
-                 color: focusMode ? "#fff" : C.muted,
-                 background: focusMode ? C.accent : "transparent",
-               }}
-             >
-               {focusMode ? "Ieși din focus" : "Focus mode"}
-             </button>
+            {/* Focus mode */}
+            <button
+              onClick={() => setFocusMode((v) => !v)}
+              className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all"
+              style={{
+                border: `1.5px solid ${focusMode ? C.accent : C.border}`,
+                color: focusMode ? "#fff" : C.muted,
+                background: focusMode ? C.accent : "transparent",
+              }}
+            >
+              {focusMode ? "Ieși din focus" : "Focus mode"}
+            </button>
 
-             {/* DOCX Import */}
-             <label className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all cursor-pointer"
-               style={{
-                 border: `1.5px solid ${C.border}`,
-                 color: C.muted,
-                 background: "transparent",
-               }}
-               onMouseEnter={(e) => e.currentTarget.style.borderColor = C.accent}
-               onMouseLeave={(e) => e.currentTarget.style.borderColor = C.border}
-             >
-               {docxLoading ? "Se încarcă..." : "Import DOCX"}
-               <input
-                 type="file"
-                 accept=".docx"
-                 onChange={(e) => {
-                   const file = e.target.files?.[0];
-                   if (file) handleDocxUpload(file);
-                 }}
-                 disabled={docxLoading}
-                 className="hidden"
-               />
-             </label>
-           </div>
+            {/* DOCX Import */}
+            <label className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all cursor-pointer"
+              style={{
+                border: `1.5px solid ${C.border}`,
+                color: C.muted,
+                background: "transparent",
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = C.accent}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = C.border}
+            >
+              {docxLoading ? "Se încarcă..." : "Import DOCX"}
+              <input
+                type="file"
+                accept=".docx"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleDocxUpload(file);
+                }}
+                disabled={docxLoading}
+                className="hidden"
+              />
+            </label>
+          </div>
         </div>
 
         {/* ── Inline status / error row ── */}
@@ -643,177 +645,156 @@ setPublishProgress(100);
         </div>
       )}
 
-      {/* ─────────────────────────────────────────────
-          EDITOR AREA
-          ───────────────────────────────────────────── */}
-      <div className={`max-w-7xl mx-auto px-6 mt-8 transition-all duration-500 ${
-        focusMode ? "max-w-3xl" : ""
-      }`}>
-
-        {/* TITLE */}
-        <input
-          className="w-full bg-transparent border-none outline-none font-serif text-[32px] sm:text-[44px] font-medium leading-[1.15] placeholder:opacity-30 transition-all duration-500"
-          style={{ color: C.text }}
-          placeholder="Titlul"
-          value={title}
-          onChange={(e) => { setTitle(e.target.value); scheduleAutosave(); }}
-        />
-
-        {/* META ROW */}
-        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 text-[11px]"
-             style={{ color: C.muted }}>
-
-          {/* Word count / read time */}
-          <span>⊕ {wordCount} cuvinte · {charCount} caractere</span>
-          <span>⏱ {readTime} min citire</span>
-
-          {/* Text type chips */}
-          <div className="flex gap-1.5 flex-wrap">
-            {TEXT_TYPES.map((t) => (
-              <Chip key={t} label={t} active={textType === t} onClick={() => {
-                setTextType(prev => prev === t ? "" : t);
-                scheduleAutosave();
-              }} />
-            ))}
-          </div>
-        </div>
-
-{/* ── SHARED CORE: EDITOR + TOOLBAR + PREVIEW ── */}
-          <div className="mt-6 grid gap-8" style={{
-            gridTemplateColumns: readingMode === "read" ? "1fr 1fr" : "1fr",
-            gridTemplateAreas: readingMode === "read" ? '"editor preview"' : '"editor"',
-          }}>
-            {/* ── EDITOR PANEL ── */}
-            <div className="grid-in-editor" style={{ display: readingMode === "read" ? "none" : undefined }}>
-
-             {/* Toolbar */}
-             {editor && (
-             <div className="flex items-center gap-4 pb-3 mb-4 border-b"
-                  style={{ borderColor: C.border }}>
-               <Toolbar editor={editor} />
-               <span className="w-px h-4" style={{ background: C.border }} />
-               <button
-                 onClick={() => editor.chain().focus().setTextAlign('center').run()}
-                 title="Aliniază la centru"
-                 className="
-                   flex items-center justify-center w-8 h-8 rounded-[0.6rem] text-[13px]
-                   font-medium transition-all duration-150 outline-none
-                 "
-                 style={{
-                   background: editor.isActive({ textAlign: 'center' }) ? C.accentLight : "transparent",
-                   color: editor.isActive({ textAlign: 'center' }) ? C.accent : C.muted,
-                   border: `1.5px solid ${editor.isActive({ textAlign: 'center' }) ? C.accent : "transparent"}`,
-                 }}
-                 onMouseEnter={(e) => {
-                   if (!editor.isActive({ textAlign: 'center' })) { e.currentTarget.style.background = C.accentLight; e.currentTarget.style.borderColor = C.border; }
-                 }}
-                 onMouseLeave={(e) => {
-                   if (!editor.isActive({ textAlign: 'center' })) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; }
-                 }}
-               >
-                 ⇫
-               </button>
-             </div>
-             )}
-
-             {/* Editor box */}
-             <div
-               className="relative rounded-[1.75rem] border p-6 sm:p-9 transition-all duration-300"
-               style={{
-                 borderColor: focusMode ? "transparent" : C.border,
-                 background: "rgba(255,255,255,0.65)",
-                 boxShadow: "0 8px 40px rgba(42,37,32,0.06)",
-                 minHeight: focusMode ? "60vh" : "480px",
-               }}
-             >
-               <EditorContent editor={editor}
-                 className="Tiinia-editor text-[15px] sm:text-[16px]"
-               />
-             </div>
-           </div>
-
-{/* ── PREVIEW PANEL ── */}
-           {readingMode === "read" && (
-             <div className="grid-in-preview rounded-[1.75rem] border p-8 sm:p-12"
-                  style={{
-                    borderColor: C.border,
-                    background: "rgba(255,255,255,0.75)",
-                    boxShadow: "0 8px 40px rgba(42,37,32,0.06)",
-                  }}>
-               {title && (
-                 <h2 className="font-serif text-[36px] font-medium leading-[1.2] mb-6"
-                     style={{ color: C.text }}>{title}</h2>
-               )}
-               <div
-                 className="text-[16px] leading-[1.9]"
-                 style={{ color: C.text, fontFamily: "var(--font-lora), Georgia, serif" }}
-                 dangerouslySetInnerHTML={{ __html: editor?.getHTML() ?? "" }}
-               />
-               {!editor?.getHTML().trim() && (
-                 <p className="italic" style={{ color: C.muted }}>
-                   Scrie ceva în editor pentru a vedea preview-ul aici.
-                 </p>
-               )}
-             </div>
-           )}
-         </div>
-
-        {/* ── SIDEBAR (right, desktop, not in focus mode) ── */}
-        <div className={`hidden lg:block transition-all duration-500 ${
-          focusMode ? "lg:hidden" : ""
-        }`}>
-          <div className="sticky top-28 space-y-6" style={{ maxWidth: "260px" }}>
-
-            {/* ── Card preview ── */}
-            <PreviewCard
-              title={title}
-              htmlContent={editor?.getHTML() ?? ""}
-              textType={textType}
-              genres={genres}
+{/* ─────────────────────────────────────────────
+           EDITOR AREA - TWO COLUMN LAYOUT
+           ───────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-6 mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* LEFT COLUMN - Main content */}
+          <div className="lg:col-span-2">
+            {/* TITLE */}
+            <input
+              className="w-full bg-transparent border-none outline-none font-serif text-[32px] sm:text-[44px] font-medium leading-[1.15] placeholder:opacity-30 transition-all duration-500"
+              style={{ color: C.text }}
+              placeholder="Titlul"
+              value={title}
+              onChange={(e) => { setTitle(e.target.value); scheduleAutosave(); }}
             />
 
-            {/* ── Genres chips ── */}
-            <div className="rounded-[1.5rem] border border-[#e8ddd0] bg-white/55 p-5">
-              <p className="text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: C.accent }}>
-                Etichete / Gen
-              </p>
-              <p className="text-[11px] mb-3 italic" style={{ color: C.muted }}>
-                {genres.length === 0
-                  ? "Alege categoriile care se potrivesc cel mai bine cu textul tău."
-                  : `${genres.length} etichet${genres.length === 1 ? "ă" : "e"} selectat${genres.length === 1 ? "ă" : "e"}`}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {GENRES.map((g) => (
-                  <Chip key={g} label={g} active={genres.includes(g)} onClick={() => toggleGenre(g)} />
+            {/* META ROW */}
+            <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3 text-[11px]"
+                 style={{ color: C.muted }}>
+              <span>⊕ {wordCount} cuvinte · {charCount} caractere</span>
+              <span>⏱ {readTime} min citire</span>
+              <div className="flex gap-1.5 flex-wrap">
+                {TEXT_TYPES.map((t) => (
+                  <Chip key={t} label={t} active={textType === t} onClick={() => {
+                    setTextType(prev => prev === t ? "" : t);
+                    scheduleAutosave();
+                  }} />
                 ))}
               </div>
             </div>
 
-            {/* ── Producer tip ── */}
-            <div className="rounded-[1.5rem] border border-[#e8ddd0] p-5"
-                 style={{ background: "rgba(184,125,75,0.04)" }}>
-              <p className="text-[10px] uppercase tracking-[0.3em] mb-2 font-serif"
-                 style={{ color: C.accent }}>
-                Sfat de scriitor
-              </p>
-<p className="text-[12px] leading-relaxed italic" style={{ color: C.muted }}>
+            {/* Toolbar */}
+            {editor && (
+            <div className="flex items-center gap-4 pb-3 mb-4 border-b"
+                 style={{ borderColor: C.border }}>
+              <Toolbar editor={editor} />
+              <span className="w-px h-4" style={{ background: C.border }} />
+              <button
+                onClick={() => editor.chain().focus().setTextAlign('center').run()}
+                title="Aliniază la centru"
+                className="
+                  flex items-center justify-center w-8 h-8 rounded-[0.6rem] text-[13px]
+                  font-medium transition-all duration-150 outline-none
+                "
+                style={{
+                  background: editor.isActive({ textAlign: 'center' }) ? C.accentLight : "transparent",
+                  color: editor.isActive({ textAlign: 'center' }) ? C.accent : C.muted,
+                  border: `1.5px solid ${editor.isActive({ textAlign: 'center' }) ? C.accent : "transparent"}`,
+                }}
+                onMouseEnter={(e) => {
+                  if (!editor.isActive({ textAlign: 'center' })) { e.currentTarget.style.background = C.accentLight; e.currentTarget.style.borderColor = C.border; }
+                }}
+                onMouseLeave={(e) => {
+                  if (!editor.isActive({ textAlign: 'center' })) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; }
+                }}
+              >
+                ⇫
+              </button>
+            </div>
+            )}
+
+            {/* Editor box */}
+            <div
+              className="relative rounded-[1.75rem] border p-6 sm:p-9 transition-all duration-300"
+              style={{
+                borderColor: focusMode ? "transparent" : C.border,
+                background: "rgba(255,255,255,0.65)",
+                boxShadow: "0 8px 40px rgba(42,37,32,0.06)",
+                minHeight: focusMode ? "60vh" : "480px",
+              }}
+            >
+              <EditorContent editor={editor}
+                className="Tiinia-editor text-[15px] sm:text-[16px]"
+              />
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN - Sidebar */}
+          <div>
+            <div className="sticky top-28 space-y-6">
+              {/* Quick Tips Card */}
+              <div className="rounded-[1.5rem] border border-[#e8ddd0] bg-white/60 p-5">
+                <p className="text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: C.accent }}>
+                  Sfaturi rapide
+                </p>
+                <p className="text-[12px] leading-relaxed italic mb-4" style={{ color: C.muted }}>
                   {randomTip}
                 </p>
-            </div>
+                <div className="space-y-2 text-[11px]" style={{ color: C.muted }}>
+                  <p>• Recomandare: 500-1500 cuvinte</p>
+                  <p>• Păstrează un ton consistent</p>
+                </div>
+              </div>
 
+              {/* Stats Card */}
+              <div className="rounded-[1.5rem] border border-[#e8ddd0] bg-white/60 p-5">
+                <p className="text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: C.accent }}>
+                  Statistici
+                </p>
+                <div className="space-y-2 text-[12px]">
+                  <div className="flex justify-between">
+                    <span style={{ color: C.muted }}>Cuvinte:</span>
+                    <span style={{ color: C.text }}>{wordCount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span style={{ color: C.muted }}>Timp citire:</span>
+                    <span style={{ color: C.text }}>{readTime} min</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span style={{ color: C.muted }}>Genuri:</span>
+                    <span style={{ color: C.text }}>{genres.length}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Preview Card */}
+              <PreviewCard
+                title={title}
+                htmlContent={editor?.getHTML() ?? ""}
+                textType={textType}
+                genres={genres}
+              />
+
+              {/* Genres Section */}
+              <div className="rounded-[1.5rem] border border-[#e8ddd0] bg-white/55 p-5">
+                <p className="text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: C.accent }}>
+                  Etichete / Gen
+                </p>
+                <p className="text-[11px] mb-3 italic" style={{ color: C.muted }}>
+                  {genres.length === 0
+                    ? "Alege categoriile care se potrivesc cel mai bine cu textul tău."
+                    : `${genres.length} etichet${genres.length === 1 ? "ă" : "e"} selectat${genres.length === 1 ? "ă" : "e"}`}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {GENRES.map((g) => (
+                    <Chip key={g} label={g} active={genres.includes(g)} onClick={() => toggleGenre(g)} />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
       </div>
 
       {/* ── ACTION BAR ── */}
       <div className="fixed bottom-0 left-0 right-0 z-30 border-t bg-white/80 backdrop-blur-xl"
            style={{ borderColor: C.border }}>
 
-        <div className={`mx-auto transition-all duration-500 ${
-          focusMode ? "max-w-3xl" : "max-w-7xl"
-        }`}>
-          <div className="flex items-center justify-between gap-4 px-6 py-35">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between gap-4 px-6 py-5">
 
             {/* left: word stats */}
             <div className="flex items-center gap-5 text-[11px]" style={{ color: C.muted }}>
