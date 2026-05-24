@@ -417,17 +417,11 @@ function CreatePostForm() {
     );
   };
 
-  const randomTip = useMemo(
-    () => {
-      // Create a stable random value using a seeded approach or use useState instead
-      const [tipIndex, setTipIndex] = useState(0);
-      useEffect(() => {
-        setTipIndex(Math.floor(Math.random() * ATOMIC_TIPS.length));
-      }, []); // Empty deps to run once on mount
-      return ATOMIC_TIPS[tipIndex];
-    },
-    []
-  );
+  const randomTip = useMemo(() => {
+      // Return a random tip - we'll regenerate when the component re-renders
+      // This is acceptable since ATOMIC_TIPS is constant
+      return ATOMIC_TIPS[Math.floor(Math.random() * ATOMIC_TIPS.length)];
+    }, []); // Empty deps means this is computed once on mount
 
   /* ── Publish ── */
   const handlePublish = useCallback(async () => {
