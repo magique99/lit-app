@@ -107,64 +107,64 @@ function Chip({
 }
 
 /* =======================================================
-   TOOLBAR
-   ======================================================= */
+    TOOLBAR
+    ======================================================= */
+const Btn = ({
+  onClick, active, label, title,
+}: { onClick: () => void; active?: boolean; label: string; title: string }) => (
+  <button
+    onClick={onClick}
+    title={title}
+    className="
+      flex items-center justify-center w-8 h-8 rounded-[0.6rem] text-[13px]
+      font-medium transition-all duration-150 outline-none
+      "
+    style={{
+      background: active ? C.accentLight : "transparent",
+      color: active ? C.accent : C.muted,
+      border: `1.5px solid ${active ? C.accent : "transparent"}`,
+    }}
+    onMouseEnter={(e) => {
+      if (!active) { e.currentTarget.style.background = C.accentLight; e.currentTarget.style.borderColor = C.border; }
+    }}
+    onMouseLeave={(e) => {
+      if (!active) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; }
+    }}
+  >
+    {label}
+  </button>
+);
+
 function Toolbar({
-  editor,
+   editor,
 }: {
-  editor: ReturnType<typeof useEditor> | null;
+   editor: ReturnType<typeof useEditor> | null;
 }) {
-  if (!editor) return null;
+   if (!editor) return null;
 
-  const Btn = ({
-    onClick, active, label, title,
-  }: { onClick: () => void; active?: boolean; label: string; title: string }) => (
-    <button
-      onClick={onClick}
-      title={title}
-      className="
-        flex items-center justify-center w-8 h-8 rounded-[0.6rem] text-[13px]
-        font-medium transition-all duration-150 outline-none
-        "
-      style={{
-        background: active ? C.accentLight : "transparent",
-        color: active ? C.accent : C.muted,
-        border: `1.5px solid ${active ? C.accent : "transparent"}`,
-      }}
-      onMouseEnter={(e) => {
-        if (!active) { e.currentTarget.style.background = C.accentLight; e.currentTarget.style.borderColor = C.border; }
-      }}
-      onMouseLeave={(e) => {
-        if (!active) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; }
-      }}
-    >
-      {label}
-    </button>
-  );
-
-  return (
-    <div className="flex items-center gap-1 flex-wrap">
-      <Btn onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-           active={editor.isActive("heading", { level: 2 })}
-           label="H2" title="Titlu paragraf" />
-      <Btn onClick={() => editor.chain().focus().toggleBlockquote().run()}
-           active={editor.isActive("blockquote")}
-           label={"\u201C\u201D"} title="Citat" />
-      <span className="w-px h-4 mx-1" style={{ background: C.border }} />
-      <Btn onClick={() => editor.chain().focus().toggleBold().run()}
-           active={editor.isActive("bold")}
-           label="B" title="Îngroșat" />
-      <Btn onClick={() => editor.chain().focus().toggleItalic().run()}
-           active={editor.isActive("italic")}
-           label="I" title="Italic" />
-      <Btn onClick={() => editor.chain().focus().toggleUnderline().run()}
-           active={editor.isActive("underline")}
-           label="U" title="Subliniat" />
-      <span className="w-px h-4 mx-1" style={{ background: C.border }} />
-      <Btn onClick={() => editor.chain().focus().setHorizontalRule().run()}
-           label="─" title="Separator" />
-    </div>
-  );
+   return (
+     <div className="flex items-center gap-1 flex-wrap">
+       <Btn onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            active={editor.isActive("heading", { level: 2 })}
+            label="H2" title="Titlu paragraf" />
+       <Btn onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            active={editor.isActive("blockquote")}
+            label={"\u201C\u201D"} title="Citat" />
+       <span className="w-px h-4 mx-1" style={{ background: C.border }} />
+       <Btn onClick={() => editor.chain().focus().toggleBold().run()}
+            active={editor.isActive("bold")}
+            label="B" title="Îngroșat" />
+       <Btn onClick={() => editor.chain().focus().toggleItalic().run()}
+            active={editor.isActive("italic")}
+            label="I" title="Italic" />
+       <Btn onClick={() => editor.chain().focus().toggleUnderline().run()}
+            active={editor.isActive("underline")}
+            label="U" title="Subliniat" />
+       <span className="w-px h-4 mx-1" style={{ background: C.border }} />
+       <Btn onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            label="─" title="Separator" />
+     </div>
+   );
 }
 
 /* =======================================================
