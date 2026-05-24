@@ -67,12 +67,12 @@ export default function LoginPage() {
       <div className="w-full max-w-sm mx-auto px-6">
         <div className="text-center mb-10">
           <h1 className="font-serif text-3xl font-medium" style={{ color: C.text }}>
-            {mode === "login" ? "Conectare" : "Înregistrare"}
+            {mode === "login" ? "Intră în spațiul tău literar" : "Creează cont literar"}
           </h1>
           <p className="mt-2 text-sm" style={{ color: C.muted }}>
             {mode === "login"
-              ? "Intră în contul tău existent"
-              : "Creează cont nou dacă nu ai unul"}
+              ? "Publică texte, salvează lecturi și urmărește reacțiile comunității."
+              : "Începe să scrii și citești alături de alți pasionați de literatură."}
           </p>
         </div>
 
