@@ -400,17 +400,17 @@ function SocialProof() {
             <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
               Texte publicate
             </p>
-            <p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
-              {counts.posts + randomOffset.current}
-            </p>
+<p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
+               {counts.posts + randomOffset}
+             </p>
           </div>
           <div>
             <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
               Autori activi
             </p>
-            <p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
-              {counts.authors + randomOffset.current}
-            </p>
+<p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
+               {counts.authors + randomOffset}
+             </p>
           </div>
           <div>
             <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: C.accent }}>
