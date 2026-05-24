@@ -71,7 +71,7 @@ export default function TextePage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const getRandomOffset = () => Math.floor(Math.random() * 30) + 21;
   const randomOffset = useState(() => getRandomOffset())[0];
-  const [trendingAuthors, setTrendingAuthors] = useState<Array<{user_id: string, username: string}>>([]);
+  const [trendingAuthors, setTrendingAuthors] = useState<Array<{user_id: string, username: string | null}>>([]);
   const [sidebarQuote, setSidebarQuote] = useState("");
 
   useEffect(() => {
