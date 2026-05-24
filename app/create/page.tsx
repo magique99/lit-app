@@ -3,10 +3,10 @@
 import { useState } from "react";
 import mammoth from "mammoth";
 import { useRouter } from "next/navigation";
-import { toPlainText } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
 import { createPost } from "@/lib/postClient";
 import { uploadDocx } from "@/lib/storage";
+import RequireEmailVerification from "@/components/RequireEmailVerification";
 
 function escapeHtml(value: string) {
   return value
@@ -29,7 +29,7 @@ function hashString(str: string) {
 const TEXT_TYPES = ["Proză", "Poezie", "Teatru", "Jurnal", "Altul"];
 const GENRES = ["Ficțiune", "Non-ficțiune", "SF", "Thriller", "Polițist", "Romantic", "Altul"];
 
-export default function CreatePost() {
+function CreatePostForm() {
   const router = useRouter();
 
   const [title, setTitle] = useState("");
@@ -338,5 +338,13 @@ export default function CreatePost() {
         </section>
       </div>
     </main>
+  );
+}
+
+export default function CreatePost() {
+  return (
+    <RequireEmailVerification>
+      <CreatePostForm />
+    </RequireEmailVerification>
   );
 }

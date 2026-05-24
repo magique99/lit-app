@@ -39,15 +39,24 @@ export default function LoginPage() {
     setMessage(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/verify-email`,
+      },
     });
 
     setLoading(false);
 
     if (error) {
       setErrorMessage(error.message);
+    } else if (data.user && !data.session) {
+      setMessage("Cont creat! Verifică email-ul pentru confirmare.");
+    } else if (data.session) {
+      setMessage("Cont creat cu succes! Vei fi redirecționat...");
+      router.push("/");
+      router.refresh();
     } else {
       setMessage("Cont creat. Verifică emailul pentru confirmare.");
     }
