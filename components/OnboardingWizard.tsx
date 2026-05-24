@@ -56,7 +56,7 @@ export default function OnboardingWizard() {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      const preferences: import("./types").UserPreferences = {
+      const preferences = {
         genres: selectedGenres,
         role: userRole,
         writes_types: userRole === "writer" || userRole === "both" ? writesTypes : [],
