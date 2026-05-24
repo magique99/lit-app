@@ -24,7 +24,7 @@ export default function AutoriPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadAuthors = useCallback(async () => {
+  const loadAuthors = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -104,6 +104,10 @@ export default function AutoriPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    loadAuthors();
   }, []);
 
   useEffect(() => {
