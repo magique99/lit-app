@@ -26,7 +26,7 @@ const C = {
     ===================================================== */
 
 /* ---- HERO ---- */
-function Hero({ user }: { user?: User }) {
+function Hero({ user }: { user?: User | null }) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Imagine de fundal */}
@@ -401,25 +401,6 @@ function SocialProof() {
   );
 }
 
-function Footer() {
-  return (
-    <footer className="py-12" style={{ background: C.bg }}>
-      <div className="max-w-4xl mx-auto text-center px-6">
-        <p className="text-sm text-muted" style={{ color: C.muted }}>
-          © {new Date().getFullYear()} Literatura9. Toate drepturile rezervate.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-4">
-          <Link href="/about" className="text-sm font-medium transition hover:text-accent">
-            Despre
-          </Link>
-          <Link href="/contact" className="text-sm font-medium transition hover:text-accent">
-            Contact
-          </Link>
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 /* =====================================================
     PAGINA PRINCIPALĂ
@@ -462,8 +443,6 @@ export default function HomePage() {
       {/* SOCIAL PROOF */}
       <SocialProof />
 
-      {/* FOOTER */}
-      <Footer />
     </main>
   );
 }
