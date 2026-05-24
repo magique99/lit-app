@@ -565,33 +565,56 @@ setPublishProgress(100);
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            {/* Reading mode toggle */}
-            <button
-              onClick={() => setReadingMode(m => m === "edit" ? "read" : "edit")}
-              className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all"
-              style={{
-                border: `1.5px solid ${readingMode === "read" ? C.accent : C.border}`,
-                color: readingMode === "read" ? "#fff" : C.muted,
-                background: readingMode === "read" ? C.accent : "transparent",
-              }}
-            >
-              {readingMode === "edit" ? "Vizualizează 📖" : "Editare ✏️"}
-            </button>
+<div className="flex items-center gap-2.5">
+             {/* Reading mode toggle */}
+             <button
+               onClick={() => setReadingMode(m => m === "edit" ? "read" : "edit")}
+               className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all"
+               style={{
+                 border: `1.5px solid ${readingMode === "read" ? C.accent : C.border}`,
+                 color: readingMode === "read" ? "#fff" : C.muted,
+                 background: readingMode === "read" ? C.accent : "transparent",
+               }}
+             >
+               {readingMode === "edit" ? "Vizualizează 📖" : "Editare ✏️"}
+             </button>
 
-            {/* Focus mode */}
-            <button
-              onClick={() => setFocusMode((v) => !v)}
-              className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all"
-              style={{
-                border: `1.5px solid ${focusMode ? C.accent : C.border}`,
-                color: focusMode ? "#fff" : C.muted,
-                background: focusMode ? C.accent : "transparent",
-              }}
-            >
-              {focusMode ? "Ieși din focus" : "Focus mode"}
-            </button>
-          </div>
+             {/* Focus mode */}
+             <button
+               onClick={() => setFocusMode((v) => !v)}
+               className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all"
+               style={{
+                 border: `1.5px solid ${focusMode ? C.accent : C.border}`,
+                 color: focusMode ? "#fff" : C.muted,
+                 background: focusMode ? C.accent : "transparent",
+               }}
+             >
+               {focusMode ? "Ieși din focus" : "Focus mode"}
+             </button>
+
+             {/* DOCX Import */}
+             <label className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all cursor-pointer"
+               style={{
+                 border: `1.5px solid ${C.border}`,
+                 color: C.muted,
+                 background: "transparent",
+               }}
+               onMouseEnter={(e) => e.currentTarget.style.borderColor = C.accent}
+               onMouseLeave={(e) => e.currentTarget.style.borderColor = C.border}
+             >
+               {docxLoading ? "Se încarcă..." : "Import DOCX"}
+               <input
+                 type="file"
+                 accept=".docx"
+                 onChange={(e) => {
+                   const file = e.target.files?.[0];
+                   if (file) handleDocxUpload(file);
+                 }}
+                 disabled={docxLoading}
+                 className="hidden"
+               />
+             </label>
+           </div>
         </div>
 
         {/* ── Inline status / error row ── */}
