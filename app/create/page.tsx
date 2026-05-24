@@ -16,8 +16,8 @@ import RequireEmailVerification from "@/components/RequireEmailVerification";
 import * as mammoth from "mammoth";
 
 /* =======================================================
-   COLOANE
-   ======================================================= */
+    COLOANE
+    ======================================================= */
 const C = {
   bg: "#f7efe4",
   surface: "#ffffff",
@@ -29,8 +29,8 @@ const C = {
 };
 
 /* =======================================================
-   OPCȚIUNI
-   ======================================================= */
+    OPCȚIUNI
+    ======================================================= */
 const TEXT_TYPES = ["Proză", "Poezie", "Teatru", "Jurnal", "Eseu", "Altul"];
 
 const GENRES = [
@@ -45,7 +45,7 @@ const ATOMIC_TIPS = [
   "Scrie ceva ce nu ai putea spune cu voce tare.",
   "Trimite primul paragraf la un prieten.",
   "Poezia are nevoie de rima sau de ritm?",
-  "Fiecare propoziție ar trebui să schimbe ceva.",
+  "Fiecare propoziție ar trebui să schimbe cevo.",
   "Săgeții trebuie să arate înainte, nu în spate.",
   "Nu explica prea mult.",
   "Dacă te cutremură, publică-l.",
@@ -572,15 +572,15 @@ setPublishProgress(100);
           </div>
 
           {/* Header right - controls */}
-          <div className="flex items-center justify-end gap-2.5">
+          <div className="flex items-center justify-end gap-3">
             {/* Reading mode toggle */}
             <button
               onClick={() => setReadingMode(m => m === "edit" ? "read" : "edit")}
-              className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all"
+              className="rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
               style={{
+                color: readingMode === "read" ? C.text : C.text,
                 border: `1.5px solid ${readingMode === "read" ? C.accent : C.border}`,
-                color: readingMode === "read" ? "#fff" : C.muted,
-                background: readingMode === "read" ? C.accent : "transparent",
+                background: readingMode === "read" ? C.accent : C.surface,
               }}
             >
               {readingMode === "edit" ? "Vizualizează 📖" : "Editare ✏️"}
@@ -589,25 +589,23 @@ setPublishProgress(100);
             {/* Focus mode */}
             <button
               onClick={() => setFocusMode((v) => !v)}
-              className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all"
+              className="rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
               style={{
+                color: focusMode ? "#fff" : C.text,
                 border: `1.5px solid ${focusMode ? C.accent : C.border}`,
-                color: focusMode ? "#fff" : C.muted,
-                background: focusMode ? C.accent : "transparent",
+                background: focusMode ? C.accent : C.surface,
               }}
             >
               {focusMode ? "Ieși din focus" : "Focus mode"}
             </button>
 
             {/* DOCX Import */}
-            <label className="rounded-full px-4 py-2 text-[11px] font-medium tracking-wide transition-all cursor-pointer"
+            <label className="rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 active:scale-[0.97] cursor-pointer"
               style={{
+                color: C.text,
                 border: `1.5px solid ${C.border}`,
-                color: C.muted,
-                background: "transparent",
+                background: C.surface,
               }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = C.accent}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = C.border}
             >
               {docxLoading ? "Se încarcă..." : "Import DOCX"}
               <input
