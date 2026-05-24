@@ -340,9 +340,15 @@ function CreatePostForm() {
       const saved = localStorage.getItem(DRAFT_KEY);
       if (saved) {
         const d = JSON.parse(saved);
-        if (d.title) setTitle(d.title);
-        if (d.textType) setTextType(d.textType);
-        if (Array.isArray(d.genres)) setGenres(d.genres);
+        if (d.title) {
+          setTitle(d.title);
+        }
+        if (d.textType) {
+          setTextType(d.textType);
+        }
+        if (Array.isArray(d.genres)) {
+          setGenres(d.genres);
+        }
         if (new Date(d.ts).getTime() > Date.now() - 86400000) {
           setToast("Draft recuperat.");
           setTimeout(() => setToast(null), 3000);
