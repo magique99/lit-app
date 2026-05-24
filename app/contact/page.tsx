@@ -16,21 +16,21 @@ export default function ContactPage() {
     setFormState(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSubmitStatus('submitting');
-    // Simulate an API call
-    try {
-      // In a real app, you would send the data to a backend here
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      // Simulate success
-      setSubmitStatus('success');
-      // Reset form
-      setFormState({ name: "", email: "", message: "" });
-    } catch (err) {
-      setSubmitStatus('error');
-    }
-  };
+   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+     e.preventDefault();
+     setSubmitStatus('submitting');
+     // Simulate an API call
+     try {
+       // In a real app, you would send the data to a backend here
+       await new Promise(resolve => setTimeout(resolve, 1500));
+       // Simulate success
+       setSubmitStatus('success');
+       // Reset form
+       setFormState({ name: "", email: "", message: "" });
+     } catch {
+       setSubmitStatus('error');
+     }
+   };
 
   return (
     <main className="min-h-screen bg-[#f7efe4] text-slate-950 py-12">
