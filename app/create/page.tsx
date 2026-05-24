@@ -670,34 +670,31 @@ function CreatePostForm() {
             </div>
           </div>
 
-          {/* ── PREVIEW PANEL ── */}
-          {readingMode === "read" && (
-            <div className="grid-in-preview rounded-[1.75rem] border p-8 sm:p-12"
-                 style={{
-                   borderColor: C.border,
-                   background: "rgba(255,255,255,0.75)",
-                   boxShadow: "0 8px 40px rgba(42,37,32,0.06)",
-                 }}>
-              <p className="text-[10px] uppercase tracking-[0.3em] mb-6" style={{ color: C.accent }}>
-                Mod lectură
-              </p>
-              {title && (
-                <h2 className="font-serif text-[36px] font-medium leading-[1.2] mb-6"
-                    style={{ color: C.text }}>{title}</h2>
-              )}
-              <div
-                className="text-[16px] leading-[1.9]"
-                style={{ color: C.text, fontFamily: "var(--font-lora), Georgia, serif" }}
-                dangerouslySetInnerHTML={{ __html: editor?.getHTML() ?? "" }}
-              />
-              {!editor?.getHTML().trim() && (
-                <p className="italic" style={{ color: C.muted }}>
-                  Scrie ceva în editor pentru a vedea preview-ul aici.
-                </p>
-              )}
-            </div>
-          )}
-        </div>
+{/* ── PREVIEW PANEL ── */}
+           {readingMode === "read" && (
+             <div className="grid-in-preview rounded-[1.75rem] border p-8 sm:p-12"
+                  style={{
+                    borderColor: C.border,
+                    background: "rgba(255,255,255,0.75)",
+                    boxShadow: "0 8px 40px rgba(42,37,32,0.06)",
+                  }}>
+               {title && (
+                 <h2 className="font-serif text-[36px] font-medium leading-[1.2] mb-6"
+                     style={{ color: C.text }}>{title}</h2>
+               )}
+               <div
+                 className="text-[16px] leading-[1.9]"
+                 style={{ color: C.text, fontFamily: "var(--font-lora), Georgia, serif" }}
+                 dangerouslySetInnerHTML={{ __html: editor?.getHTML() ?? "" }}
+               />
+               {!editor?.getHTML().trim() && (
+                 <p className="italic" style={{ color: C.muted }}>
+                   Scrie ceva în editor pentru a vedea preview-ul aici.
+                 </p>
+               )}
+             </div>
+           )}
+         </div>
 
         {/* ── SIDEBAR (right, desktop, not in focus mode) ── */}
         <div className={`hidden lg:block transition-all duration-500 ${
