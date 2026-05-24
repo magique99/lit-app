@@ -367,30 +367,31 @@ function CreatePostForm() {
     }, 1200);
   }, [title, textType, genres]);
 
-  /* ── TIPTAP EDITOR ── */
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: { levels: [2, 3] },
-      }),
-      CharacterCount,
-      Placeholder.configure({
-        placeholder: ({ node }) => {
-          if (node.type.name === "heading") {
-            return "Titlul paragrafului...";
-          }
-          return "\u201C\u00CEncepe cu prima propoziție care nu îți dă pace.\u201D";
-        },
-      }),
-      Underline,
-      Link.configure({ openOnClick: false }),
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
-    ],
-    content: "",
-    onUpdate: () => {
-      scheduleAutosave();
-    },
-  });
+/* ── TIPTAP EDITOR ── */
+   const editor = useEditor({
+     extensions: [
+       StarterKit.configure({
+         heading: { levels: [2, 3] },
+       }),
+       CharacterCount,
+       Placeholder.configure({
+         placeholder: ({ node }) => {
+           if (node.type.name === "heading") {
+             return "Titlul paragrafului...";
+           }
+           return "\u201C\u00CEncepe cu prima propoziție care nu îți dă pace.\u201D";
+         },
+       }),
+       Underline,
+       Link.configure({ openOnClick: false }),
+       TextAlign.configure({ types: ["heading", "paragraph"] }),
+     ],
+     content: "",
+     immediatelyRender: false,
+     onUpdate: () => {
+       scheduleAutosave();
+     },
+   });
 
   useEffect(() => {
     scheduleAutosave();
