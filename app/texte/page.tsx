@@ -51,7 +51,8 @@ export default function TextePage() {
   const [likeError, setLikeError] = useState<string | null>(null);
   const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const randomOffset = useRef(Math.floor(Math.random() * 30) + 21); // >=20
+  const getRandomOffset = () => Math.floor(Math.random() * 30) + 21; // >=20
+  const randomOffset = useState(() => getRandomOffset())[0];
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);

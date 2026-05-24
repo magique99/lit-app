@@ -375,7 +375,8 @@ function CTA({ currentUserId }: { currentUserId: string | null }) {
 
 function SocialProof() {
   const [counts, setCounts] = useState({ posts: 0, authors: 0 });
-  const randomOffset = useRef(Math.floor(Math.random() * 30) + 21); // >=20
+  const getRandomOffset = () => Math.floor(Math.random() * 30) + 21; // >=20
+  const randomOffset = useState(() => getRandomOffset())[0];
 
   useEffect(() => {
     async function fetchCounts() {
