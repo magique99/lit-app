@@ -411,7 +411,7 @@ function CreatePostForm() {
   const charCount = editor?.storage.characterCount?.characters() ?? 0;
   const plainText = editor?.getText() ?? "";
   const readTime = estimateReadingTime(plainText);
-  const savedAgo = mounted && lastSaved > 0 ? formatCountdown(lastSaved) : "";
+  const savedAgo = mountedRef.current && lastSaved > 0 ? formatCountdown(lastSaved) : "";
 
   const toggleGenre = (g: string) => {
     setGenres((prev) =>
