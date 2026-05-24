@@ -65,17 +65,19 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center" style={{ background: C.bg }}>
       <div className="w-full max-w-sm mx-auto px-6">
-        <div className="text-center mb-10">
-          <h1 className="font-serif text-3xl font-medium" style={{ color: C.text }}>
-            {mode === "login" ? "Intră în spațiul tău literar" : "Creează cont literar"}
+        {/* Title - Strong focus point */}
+        <div className="text-center mb-16">
+          <h1 className="font-serif text-4xl font-medium leading-tight" style={{ color: C.text }}>
+            {mode === "login" ? "Conectează-te la Literatura9" : "Creează un cont"}
           </h1>
-          <p className="mt-2 text-sm" style={{ color: C.muted }}>
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: C.muted }}>
             {mode === "login"
-              ? "Publică texte, salvează lecturi și urmărește reacțiile comunității."
-              : "Începe să scrii și citești alături de alți pasionați de literatură."}
+              ? "Continuă lectura și scrisul acolo unde ai rămas."
+              : "Intră în comunitatea celor care scriu și citesc cu inima."}
           </p>
         </div>
 
+        {/* Form */}
         <div className="rounded-3xl border p-8" style={{ background: C.surface, borderColor: C.border }}>
           {errorMessage && (
             <div className="mb-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -108,26 +110,26 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
 
+            {/* Clear CTA */}
             <button
               onClick={mode === "login" ? handleLogin : handleRegister}
               disabled={loading}
-              className="w-full rounded-full px-6 py-3 text-sm font-medium text-white transition-all duration-300 hover:opacity-90 disabled:cursor-wait disabled:opacity-60"
+              className="w-full rounded-full px-6 py-3.5 text-sm font-medium text-white transition-all duration-300 hover:opacity-90 disabled:cursor-wait disabled:opacity-60"
               style={{ backgroundColor: C.accent }}
             >
-              {loading ? "Se procesează..." : mode === "login" ? "Conectare" : "Înregistrare"}
+              {loading ? "Se procesează..." : mode === "login" ? "Intră în cont" : "Creează cont"}
             </button>
           </div>
         </div>
 
+        {/* Secondary action - lower visual weight */}
         <div className="mt-8 text-center">
           <button
             onClick={() => setMode(mode === "login" ? "register" : "login")}
             className="text-sm transition-colors"
             style={{ color: C.accent }}
           >
-            {mode === "login"
-              ? "Nu ai cont? Înregistrează-te"
-              : "Ai deja cont? Conectează-te"}
+            {mode === "login" ? "Nu ai cont? Creează unul" : "Ai deja cont? Conectează-te"}
           </button>
         </div>
       </div>
