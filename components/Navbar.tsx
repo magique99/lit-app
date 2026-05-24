@@ -69,8 +69,8 @@ export default function Navbar() {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-50" style={{ background: "rgba(247,243,238,0.95)", backdropFilter: "blur-xl" }}>
-      <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4">
+<header className="sticky top-0 z-50" style={{ background: C.bg }}>
+       <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4">
         {/* LOGO */}
         <Link
           href="/"
