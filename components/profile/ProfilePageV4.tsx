@@ -72,22 +72,21 @@ export default function ProfilePage() {
           return;
         }
 
-        const p = toProfile(profileData)!;
-          setProfile(p);
-          setUsername(p.username || "");
-          setFirstName(p.first_name || "");
-          setLastName(p.last_name || "");
-          setNickname(p.nickname || "");
-          setBio(p.bio || "");
-          setGender(p.gender || "");
-          setAge(p.age ?? 0);
-          setCity(p.city || "");
-          setCountry(p.country || "");
-          setPhone(p.phone || "");
-          setVehicle(p.vehicle || "");
-          setAwards(p.awards || "");
-          setAvatarUrl(p.avatar_url || "");
-        }
+const p = toProfile(profileData)!;
+        setProfile(p);
+        setUsername(p.username || "");
+        setFirstName(p.first_name || "");
+        setLastName(p.last_name || "");
+        setNickname(p.nickname || "");
+        setBio(p.bio || "");
+        setGender(p.gender || "");
+        setAge(p.age ?? 0);
+        setCity(p.city || "");
+        setCountry(p.country || "");
+        setPhone(p.phone || "");
+        setVehicle(p.vehicle || "");
+        setAwards(p.awards || "");
+        setAvatarUrl(p.avatar_url || "");
         setLoading(false);
       } catch {
         setError("A apărut o eroare.");
