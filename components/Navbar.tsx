@@ -98,9 +98,9 @@ export default function Navbar() {
             href="/texte"
             className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
             style={{
-              color: "#2A2520",
-              border: "1.5px solid #E8E0D8",
-              background: "#FFFCF7",
+              color: C.text,
+              border: `1.5px solid ${C.border}`,
+              background: C.surface,
             }}
           >
             Texte
