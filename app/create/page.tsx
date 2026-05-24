@@ -371,30 +371,65 @@ function CreatePostForm() {
   }, [title, textType, genres]);
 
 /* ── TIPTAP EDITOR ── */
-   const editor = useEditor({
-     extensions: [
-       StarterKit.configure({
-         heading: { levels: [2, 3] },
-       }),
-       CharacterCount,
-       Placeholder.configure({
-         placeholder: ({ node }) => {
-           if (node.type.name === "heading") {
-             return "Titlul paragrafului...";
-           }
-           return "\u201C\u00CEncepe cu prima propoziție care nu îți dă pace.\u201D";
-         },
-       }),
-       Underline,
-       Link.configure({ openOnClick: false }),
-       TextAlign.configure({ types: ["heading", "paragraph"] }),
-     ],
-     content: "",
-     immediatelyRender: false,
-     onUpdate: () => {
-       scheduleAutosave();
-     },
-   });
+    const editor = useEditor({
+      extensions: [
+        StarterKit.configure({
+          heading: { levels: [2, 3] },
+        }),
+        CharacterCount,
+        Placeholder.configure({
+          placeholder: ({ node }) => {
+            if (node.type.name === "heading") {
+              return "Titlul paragrafului...";
+            }
+            return "\u201C\u00CEncepe cu prima propoziție care nu îți dă pace.\u201D";
+          },
+        }),
+        Underline,
+        Link.configure({ openOnClick: false }),
+        TextAlign.configure({ types: ["heading", "paragraph"] }),
+      ],
+      content: "",
+      immediatelyRender: false,
+      onUpdate: () => {
+        scheduleAutosave();
+      },
+    });
+
+   useEffect(() => {
+     editorRef.current = editor;
+   }, [editor]);
+
+   const handleDocxUpload = useCallback(async (file: File) => {
+     if (!file || !file.name.endsWith(".docx")) {
+       setPublishError("Selectează un fișier .docx valid.");
+       return;
+     }
+
+     setDocxLoading(true);
+     setPublishError(null);
+
+     try {
+       const arrayBuffer = await file.arrayBuffer();
+       const result = await mammoth.convertToHtml({ arrayBuffer });
+       
+       if (editorRef.current && result.value) {
+         editorRef.current.commands.setContent(result.value);
+         const text = htmlToPlainTextWithNewlines(result.value);
+         const firstLine = text.split("\n")[0] || "";
+         if (firstLine.length > 20 && !title) {
+           setTitle(firstLine.substring(0, 60));
+         }
+         setToast("Conținut încărcat din DOCX.");
+         setTimeout(() => setToast(null), 3000);
+       }
+     } catch (err) {
+       console.error(err);
+       setPublishError("Nu am putut citi fișierul DOCX.");
+     } finally {
+       setDocxLoading(false);
+     }
+   }, [title]);
 
   useEffect(() => {
     scheduleAutosave();
