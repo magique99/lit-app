@@ -212,7 +212,7 @@ profiles: {
             following_count: number;
             likes_count: number;
             comments_count: number;
-            preferences: import("./types").UserPreferences | null;
+            preferences: Json | null;
           };
 Insert: {
             avatar_url?: string | null;
@@ -238,7 +238,7 @@ Insert: {
             following_count?: number;
             likes_count?: number;
             comments_count?: number;
-            preferences?: string[] | null;
+            preferences?: Json | null;
           };
 Update: {
             avatar_url?: string | null;
@@ -264,7 +264,7 @@ Update: {
             following_count?: number;
             likes_count?: number;
             comments_count?: number;
-            preferences?: string[] | null;
+            preferences?: Json | null;
           };
          Relationships: [];
        };

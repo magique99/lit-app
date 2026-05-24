@@ -66,7 +66,7 @@ export default function OnboardingWizard() {
       };
       await supabase
         .from("profiles")
-        .update({ preferences })
+        .update({ preferences } as never)
         .eq("user_id", user.id);
     }
     router.push("/");
