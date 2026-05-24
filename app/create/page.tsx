@@ -13,6 +13,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { createPost } from "@/lib/postClient";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import RequireEmailVerification from "@/components/RequireEmailVerification";
+import * as mammoth from "mammoth";
 
 /* =======================================================
    COLOANE
@@ -314,6 +315,7 @@ function CreatePostForm() {
    const [publishedId, setPublishedId] = useState<string | null>(null);
    const [publishError, setPublishError] = useState<string | null>(null);
    const [toast, setToast] = useState<string | null>(null);
+   const [docxLoading, setDocxLoading] = useState(false);
 
    /* autosave */
    const [lastSaved, setLastSaved] = useState<number>(0);
@@ -325,6 +327,37 @@ function CreatePostForm() {
 
    /* reading mode */
    const [readingMode, setReadingMode] = useState<"edit" | "read">("edit");
+
+   const handleDocxUpload = useCallback(async (file: File) => {
+     if (!file || !file.name.endsWith(".docx")) {
+       setPublishError("Selectează un fișier .docx valid.");
+       return;
+     }
+
+     setDocxLoading(true);
+     setPublishError(null);
+
+     try {
+       const arrayBuffer = await file.arrayBuffer();
+       const result = await mammoth.convertToHtml({ arrayBuffer });
+       
+       if (editor && result.value) {
+         editor.commands.setContent(result.value);
+         const text = htmlToPlainTextWithNewlines(result.value);
+         const firstLine = text.split("\n")[0] || "";
+         if (firstLine.length > 20 && !title) {
+           setTitle(firstLine.substring(0, 60));
+         }
+         setToast("Conținut încărcat din DOCX.");
+         setTimeout(() => setToast(null), 3000);
+       }
+     } catch (err) {
+       console.error(err);
+       setPublishError("Nu am putut citi fișierul DOCX.");
+     } finally {
+       setDocxLoading(false);
+     }
+   }, [editor, title]);
 
    /* ── tip from localStorage on mount ── */
    useEffect(() => {
