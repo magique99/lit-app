@@ -436,9 +436,6 @@ export default function HomePage() {
       {/* FEATURES */}
       <Features />
 
-      {/* CALL-TO-ACTION */}
-      <CTA currentUserId={currentUserId} />
-
       {/* SOCIAL PROOF */}
       <SocialProof />
 

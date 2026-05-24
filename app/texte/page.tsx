@@ -32,6 +32,24 @@ const GENRES = [
   "Romantic",
 ];
 
+const C = {
+  bg: "#F7F3EE",
+  surface: "#FFFCF7",
+  text: "#2A2520",
+  muted: "#7A7268",
+  border: "#E8E0D8",
+  accent: "#B87D4B",
+};
+
+const QUOTES = [
+  "Literatește nu e un dar. Este o practică zilnică a atenției.",
+  "Cuvintele bune sunt cele care rămân după ce ai citit totul.",
+  "Literatura nu se grăbește. E ca un pătrunjel – crește în tăcere.",
+  "Un text bun e ca o rană curată – ambele au nevoie de răbdare.",
+];
+
+const TAGS = ["Grotesc", "Simbolic", "Oniric", "Poezie", "Eseu", "Ficțiune"];
+
 export default function TextePage() {
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
@@ -51,8 +69,14 @@ export default function TextePage() {
   const [likeError, setLikeError] = useState<string | null>(null);
   const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const getRandomOffset = () => Math.floor(Math.random() * 30) + 21; // >=20
+  const getRandomOffset = () => Math.floor(Math.random() * 30) + 21;
   const randomOffset = useState(() => getRandomOffset())[0];
+  const [trendingAuthors, setTrendingAuthors] = useState<Array<{user_id: string, username: string}>>([]);
+  const [sidebarQuote, setSidebarQuote] = useState("");
+
+  useEffect(() => {
+    setSidebarQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+  }, []);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
@@ -65,6 +89,31 @@ export default function TextePage() {
   const authorsCount = useMemo(() => {
     return new Set(posts.map((p) => p.user_id).filter(Boolean)).size;
   }, [posts]);
+
+  const loadTrendingAuthors = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("posts")
+      .select("user_id")
+      .not("user_id", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (error || !data) return;
+
+    const userIds = Array.from(new Set(data.map(p => p.user_id)));
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("user_id, username")
+      .in("user_id", userIds);
+
+    if (profiles) {
+      setTrendingAuthors(profiles.slice(0, 5));
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTrendingAuthors();
+  }, [loadTrendingAuthors]);
 
   async function loadCounts(postIds: string[]) {
     if (postIds.length === 0) return;
