@@ -25,7 +25,7 @@ const C = {
     ===================================================== */
 
 /* ---- HERO ---- */
-function Hero({ currentUserId }: { currentUserId: string | null }) {
+function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Imagine de fundal */}
