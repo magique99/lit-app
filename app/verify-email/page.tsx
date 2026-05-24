@@ -92,8 +92,17 @@ function VerifyEmailContent() {
       )}
 
       {status === "pending" && (
-        <div className="rounded-xl border border-yellow-100 bg-yellow-50 px-4 py-3 text-sm text-yellow-700">
-          {message}
+        <div>
+          <div className="rounded-xl border border-yellow-100 bg-yellow-50 px-4 py-3 text-sm text-yellow-700">
+            {message}
+          </div>
+          <button
+            onClick={() => void handleResend()}
+            disabled={resending}
+            className="mt-4 text-sm underline text-blue-600"
+          >
+            {resending ? "Se trimite..." : "Retransmite email-ul de confirmare"}
+          </button>
         </div>
       )}
 
