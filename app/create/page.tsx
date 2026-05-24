@@ -330,34 +330,36 @@ function CreatePostForm() {
   /* saving slug info */
   const lastSavedRef = useRef(0);
 
-  /* Prevent ssr mismatch */
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+   /* Prevent ssr mismatch */
+   const mountedRef = useRef(false);
+   useEffect(() => {
+     mountedRef.current = true;
+   }, []);
 
-  /* ── tip from localStorage on mount ── */
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(DRAFT_KEY);
-      if (saved) {
-        const d = JSON.parse(saved);
-        if (d.title) {
-          setTitle(d.title);
-        }
-        if (d.textType) {
-          setTextType(d.textType);
-        }
-        if (Array.isArray(d.genres)) {
-          setGenres(d.genres);
-        }
-        if (new Date(d.ts).getTime() > Date.now() - 86400000) {
-          setToast("Draft recuperat.");
-          setTimeout(() => setToast(null), 3000);
-        }
-      }
-    } catch { /* ignore */ }
-  }, [DRAFT_KEY]);
+   /* ── tip from localStorage on mount ── */
+   useEffect(() => {
+     try {
+       const saved = localStorage.getItem(DRAFT_KEY);
+       if (saved) {
+         const d = JSON.parse(saved);
+         queueMicrotask(() => {
+           if (d.title) {
+             setTitle(d.title);
+           }
+           if (d.textType) {
+             setTextType(d.textType);
+           }
+           if (Array.isArray(d.genres)) {
+             setGenres(d.genres);
+           }
+           if (new Date(d.ts).getTime() > Date.now() - 86400000) {
+             setToast("Draft recuperat.");
+             setTimeout(() => setToast(null), 3000);
+           }
+         });
+       }
+     } catch { /* ignore */ }
+   }, [DRAFT_KEY]);
 
   /* ── Autosave to localStorage ── */
   const scheduleAutosave = useCallback(() => {
@@ -417,11 +419,9 @@ function CreatePostForm() {
     );
   };
 
-  const randomTip = useMemo(() => {
-      // Return a random tip - we'll regenerate when the component re-renders
-      // This is acceptable since ATOMIC_TIPS is constant
-      return ATOMIC_TIPS[Math.floor(Math.random() * ATOMIC_TIPS.length)];
-    }, []); // Empty deps means this is computed once on mount
+   const [randomTip] = useState(() => {
+       return ATOMIC_TIPS[Math.floor(Math.random() * ATOMIC_TIPS.length)];
+     });
 
   /* ── Publish ── */
   const handlePublish = useCallback(async () => {

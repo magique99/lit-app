@@ -106,13 +106,9 @@ export default function AutoriPage() {
     }
   };
 
-  useEffect(() => {
-    loadAuthors();
-  }, []);
-
-  useEffect(() => {
-    loadAuthors();
-  }, []);
+   useEffect(() => {
+     loadAuthors();
+   }, []);
 
   return (
     <main className="min-h-screen" style={{ background: C.bg }}>

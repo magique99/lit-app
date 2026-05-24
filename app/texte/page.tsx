@@ -72,7 +72,7 @@ export default function TextePage() {
   const getRandomOffset = () => Math.floor(Math.random() * 30) + 21;
   const randomOffset = useState(() => getRandomOffset())[0];
   const [trendingAuthors, setTrendingAuthors] = useState<Array<{user_id: string, username: string | null}>>([]);
-  const [sidebarQuote, setSidebarQuote] = useState(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+   const [sidebarQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
   useEffect(() => {
     // No-op effect since we initialize with useState
