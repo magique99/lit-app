@@ -332,7 +332,9 @@ function CreatePostForm() {
 
   /* Prevent ssr mismatch */
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   /* ── tip from localStorage on mount ── */
   useEffect(() => {
