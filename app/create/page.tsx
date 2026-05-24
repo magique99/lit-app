@@ -618,19 +618,13 @@ function CreatePostForm() {
           </div>
         </div>
 
-        {/* ── SHARED CORE: EDITOR + TOOLBAR + PREVIEW ── */}
-        <div className="mt-6 grid gap-8" style={{
-          gridTemplateColumns: "1fr 0px 1fr",
-          ...(readingMode === "read"
-            ? { gridTemplateColumns: "1fr 0px 1fr" }
-            : {}
-          ),
-          gridTemplateAreas: readingMode === "read"
-            ? '"editor  .  preview"'
-            : '"editor"',
-        }}>
-          {/* ── EDITOR PANEL ── */}
-          <div className="grid-in-editor" style={{ display: readingMode === "read" ? "none" : undefined }}>
+{/* ── SHARED CORE: EDITOR + TOOLBAR + PREVIEW ── */}
+         <div className="mt-6 grid gap-8" style={{
+           gridTemplateColumns: readingMode === "read" ? "1fr 1fr" : "1fr",
+           gridTemplateAreas: readingMode === "read" ? '"editor preview"' : '"editor"',
+         }}>
+           {/* ── EDITOR PANEL ── */}
+           <div className="grid-in-editor" style={{ display: readingMode === "read" ? "none" : undefined }}>
 
             {/* Toolbar */}
             <div className="flex items-center gap-4 pb-3 mb-4 border-b"
