@@ -53,7 +53,7 @@ export default function SignupPage() {
       }
     }
 
-    router.push("/profile");
+    router.push("/onboarding");
   }
 
   return (

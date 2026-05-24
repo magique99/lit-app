@@ -19,12 +19,23 @@ type ProfileRow = Tables["profiles"]["Row"];
 export type Profile = Omit<ProfileRow, "role"> & {
   role?: UserRole | null;
 };
+
 export type ProfileInsert = Omit<Tables["profiles"]["Insert"], "role"> & {
   role?: UserRole | null;
 };
+
 export type ProfileUpdate = Omit<Tables["profiles"]["Update"], "role"> & {
   role?: UserRole | null;
 };
+
+export type GenrePreference = 
+  | "Poezie"
+  | "Proză"
+  | "Grotesc"
+  | "Simbolic"
+  | "SF"
+  | "Dramă"
+  | "Eseu";
 
 export function toProfile(dbProfile: ProfileRow | null): Profile | null {
   if (!dbProfile) return null;

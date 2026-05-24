@@ -36,8 +36,25 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/");
+    await checkAndRedirect();
     router.refresh();
+  }
+
+  async function checkAndRedirect() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("preferences")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!profile?.preferences || profile.preferences.length === 0) {
+      router.push("/onboarding");
+    } else {
+      router.push("/");
+    }
   }
 
   async function handleRegister() {
@@ -60,9 +77,8 @@ export default function LoginPage() {
     } else if (data.user && !data.session) {
       setMessage("Cont creat! Verifică email-ul pentru confirmare.");
     } else if (data.session) {
-      setMessage("Cont creat cu succes! Vei fi redirecționat...");
-      router.push("/");
-      router.refresh();
+      setMessage("Cont creat cu succes!");
+      router.push("/onboarding");
     } else {
       setMessage("Cont creat. Verifică emailul pentru confirmare.");
     }

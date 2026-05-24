@@ -40,8 +40,8 @@ function VerifyEmailContent() {
           setMessage(error.message);
         } else {
           setStatus("success");
-          setMessage("Email verificat cu succes! Poți să te conectezi acum.");
-          setTimeout(() => router.push("/login"), 2000);
+          setMessage("Email verificat cu succes!");
+          setTimeout(() => router.push("/onboarding"), 1500);
         }
       } else if (code) {
         const { data, error } = await supabase.auth.exchangeCodeForSession(code);
@@ -50,8 +50,8 @@ function VerifyEmailContent() {
           setMessage(error.message);
         } else if (data.session) {
           setStatus("success");
-          setMessage("Email verificat cu succes! Vei fi redirecționat...");
-          setTimeout(() => router.push("/profile"), 1500);
+          setMessage("Email verificat cu succes!");
+          setTimeout(() => router.push("/onboarding"), 1500);
         }
       } else {
         if (sent === "true") {
