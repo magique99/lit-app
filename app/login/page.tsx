@@ -18,7 +18,7 @@ export default function LoginPage() {
     setMessage(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -27,6 +27,12 @@ export default function LoginPage() {
 
     if (error) {
       setErrorMessage(error.message);
+      return;
+    }
+
+    if (data.user && !data.user.email_confirmed_at) {
+      await supabase.auth.signOut();
+      setErrorMessage("Trebuie să confirmi email-ul înainte de a te conecta. Verifică inbox-ul.");
       return;
     }
 
