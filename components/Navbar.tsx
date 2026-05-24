@@ -154,7 +154,7 @@ export default function Navbar() {
                       transition-colors
                     "
                   >
-                    Octresc
+                    Adauga Text
                   </Link>
 
                   <Link

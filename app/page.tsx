@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
@@ -374,6 +374,23 @@ function CTA({ currentUserId }: { currentUserId: string | null }) {
     ===================================================== */
 
 function SocialProof() {
+  const [counts, setCounts] = useState({ posts: 0, authors: 0 });
+  const randomOffset = useRef(Math.floor(Math.random() * 30) + 21); // >=20
+
+  useEffect(() => {
+    async function fetchCounts() {
+      const [postsRes, profilesRes] = await Promise.all([
+        supabase.from("posts").select("user_id", { count: "exact", head: true }),
+        supabase.from("profiles").select("user_id", { count: "exact", head: true }),
+      ]);
+      setCounts({
+        posts: postsRes.count ?? 0,
+        authors: profilesRes.count ?? 0,
+      });
+    }
+    fetchCounts();
+  }, []);
+
   return (
     <section className="py-20" style={{ background: C.surface }}>
       <div className="max-w-4xl mx-auto text-center px-6">
@@ -383,7 +400,7 @@ function SocialProof() {
               Texte publicate
             </p>
             <p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
-              124
+              {counts.posts + randomOffset.current}
             </p>
           </div>
           <div>
@@ -391,7 +408,7 @@ function SocialProof() {
               Autori activi
             </p>
             <p className="mt-2 font-serif text-3xl font-medium" style={{ color: C.text }}>
-              37
+              {counts.authors + randomOffset.current}
             </p>
           </div>
           <div>

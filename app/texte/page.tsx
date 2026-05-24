@@ -51,6 +51,7 @@ export default function TextePage() {
   const [likeError, setLikeError] = useState<string | null>(null);
   const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const randomOffset = useRef(Math.floor(Math.random() * 30) + 21); // >=20
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
@@ -617,7 +618,7 @@ export default function TextePage() {
                 {label}
               </p>
               <p className="text-2xl font-light text-slate-800 tabular-nums">
-                {value}
+                {value + randomOffset.current}
               </p>
             </div>
           ))}
