@@ -7,6 +7,7 @@ import CharacterCount from "@tiptap/extension-character-count";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
+import TextAlign from "@tiptap/extension-text-align";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { createPost } from "@/lib/postClient";
@@ -376,13 +377,14 @@ function CreatePostForm() {
       Placeholder.configure({
         placeholder: ({ node }) => {
           if (node.type.name === "heading") {
-            return "Titlu paragraf...";
+            return "Titlul paragrafului...";
           }
           return "\u201C\u00CEncepe cu prima propoziție care nu îți dă pace.\u201D";
         },
       }),
       Underline,
       Link.configure({ openOnClick: false }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
     content: "",
     onUpdate: ({ editor: ed }) => {
@@ -634,6 +636,28 @@ function CreatePostForm() {
             <div className="flex items-center gap-4 pb-3 mb-4 border-b"
                  style={{ borderColor: C.border }}>
               <Toolbar editor={editor} />
+              <span className="w-px h-4" style={{ background: C.border }} />
+              <button
+                onClick={() => editor.chain().focus().setTextAlign('center').run()}
+                title="Aliniază la centru"
+                className="
+                  flex items-center justify-center w-8 h-8 rounded-[0.6rem] text-[13px]
+                  font-medium transition-all duration-150 outline-none
+                "
+                style={{
+                  background: editor.isActive({ textAlign: 'center' }) ? C.accentLight : "transparent",
+                  color: editor.isActive({ textAlign: 'center' }) ? C.accent : C.muted,
+                  border: `1.5px solid ${editor.isActive({ textAlign: 'center' }) ? C.accent : "transparent"}`,
+                }}
+                onMouseEnter={(e) => {
+                  if (!editor.isActive({ textAlign: 'center' })) { e.currentTarget.style.background = C.accentLight; e.currentTarget.style.borderColor = C.border; }
+                }}
+                onMouseLeave={(e) => {
+                  if (!editor.isActive({ textAlign: 'center' })) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; }
+                }}
+              >
+                ⇫
+              </button>
             </div>
 
             {/* Editor box */}
