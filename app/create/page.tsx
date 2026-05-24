@@ -618,56 +618,58 @@ setPublishProgress(100);
         </div>
 
 {/* ── SHARED CORE: EDITOR + TOOLBAR + PREVIEW ── */}
-         <div className="mt-6 grid gap-8" style={{
-           gridTemplateColumns: readingMode === "read" ? "1fr 1fr" : "1fr",
-           gridTemplateAreas: readingMode === "read" ? '"editor preview"' : '"editor"',
-         }}>
-           {/* ── EDITOR PANEL ── */}
-           <div className="grid-in-editor" style={{ display: readingMode === "read" ? "none" : undefined }}>
+          <div className="mt-6 grid gap-8" style={{
+            gridTemplateColumns: readingMode === "read" ? "1fr 1fr" : "1fr",
+            gridTemplateAreas: readingMode === "read" ? '"editor preview"' : '"editor"',
+          }}>
+            {/* ── EDITOR PANEL ── */}
+            <div className="grid-in-editor" style={{ display: readingMode === "read" ? "none" : undefined }}>
 
-            {/* Toolbar */}
-            <div className="flex items-center gap-4 pb-3 mb-4 border-b"
-                 style={{ borderColor: C.border }}>
-              <Toolbar editor={editor} />
-              <span className="w-px h-4" style={{ background: C.border }} />
-              <button
-                onClick={() => editor.chain().focus().setTextAlign('center').run()}
-                title="Aliniază la centru"
-                className="
-                  flex items-center justify-center w-8 h-8 rounded-[0.6rem] text-[13px]
-                  font-medium transition-all duration-150 outline-none
-                "
-                style={{
-                  background: editor.isActive({ textAlign: 'center' }) ? C.accentLight : "transparent",
-                  color: editor.isActive({ textAlign: 'center' }) ? C.accent : C.muted,
-                  border: `1.5px solid ${editor.isActive({ textAlign: 'center' }) ? C.accent : "transparent"}`,
-                }}
-                onMouseEnter={(e) => {
-                  if (!editor.isActive({ textAlign: 'center' })) { e.currentTarget.style.background = C.accentLight; e.currentTarget.style.borderColor = C.border; }
-                }}
-                onMouseLeave={(e) => {
-                  if (!editor.isActive({ textAlign: 'center' })) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; }
-                }}
-              >
-                ⇫
-              </button>
-            </div>
+             {/* Toolbar */}
+             {editor && (
+             <div className="flex items-center gap-4 pb-3 mb-4 border-b"
+                  style={{ borderColor: C.border }}>
+               <Toolbar editor={editor} />
+               <span className="w-px h-4" style={{ background: C.border }} />
+               <button
+                 onClick={() => editor.chain().focus().setTextAlign('center').run()}
+                 title="Aliniază la centru"
+                 className="
+                   flex items-center justify-center w-8 h-8 rounded-[0.6rem] text-[13px]
+                   font-medium transition-all duration-150 outline-none
+                 "
+                 style={{
+                   background: editor.isActive({ textAlign: 'center' }) ? C.accentLight : "transparent",
+                   color: editor.isActive({ textAlign: 'center' }) ? C.accent : C.muted,
+                   border: `1.5px solid ${editor.isActive({ textAlign: 'center' }) ? C.accent : "transparent"}`,
+                 }}
+                 onMouseEnter={(e) => {
+                   if (!editor.isActive({ textAlign: 'center' })) { e.currentTarget.style.background = C.accentLight; e.currentTarget.style.borderColor = C.border; }
+                 }}
+                 onMouseLeave={(e) => {
+                   if (!editor.isActive({ textAlign: 'center' })) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; }
+                 }}
+               >
+                 ⇫
+               </button>
+             </div>
+             )}
 
-            {/* Editor box */}
-            <div
-              className="relative rounded-[1.75rem] border p-6 sm:p-9 transition-all duration-300"
-              style={{
-                borderColor: focusMode ? "transparent" : C.border,
-                background: "rgba(255,255,255,0.65)",
-                boxShadow: "0 8px 40px rgba(42,37,32,0.06)",
-                minHeight: focusMode ? "60vh" : "480px",
-              }}
-            >
-              <EditorContent editor={editor}
-                className="Tiinia-editor text-[15px] sm:text-[16px]"
-              />
-            </div>
-          </div>
+             {/* Editor box */}
+             <div
+               className="relative rounded-[1.75rem] border p-6 sm:p-9 transition-all duration-300"
+               style={{
+                 borderColor: focusMode ? "transparent" : C.border,
+                 background: "rgba(255,255,255,0.65)",
+                 boxShadow: "0 8px 40px rgba(42,37,32,0.06)",
+                 minHeight: focusMode ? "60vh" : "480px",
+               }}
+             >
+               <EditorContent editor={editor}
+                 className="Tiinia-editor text-[15px] sm:text-[16px]"
+               />
+             </div>
+           </div>
 
 {/* ── PREVIEW PANEL ── */}
            {readingMode === "read" && (
