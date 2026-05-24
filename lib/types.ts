@@ -37,11 +37,11 @@ export type GenrePreference =
   | "Dramă"
   | "Eseu";
 
-export type UserRole = "reader" | "writer" | "both";
+export type OnboardingRole = "reader" | "writer" | "both";
 
 export type UserPreferences = {
   genres: GenrePreference[];
-  role: UserRole;
+  role: OnboardingRole;
   writes_types: string[];
   reads_types: string[];
 };

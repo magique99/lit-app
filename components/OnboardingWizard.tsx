@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import type { GenrePreference } from "@/lib/types";
+import type { GenrePreference, OnboardingRole } from "@/lib/types";
 
 const GENRE_OPTIONS: GenrePreference[] = [
   "Poezie",
@@ -17,8 +17,6 @@ const GENRE_OPTIONS: GenrePreference[] = [
 
 const TEXT_TYPES = ["Poezie", "Proză", "Teatru", "Jurnal", "Altul"];
 
-type UserRole = "reader" | "writer" | "both";
-
 export default function OnboardingWizard() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -28,7 +26,7 @@ export default function OnboardingWizard() {
   const [selectedGenres, setSelectedGenres] = useState<GenrePreference[]>([]);
 
   // Step 2: Role
-  const [userRole, setUserRole] = useState<UserRole>("reader");
+  const [userRole, setUserRole] = useState<OnboardingRole>("reader");
 
   // Step 3: Text types (for writers)
   const [writesTypes, setWritesTypes] = useState<string[]>([]);
@@ -58,7 +56,7 @@ export default function OnboardingWizard() {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      const preferences = {
+      const preferences: import("./types").UserPreferences = {
         genres: selectedGenres,
         role: userRole,
         writes_types: userRole === "writer" || userRole === "both" ? writesTypes : [],
