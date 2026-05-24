@@ -19,13 +19,14 @@ function OnboardingContent() {
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("preferences")
-        .eq("user_id", user.id)
-        .maybeSingle();
+const { data: profile } = await supabase
+          .from("profiles")
+          .select("preferences")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      if (!profile?.preferences || !profile.preferences.genres || profile.preferences.genres.length === 0) {
+        const prefs = profile?.preferences as { genres?: string[] } | null;
+        if (!prefs?.genres || prefs.genres.length === 0) {
         setNeedsOnboarding(true);
       } else {
         router.push("/");
