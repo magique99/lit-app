@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
-import type { Post, Profile } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
+import type { Profile } from "@/lib/types";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 
 /* =====================================================
