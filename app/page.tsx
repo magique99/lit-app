@@ -199,7 +199,7 @@ function LatestTexts() {
     );
   }
 
-  if (error) {
+  if (error && texts.length > 0) {
     return (
       <section className="py-28 sm:py-36 md:py-44 px-6" style={{ background: C.surface }}>
         <div className="max-w-2xl mx-auto text-center">
@@ -207,6 +207,10 @@ function LatestTexts() {
         </div>
       </section>
     );
+  }
+
+  if (!loading && !error && texts.length === 0) {
+    return null; // Don't show section if no posts
   }
 
   return (
