@@ -613,13 +613,14 @@ function CreatePostForm() {
       setLastSaved(0);
 
 setPublishProgress(100);
-       setPublishLabel("Publicat.");
-       setPublishedId(post.id);
+        setPublishLabel("Publicat.");
+        setPublishedId(post.id);
 
-      setTimeout(() => {
-        setFocusMode(false);
-        setPublishing(false);
-      }, 2800);
+        setTimeout(() => {
+          setFocusMode(false);
+          setPublishing(false);
+          router.push(`/post/${post.id}`);
+        }, 1500);
     } catch (err: unknown) {
       console.error(err);
       setPublishError(err instanceof Error ? err.message : "Nu am putut salva postarea.");
