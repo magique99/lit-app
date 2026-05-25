@@ -51,36 +51,34 @@ export default async function PostPage({ params }: Props) {
     notFound();
   }
 
-  if (!post?.user_id) {
-    notFound();
-  }
-
   let profile: ProfileData | null = null;
-  const { data: profileData, error: profileError } = await supabase
-    .from("profiles")
-    .select("username, avatar_url, first_name, last_name, nickname")
-    .eq("user_id", post.user_id)
-    .maybeSingle<ProfileData>();
-   
-  if (!profileError && profileData) {
-    // Determine display name: username > first_name + last_name > nickname > "anonim"
-    let displayName = null;
-    if (profileData.username && profileData.username.trim() !== '') {
-      displayName = profileData.username;
-    } else if ((profileData.first_name && profileData.first_name.trim() !== '') || 
-               (profileData.last_name && profileData.last_name.trim() !== '')) {
-      displayName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim();
-    } else if (profileData.nickname && profileData.nickname.trim() !== '') {
-      displayName = profileData.nickname;
+
+  if (post.user_id) {
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("username, avatar_url, first_name, last_name, nickname")
+      .eq("user_id", post.user_id)
+      .maybeSingle<ProfileData>();
+      
+    if (!profileError && profileData) {
+      let displayName = null;
+      if (profileData.username && profileData.username.trim() !== '') {
+        displayName = profileData.username;
+      } else if ((profileData.first_name && profileData.first_name.trim() !== '') || 
+                 (profileData.last_name && profileData.last_name.trim() !== '')) {
+        displayName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim();
+      } else if (profileData.nickname && profileData.nickname.trim() !== '') {
+        displayName = profileData.nickname;
+      }
+      
+      profile = {
+        username: displayName ?? null,
+        avatar_url: profileData.avatar_url ?? null,
+        first_name: profileData.first_name ?? null,
+        last_name: profileData.last_name ?? null,
+        nickname: profileData.nickname ?? null
+      };
     }
-    
-    profile = {
-      username: displayName ?? null,
-      avatar_url: profileData.avatar_url ?? null,
-      first_name: profileData.first_name ?? null,
-      last_name: profileData.last_name ?? null,
-      nickname: profileData.nickname ?? null
-    };
   }
 
   const authorName = profile?.username ?? "anonim";
@@ -94,7 +92,6 @@ export default async function PostPage({ params }: Props) {
     }
   );
 
-  // Fetch comment count
   const { data: commentsData, error: commentsError } = await supabase
     .from("comments")
     .select("id", { count: "exact" })
@@ -106,7 +103,6 @@ export default async function PostPage({ params }: Props) {
     <main className="relative min-h-screen bg-[#f7efe4] text-slate-950">
       <div className="mx-auto max-w-5xl px-6 py-10 lg:px-8">
         
-        {/* HEADER */}
         <section className="overflow-hidden rounded-[2.5rem] border border-slate-200 bg-[#fcf5ec] p-8 shadow-[0_40px_120px_rgba(15,23,42,0.12)]">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
@@ -123,7 +119,6 @@ export default async function PostPage({ params }: Props) {
               </p>
             </div>
 
-            {/* AUTHOR BOX (simplificat) */}
             <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 {post.user_id ? (
@@ -148,15 +143,15 @@ export default async function PostPage({ params }: Props) {
                   <>
                     <div className="relative h-12 w-12 overflow-hidden rounded-full">
                       <Image
-                        src={profile?.avatar_url ?? "/user.jpg"}
-                        alt={authorName}
+                        src="/user.jpg"
+                        alt="anonim"
                         fill
                         sizes="48px"
                         className="object-cover"
                       />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold">@{authorName}</p>
+                      <p className="text-sm font-semibold">@anonim</p>
                       <p className="text-xs text-slate-500">
                         Publicat {publishedAt}
                       </p>
@@ -172,15 +167,12 @@ export default async function PostPage({ params }: Props) {
           </div>
         </section>
 
-        {/* CONTENT */}
         <article className="mt-10 overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-10 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
           <PaginatedContent content={post.content} wordsPerPage={350} />
         </article>
 
-        {/* ANNOTATIONS */}
         <TextAnnotations postId={id} postContent={post.content} />
 
-        {/* COMMENTS */}
         <PostClient postId={id} />
       </div>
     </main>
