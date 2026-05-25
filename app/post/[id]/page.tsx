@@ -30,7 +30,6 @@ type ProfileData = {
 
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
-  console.log("POST ID:", id);
 
   const { data: post, error } = await supabase
     .from("posts")
@@ -39,7 +38,6 @@ export default async function PostPage({ params }: Props) {
     .single<PostPageData>();
 
   if (error) {
-    console.log("POST PAGE ERROR:", error);
     notFound();
   }
 
