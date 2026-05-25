@@ -45,7 +45,7 @@ export default async function PostPage({ params }: Props) {
     notFound();
   }
 
-  if (!post.user_id) {
+  if (!post?.user_id) {
     notFound();
   }
 

@@ -7,15 +7,10 @@ import type { Annotation } from "@/lib/types";
 
 export default function TextAnnotations({ postId, postContent }: { postId: string; postContent?: string }) {
   const pathname = usePathname();
-  const isPostPage = pathname?.startsWith("/post/");
-
-  console.log("TextAnnotations render - postId:", postId, "isPostPage:", isPostPage, "pathname:", pathname);
 
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
-  // Folosim un key pentru a forța refresh la postId change
   const annotationsKey = useMemo(() => `${postId}-${annotations.length}`, [postId, annotations.length]);
-  
-  console.log("TextAnnotations state - annotations count:", annotations.length, "key:", annotationsKey);
+
   const [selectedText, setSelectedText] = useState<{ text: string; start: number; end: number } | null>(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupPos, setPopupPos] = useState({ x: 0, y: 0 });
@@ -29,7 +24,6 @@ export default function TextAnnotations({ postId, postContent }: { postId: strin
   }, [showPopup]);
 
   const loadAnnotations = useCallback(async () => {
-    console.log("LOAD ANNOTATIONS - postId:", postId);
     const { data, error } = await supabase
       .from("annotations")
       .select("*")
@@ -37,13 +31,11 @@ export default function TextAnnotations({ postId, postContent }: { postId: strin
 
     console.log("LOAD ANNOTATIONS - error:", error, "data raw:", data);
     if (error) {
-      console.error("LOAD ANNOTATIONS ERROR:", error);
       setAnnotations([]);
       return;
     }
-    
+
     const typedData = (data as Annotation[]) || [];
-    console.log("LOAD ANNOTATIONS - typedData:", typedData.length, "items");
     setAnnotations(typedData);
   }, [postId]);
 
@@ -84,7 +76,6 @@ export default function TextAnnotations({ postId, postContent }: { postId: strin
   };
 
   useEffect(() => {
-    console.log("useEffect - mounting, calling loadAnnotations");
     supabase.auth.getUser().then(({ data }) => {
       setCurrentUserId(data.user?.id ?? null);
     });

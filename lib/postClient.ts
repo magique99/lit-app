@@ -15,19 +15,11 @@ export type CreatePostInput = {
 };
 
 export async function createPost(input: CreatePostInput): Promise<Post> {
-  // Ensure profile exists for the user
-  const { data: existingProfile } = await supabase
-    .from("profiles")
-    .select("user_id")
-    .eq("user_id", input.user_id)
-    .single();
-
-  if (!existingProfile) {
-    await supabase.from("profiles").insert({
-      user_id: input.user_id,
-      username: `user_${input.user_id.slice(0, 8)}`,
-    });
-  }
+  // Ensure profile exists for the user - upsert to handle race conditions
+  await supabase.from("profiles").upsert({
+    user_id: input.user_id,
+    username: `user_${input.user_id.slice(0, 8)}`,
+  }, { onConflict: "user_id" });
 
   const { data, error } = await supabase
     .from("posts")
@@ -49,6 +41,10 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
   if (error) {
     console.error("createPost error:", error);
     throw error;
+  }
+
+  if (!data?.user_id) {
+    throw new Error("Post created without user_id - authentication issue");
   }
 
   return data;
