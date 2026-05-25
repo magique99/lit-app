@@ -17,6 +17,7 @@ export default function PostClient({ postId }: { postId: string }) {
   const typingChannel = useRef<RealtimeChannel | null>(null);
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  
   // =========================
   // USER
   // =========================
