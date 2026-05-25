@@ -1,14 +1,21 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
 import type { Comment, Post, Profile, LikeInsert } from "@/lib/types";
-import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import RequireEmailVerification from "@/components/RequireEmailVerification";
 import * as mammoth from "mammoth";
+import { useEditor, EditorContent } from "@tiptap/react";
+import { StarterKit } from "@tiptap/starter-kit";
+import { CharacterCount } from "@tiptap/extension-character-count";
+import { Placeholder } from "@tiptap/extension-placeholder";
+import { Underline } from "@tiptap/extension-underline";
+import { Link as TiptapLink } from "@tiptap/extension-link";
+import { TextAlign } from "@tiptap/extension-text-align";
 
 /* =======================================================
     COLOANE
@@ -483,7 +490,6 @@ function CreatePostForm() {
           },
         }),
         Underline,
-        Link.configure({ openOnClick: false }),
         TextAlign.configure({ types: ["heading", "paragraph"] }),
       ],
       content: "",
