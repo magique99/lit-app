@@ -330,7 +330,7 @@ export default function OnboardingWizard() {
           </div>
         )}
 
-        {/* Step 4/5: Reads types (for reader or both) */}
+        {/* Step 4: Reads types (for reader only) */}
         {step === 4 && userRole === "reader" && (
           <div>
             <h1 className="text-2xl font-serif font-medium mb-2 text-center" style={{ color: C.text }}>
@@ -418,8 +418,8 @@ export default function OnboardingWizard() {
           </div>
         )}
 
-        {/* Final step for writers only */}
-        {step === 4 && userRole === "writer" && (
+        {/* Step 5: Final for writers */}
+        {step === 5 && userRole === "writer" && (
           <div>
             <h1 className="text-2xl font-serif font-medium mb-6 text-center" style={{ color: C.text }}>
               Gata!
