@@ -860,8 +860,11 @@ setPublishProgress(100);
                   {randomTip}
                 </p>
                 <div className="space-y-2 text-[11px]" style={{ color: C.muted }}>
-                  <p>• Recomandare: 500-1500 cuvinte</p>
-                  <p>• Păstrează un ton consistent</p>
+                  <p>• Începe cu o idee simplă, nu cu perfecțiunea.</p>
+                  <p>• Lasă textul să se așeze, apoi revino asupra lui.</p>
+                  <p>• Nu te opri la prima versiune — revino și rescrie.</p>
+                  <p>• Ajustează ritmul citindu-l de mai multe ori.</p>
+                  <p>• Citește textul înainte să-l publici.</p>
                 </div>
               </div>
 

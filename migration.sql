@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   comments_count INTEGER NOT NULL DEFAULT 0
 );
 
+
 -- ─── 1: Profiles extra columns ────────────────────────────────────────────
 -- (Columns will be skipped if table was just created)
 ALTER TABLE profiles
@@ -54,6 +55,7 @@ ALTER TABLE profiles
   ADD COLUMN IF NOT EXISTS following_count  INTEGER NOT NULL DEFAULT 0,
   ADD COLUMN IF NOT EXISTS likes_count      INTEGER NOT NULL DEFAULT 0,
   ADD COLUMN IF NOT EXISTS comments_count   INTEGER NOT NULL DEFAULT 0;
+
 
 -- ─── 2: RLS on profiles ───────────────────────────────────────────────────────────
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -94,12 +96,44 @@ CREATE TABLE IF NOT EXISTS posts (
    text_type   TEXT,
    genre       TEXT,
    uses_ai     BOOLEAN DEFAULT FALSE,
+   doc_url     TEXT,
+   docx_url    TEXT,
+   docx_path   TEXT,
+   file_hash   TEXT,
+   version     INTEGER DEFAULT 1,
    created_at  TIMESTAMPTZ DEFAULT NOW(),
    updated_at  TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at);
+
+-- Add missing columns if they don't exist (for existing tables)
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS file_hash TEXT;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS docx_url TEXT;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS docx_path TEXT;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS version INTEGER DEFAULT 1;
+
+
+-- ─── 2.5.1: RLS on posts ───────────────────────────────────────────────────
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS posts_select_policy ON posts;
+DROP POLICY IF EXISTS posts_insert_policy ON posts;
+DROP POLICY IF EXISTS posts_update_policy ON posts;
+DROP POLICY IF EXISTS posts_delete_policy ON posts;
+
+CREATE POLICY posts_select_policy ON posts FOR SELECT
+  USING (true);
+
+CREATE POLICY posts_insert_policy ON posts FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY posts_update_policy ON posts FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY posts_delete_policy ON posts FOR DELETE
+  USING (auth.uid() = user_id);
 
 
 -- ─── 2.6: Comments table ───────────────────────────────────────────────────
@@ -128,6 +162,39 @@ CREATE TABLE IF NOT EXISTS likes (
 CREATE INDEX IF NOT EXISTS idx_likes_post_id ON likes(post_id);
 CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);
 
+-- ─── 2.7.1: RLS on likes ─────────────────────────────────────────────────────
+ALTER TABLE likes ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS likes_select_policy ON likes;
+DROP POLICY IF EXISTS likes_insert_policy ON likes;
+DROP POLICY IF EXISTS likes_delete_policy ON likes;
+
+CREATE POLICY likes_select_policy ON likes FOR SELECT
+  USING (true);
+
+CREATE POLICY likes_insert_policy ON likes FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY likes_delete_policy ON likes FOR DELETE
+  USING (auth.uid() = user_id);
+
+
+-- ─── 2.6.1: RLS on comments ─────────────────────────────────────────────────
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS comments_select_policy ON comments;
+DROP POLICY IF EXISTS comments_insert_policy ON comments;
+DROP POLICY IF EXISTS comments_delete_policy ON comments;
+
+CREATE POLICY comments_select_policy ON comments FOR SELECT
+  USING (true);
+
+CREATE POLICY comments_insert_policy ON comments FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY comments_delete_policy ON comments FOR DELETE
+  USING (auth.uid() = user_id);
+
 
 -- ─── 2.8: Annotations table ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS annotations (
@@ -140,6 +207,22 @@ CREATE TABLE IF NOT EXISTS annotations (
 
 CREATE INDEX IF NOT EXISTS idx_annotations_post_id ON annotations(post_id);
 CREATE INDEX IF NOT EXISTS idx_annotations_user_id ON annotations(user_id);
+
+-- ─── 2.8.1: RLS on annotations ─────────────────────────────────────────────
+ALTER TABLE annotations ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS annotations_select_policy ON annotations;
+DROP POLICY IF EXISTS annotations_insert_policy ON annotations;
+DROP POLICY IF EXISTS annotations_delete_policy ON annotations;
+
+CREATE POLICY annotations_select_policy ON annotations FOR SELECT
+  USING (true);
+
+CREATE POLICY annotations_insert_policy ON annotations FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY annotations_delete_policy ON annotations FOR DELETE
+  USING (auth.uid() = user_id);
 
 
 -- ─── 2.9: Followers table (legacy - kept for compatibility) ───────────────
@@ -220,6 +303,10 @@ $func_name$ LANGUAGE plpgsql;
 -- ─── 4: RLS on follows ─────────────────────────────────────────────────────
 ALTER TABLE follows ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS read_follows_policy ON follows;
+DROP POLICY IF EXISTS insert_own_follows_policy ON follows;
+DROP POLICY IF EXISTS delete_own_follows_policy ON follows;
+
 CREATE POLICY read_follows_policy ON follows FOR SELECT
   USING (auth.uid() IS NOT NULL);
 
@@ -233,10 +320,10 @@ CREATE POLICY delete_own_follows_policy ON follows FOR DELETE
 -- ─── 5: Triggers ───────────────────────────────────────────────────────────
 -- Note: Create triggers only AFTER functions exist and table has data
 -- Disable triggers for now if you need to insert test data
--- DROP TRIGGER IF EXISTS t_follows_insert ON follows;
--- DROP TRIGGER IF EXISTS t_follows_delete ON follows;
--- DROP TRIGGER IF EXISTS t_follows_insert_following ON follows;
--- DROP TRIGGER IF EXISTS t_follows_delete_following ON follows;
+DROP TRIGGER IF EXISTS t_follows_insert ON follows;
+DROP TRIGGER IF EXISTS t_follows_delete ON follows;
+DROP TRIGGER IF EXISTS t_follows_insert_following ON follows;
+DROP TRIGGER IF EXISTS t_follows_delete_following ON follows;
 
 -- CREATE TRIGGER t_follows_insert
 -- AFTER INSERT ON follows
