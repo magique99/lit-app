@@ -38,15 +38,17 @@ export default async function PostPage({ params }: Props) {
     .eq("id", id)
     .single<PostPageData>();
 
-  if (error || !post) {
+  if (error) {
     console.log("POST PAGE ERROR:", error);
     notFound();
   }
 
-  // Dacă postul nu are user_id, trebuie să notFound() deoarece nu putem avea un post fără autor
+  if (!post) {
+    notFound();
+  }
+
   if (!post.user_id) {
     notFound();
-    return; // Adăugat pentru a evita executarea ulterioară
   }
 
   let profile: ProfileData | null = null;
