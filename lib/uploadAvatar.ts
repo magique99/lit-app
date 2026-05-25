@@ -20,7 +20,7 @@ export async function uploadAvatar(file: File, userId: string): Promise<string |
     }
     
     // If bucket not found error, try documents bucket
-    if (error?.message?.includes('Bucket not found')) {
+    if (error?.message?.includes('Bucket not found') || error?.message?.includes('does not exist')) {
       try {
         const { error: docError } = await supabase.storage
           .from("documents")
@@ -37,7 +37,7 @@ export async function uploadAvatar(file: File, userId: string): Promise<string |
           return data.publicUrl;
         }
       } catch (docError) {
-        // Documents bucket also failed, continue below
+        // Documents bucket also failed
       }
     }
   } catch (avatarError) {
@@ -58,7 +58,7 @@ export async function uploadAvatar(file: File, userId: string): Promise<string |
         return data.publicUrl;
       }
     } catch (docError) {
-      // Both buckets failed, continue below
+      // Both buckets failed
     }
   }
 
