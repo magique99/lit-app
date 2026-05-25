@@ -29,6 +29,10 @@ ALTER TABLE profiles
 -- ─── 2: RLS on profiles ───────────────────────────────────────────────────────────
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS profiles_select_policy ON profiles;
+DROP POLICY IF EXISTS profiles_insert_policy ON profiles;
+DROP POLICY IF EXISTS profiles_update_policy ON profiles;
+
 CREATE POLICY profiles_select_policy ON profiles FOR SELECT
   USING (auth.uid() IS NOT NULL);
 
