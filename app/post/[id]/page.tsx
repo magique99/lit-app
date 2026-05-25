@@ -31,17 +31,23 @@ type ProfileData = {
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
 
-  const { data: post, error } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("id", id)
-    .single<PostPageData>();
+  let post: PostPageData | null = null;
+  let fetchError: unknown = null;
 
-  if (error) {
-    notFound();
+  try {
+    const result = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", id)
+      .single<PostPageData>();
+    
+    post = result.data;
+    fetchError = result.error;
+  } catch (e) {
+    fetchError = e;
   }
 
-  if (!post) {
+  if (fetchError || !post) {
     notFound();
   }
 
