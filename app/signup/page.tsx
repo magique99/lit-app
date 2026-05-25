@@ -32,14 +32,8 @@ export default function SignupPage() {
       return;
     }
 
-    if (data.user && !data.session) {
-      setInfoMessage("Cont creat cu succes! Verifică email-ul pentru a confirma contul.");
-      setLoading(false);
-      return;
-    }
-
+    // Create profile for all cases - whether auto-confirmed or needs email confirmation
     const userId = data.user?.id;
-
     if (userId) {
       const { error: profileError } = await supabase.from("profiles").insert({
         user_id: userId,
@@ -51,6 +45,12 @@ export default function SignupPage() {
       if (profileError) {
         console.error("CREATE PROFILE ERROR:", profileError);
       }
+    }
+
+    if (data.user && !data.session) {
+      setInfoMessage("Cont creat cu succes! Verifică email-ul pentru a confirma contul.");
+      setLoading(false);
+      return;
     }
 
     router.push("/onboarding");

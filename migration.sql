@@ -26,6 +26,18 @@ ALTER TABLE profiles
   ADD COLUMN IF NOT EXISTS likes_count      INTEGER NOT NULL DEFAULT 0,
   ADD COLUMN IF NOT EXISTS comments_count   INTEGER NOT NULL DEFAULT 0;
 
+-- ─── 2: RLS on profiles ───────────────────────────────────────────────────────────
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY profiles_select_policy ON profiles FOR SELECT
+  USING (auth.uid() IS NOT NULL);
+
+CREATE POLICY profiles_insert_policy ON profiles FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY profiles_update_policy ON profiles FOR UPDATE
+  USING (auth.uid() = user_id);
+
 
 -- ─── 2: Follows table ──────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS follows (

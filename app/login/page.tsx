@@ -44,11 +44,24 @@ export default function LoginPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Check if profile exists, create if missing
     const { data: profile } = await supabase
       .from("profiles")
       .select("preferences")
       .eq("user_id", user.id)
       .maybeSingle();
+
+    if (!profile) {
+      // Create a default profile if it doesn't exist
+      await supabase.from("profiles").insert({
+        user_id: user.id,
+        username: user.email?.split("@")[0] ?? "user",
+        bio: "",
+        role: "user",
+      });
+      router.push("/onboarding");
+      return;
+    }
 
     const prefs = profile?.preferences as { genres?: string[] } | null;
     if (!prefs?.genres || prefs.genres.length === 0) {
