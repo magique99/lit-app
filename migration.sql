@@ -58,6 +58,11 @@ CREATE INDEX IF NOT EXISTS idx_follows_following_id ON follows(following_id);
 
 -- ─── 3: Functions ─────────────────────────────────────────────────────────
 
+DROP FUNCTION IF EXISTS increment_followers_fn(UUID);
+DROP FUNCTION IF EXISTS decrement_followers_fn(UUID);
+DROP FUNCTION IF EXISTS increment_following_fn(UUID);
+DROP FUNCTION IF EXISTS decrement_following_fn(UUID);
+
 CREATE OR REPLACE FUNCTION increment_followers_fn(p_user_id UUID)
 RETURNS VOID AS
 $func_name$
