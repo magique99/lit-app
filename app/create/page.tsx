@@ -1,16 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import CharacterCount from "@tiptap/extension-character-count";
-import Placeholder from "@tiptap/extension-placeholder";
-import Underline from "@tiptap/extension-underline";
-import Link from "@tiptap/extension-link";
-import TextAlign from "@tiptap/extension-text-align";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
-import { createPost } from "@/lib/postClient";
+import type { Comment, Post, Profile, LikeInsert } from "@/lib/types";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import RequireEmailVerification from "@/components/RequireEmailVerification";
 import * as mammoth from "mammoth";
@@ -595,15 +590,26 @@ function CreatePostForm() {
       setPublishProgress(50);
       setPublishLabel("Se salvează în baza de date…");
 
-      const post = await createPost({
-        title: title.trim(),
-        content: editor!.getHTML(),
-        user_id: user.id,
-        version: 1,
-        text_type: textType,
-        genre: genreBlob,
-        uses_ai: null,
+      const genreBlob = genres.length > 0 ? genres.join(", ") : null;
+
+      const response = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title.trim(),
+          content: editor!.getHTML(),
+          text_type: textType,
+          genre: genreBlob,
+          uses_ai: null,
+        }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create post");
+      }
+
+      const { post } = await response.json();
 
       setPublishProgress(80);
       setPublishLabel("Publică…");
