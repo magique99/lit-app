@@ -218,7 +218,7 @@ function LatestTexts() {
             Ultimele texte
           </span>
           <h2 className="mt-4 font-serif text-3xl sm:text-4xl md:text-5xl font-medium" style={{ color: C.text }}>
-            Cele mai recente adăugări
+            Cele mai recente texte
           </h2>
         </div>
 
