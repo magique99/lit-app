@@ -7,13 +7,13 @@ import { supabase } from "@/lib/supabaseClient";
 import type { User } from "@supabase/supabase-js";
 
 const C = {
-  bg: "#F7F3EE",
-  surface: "#FFFCF7",
-  text: "#2A2520",
-  muted: "#7A7268",
-  border: "#E8E0D8",
-  accent: "#B87D4B",
-  accentHover: "#9E6538",
+  bg: "#2a241f",
+  surface: "#3a342f",
+  text: "#e8d5c0",
+  muted: "#a89a8d",
+  border: "#3a342f",
+  accent: "#c4956a",
+  accentHover: "#d4c0a8",
 };
 
 export default function Navbar() {
@@ -78,156 +78,156 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, [menuOpen]);
 
-  return (
-<header className="sticky top-0 z-50" style={{ background: C.bg }}>
-       <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4">
-        {/* LOGO */}
-        <Link
-          href="/"
-          className="font-serif text-lg tracking-[0.35em] transition"
-          style={{ color: "#2A2520" }}
-        >
-          Literatura9
-        </Link>
-
-        {/* RIGHT */}
-        <div className="flex items-center gap-3">
-
-          {/* Texte */}
+return (
+    <header className="sticky top-0 z-50" style={{ background: C.bg }}>
+         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4">
+          {/* LOGO */}
           <Link
-            href="/texte"
-            className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
-            style={{
-              color: C.text,
-              border: `1.5px solid ${C.border}`,
-              background: C.surface,
-            }}
+            href="/"
+            className="font-serif text-lg tracking-[0.35em] transition"
+            style={{ color: C.text }}
           >
-            Citeste Texte
+            Literatura9
           </Link>
 
-          {user ? (
-            /* ── PROFILUL CONECTAT ── */
-            <div className="relative" ref={menuRef}>
-              <button
-                onClick={() => setMenuOpen((o) => !o)}
-                className="
-                  h-10 w-10 rounded-full overflow-hidden
-                  border border-slate-300/80
-                  focus:outline-none focus:ring-1 focus:ring-slate-400
-                  active:scale-[0.97] transition
-                "
-              >
-                {avatarUrl ? (
-                  <Image
-                    src={avatarUrl}
-                    alt={user.email ?? "avatar"}
-                    width={40}
-                    height={40}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <img
-                    src={`https://ui-avatars.com/api/?background=2A2520&color=fcf5ec&name=${encodeURIComponent(
-                      user.email ?? "user"
-                    )}`}
-                    alt={user.email ?? "avatar"}
-                    className="h-full w-full object-cover"
-                  />
-                )}
-              </button>
+          {/* RIGHT */}
+          <div className="flex items-center gap-3">
 
-              {menuOpen && (
-                <div
+            {/* Texte */}
+            <Link
+              href="/texte"
+              className="rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
+              style={{
+                color: C.text,
+                border: `1.5px solid ${C.border}`,
+                background: C.surface,
+              }}
+            >
+              Citeste Texte
+            </Link>
+
+            {user ? (
+              /* ── PROFILUL CONECTAT ── */
+              <div className="relative" ref={menuRef}>
+                <button
+                  onClick={() => setMenuOpen((o) => !o)}
                   className="
-                    absolute right-0 top-full mt-2
-                    w-48
-                    bg-white/95 backdrop-blur-md
-                    border border-slate-200/80
-                    rounded-xl shadow-[0_12px_40px_rgba(15,23,42,0.10)]
-                    py-2
-                    z-50
-                    animate-in fade-in slide-in-from-top-2 duration-150
+                    h-10 w-10 rounded-full overflow-hidden
+                    border border-slate-500/80
+                    focus:outline-none focus:ring-1 focus:ring-slate-400
+                    active:scale-[0.97] transition
                   "
                 >
-                  {/* header: email */}
-                  <p className="px-4 py-2 text-[11px] font-medium text-slate-500 truncate border-b border-slate-100">
-                    {user.email}
-                  </p>
+                  {avatarUrl ? (
+                    <Image
+                      src={avatarUrl}
+                      alt={user.email ?? "avatar"}
+                      width={40}
+                      height={40}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={`https://ui-avatars.com/api/?background=2a241f&color=e8d5c0&name=${encodeURIComponent(
+                        user.email ?? "user"
+                      )}`}
+                      alt={user.email ?? "avatar"}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </button>
 
-                  <Link
-                    href="/create"
-                    onClick={() => setMenuOpen(false)}
+                {menuOpen && (
+                  <div
                     className="
-                      block px-4 py-2.5 text-sm text-slate-700
-                      hover:bg-slate-50 hover:text-slate-900
-                      transition-colors
+                      absolute right-0 top-full mt-2
+                      w-48
+                      bg-[#3a342f]/95 backdrop-blur-md
+                      border border-slate-600/80
+                      rounded-xl shadow-[0_12px_40px_rgba(15,23,42,0.10)]
+                      py-2
+                      z-50
+                      animate-in fade-in slide-in-from-top-2 duration-150
                     "
                   >
-                    Adauga Text
-                  </Link>
+                    {/* header: email */}
+                    <p className="px-4 py-2 text-[11px] font-medium text-slate-400 truncate border-b border-slate-600">
+                      {user.email}
+                    </p>
 
-                  <Link
-                    href="/notifications"
-                    onClick={() => setMenuOpen(false)}
-                    className="
-                      block px-4 py-2.5 text-sm text-slate-700
-                      hover:bg-slate-50 hover:text-slate-900
-                      transition-colors
-                    "
-                  >
-                    Notificări
-                  </Link>
+                    <Link
+                      href="/create"
+                      onClick={() => setMenuOpen(false)}
+                      className="
+                        block px-4 py-2.5 text-sm text-slate-300
+                        hover:bg-slate-700 hover:text-slate-100
+                        transition-colors
+                      "
+                    >
+                      Adauga Text
+                    </Link>
 
-                  <Link
-                    href="/profile"
-                    onClick={() => setMenuOpen(false)}
-                    className="
-                      block px-4 py-2.5 text-sm text-slate-700
-                      hover:bg-slate-50 hover:text-slate-900
-                      transition-colors
-                    "
-                  >
-                    Setările contului
-                  </Link>
+                    <Link
+                      href="/notifications"
+                      onClick={() => setMenuOpen(false)}
+                      className="
+                        block px-4 py-2.5 text-sm text-slate-300
+                        hover:bg-slate-700 hover:text-slate-100
+                        transition-colors
+                      "
+                    >
+                      Notificări
+                    </Link>
 
-                  <div className="my-1.5 border-t border-slate-100" />
+                    <Link
+                      href="/profile"
+                      onClick={() => setMenuOpen(false)}
+                      className="
+                        block px-4 py-2.5 text-sm text-slate-300
+                        hover:bg-slate-700 hover:text-slate-100
+                        transition-colors
+                      "
+                    >
+                      Setările contului
+                    </Link>
 
-                  <button
-                    onClick={async () => {
-                      setMenuOpen(false);
-                      await supabase.auth.signOut();
-                      window.location.href = "/";
-                    }}
-                    className="
-                      block w-full text-left px-4 py-2.5 text-sm text-rose-600/80
-                      hover:bg-rose-50 hover:text-rose-700
-                      transition-colors
-                    "
-                  >
-                    Deconectare
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            /* ── CONECTARE ── */
-            <Link
-              href="/login"
-              className="
-                rounded-full px-7 py-3.5 text-sm font-semibold text-white
-                transition-all duration-300
-                hover:shadow-[0_8px_30px_rgba(184,125,75,0.3)]
-                active:scale-[0.97]
-              "
-              style={{ backgroundColor: "#B87D4B" }}
-            >
-              Conectare
-            </Link>
-          )}
+                    <div className="my-1.5 border-t border-slate-600" />
 
+                    <button
+                      onClick={async () => {
+                        setMenuOpen(false);
+                        await supabase.auth.signOut();
+                        window.location.href = "/";
+                      }}
+                      className="
+                        block w-full text-left px-4 py-2.5 text-sm text-rose-400/80
+                        hover:bg-rose-900/20 hover:text-rose-300
+                        transition-colors
+                      "
+                    >
+                      Deconectare
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* ── CONECTARE ── */
+              <Link
+                href="/login"
+                className="
+                  rounded-full px-7 py-3.5 text-sm font-semibold text-white
+                  transition-all duration-300
+                  hover:shadow-[0_8px_30px_rgba(184,125,75,0.3)]
+                  active:scale-[0.97]
+                "
+                style={{ backgroundColor: C.accent }}
+              >
+                Conectare
+              </Link>
+            )}
+
+          </div>
         </div>
-      </div>
     </header>
   );
 }
