@@ -296,11 +296,114 @@ function PublishOverlay({
         </button>
       )}
     </div>
+);
+}
+
+/* =======================================================
+   PREVIEW MODAL
+   ======================================================= */
+function PreviewModal({
+  visible,
+  title,
+  htmlContent,
+  textType,
+  genres,
+  onClose,
+}: {
+  visible: boolean;
+  title: string;
+  htmlContent: string;
+  textType?: string;
+  genres: string[];
+  onClose: () => void;
+}) {
+  const plain = htmlToPlainTextWithNewlines(htmlContent).replace(/\s+/g, " ");
+  const readTime = estimateReadingTime(plain);
+
+  useEffect(() => {
+    if (visible) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [visible]);
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-white/98 backdrop-blur-xl overflow-y-auto">
+      <style>{`
+        .preview-content .ProseMirror {
+          font-family: var(--font-lora), Georgia, 'Times New Roman', serif;
+          line-height: 1.85;
+        }
+        .preview-content p { margin-bottom: 1.1em; }
+        .preview-content h2 { font-size: 1.5rem; font-weight: 600; margin: 1.6em 0 0.6em; }
+        .preview-content h3 { font-size: 1.25rem; font-weight: 600; margin: 1.4em 0 0.5em; }
+        .preview-content blockquote {
+          border-left: 3px solid rgba(184,125,75,0.4);
+          padding-left: 1.2em;
+          margin: 1.4em 0;
+          font-style: italic;
+          color: #555;
+        }
+      `}</style>
+
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        <div className="flex items-center justify-between mb-10">
+          <h2 className="text-xs uppercase tracking-[0.4em] font-serif" style={{ color: C.accent }}>
+            Preview publicare
+          </h2>
+          <button
+            onClick={onClose}
+            className="rounded-full px-5 py-2 text-sm font-medium transition-all duration-200"
+            style={{
+              color: C.text,
+              border: `1.5px solid ${C.border}`,
+              background: C.surface,
+            }}
+          >
+            Închide ×
+          </button>
+        </div>
+
+        <article className="rounded-[2.5rem] border border-slate-200 bg-white p-12 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
+          <h1 className="font-serif text-4xl font-semibold leading-tight mb-4" style={{ color: C.text }}>
+            {title.trim() || <span style={{ color: C.muted }}>Fără titlu</span>}
+          </h1>
+
+          <div className="flex items-center gap-4 text-xs mb-8" style={{ color: C.muted }}>
+            {textType && <span className="uppercase tracking-wider">{textType}</span>}
+            <span>•</span>
+            <span>{readTime} min citire</span>
+            {genres.length > 0 && (
+              <>
+                <span>•</span>
+                <div className="flex gap-1.5">
+                  {genres.map((g) => (
+                    <span key={g} className="px-2 py-0.5 rounded-full text-[10px]"
+                          style={{ background: C.accentLight, color: C.accent }}>
+                      {g}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          <div
+            className="preview-content text-lg leading-relaxed text-slate-800 max-w-3xl"
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
+          />
+        </article>
+      </div>
+    </div>
   );
 }
 
 /* =======================================================
-   MAIN FORM
+    MAIN FORM
    ======================================================= */
 function CreatePostForm() {
   const router = useRouter();
@@ -323,13 +426,16 @@ function CreatePostForm() {
    const DRAFT_KEY = "lit9_create_draft_v1";
    const editorRef = useRef<ReturnType<typeof useEditor> | null>(null);
 
-   /* focus mode */
-   const [focusMode, setFocusMode] = useState(false);
+/* focus mode */
+    const [focusMode, setFocusMode] = useState(false);
 
-   /* reading mode */
-   const [readingMode, setReadingMode] = useState<"edit" | "read">("edit");
+    /* reading mode */
+    const [readingMode, setReadingMode] = useState<"edit" | "read">("edit");
 
-    /* ── tip from localStorage on mount ── */
+    /* preview mode */
+    const [showPreview, setShowPreview] = useState(false);
+
+     /* ── tip from localStorage on mount ── */
     useEffect(() => {
       try {
         const saved = localStorage.getItem(DRAFT_KEY);
@@ -557,6 +663,15 @@ setPublishProgress(100);
         onCancel={() => { setPublishing(false); setPublishProgress(0); }}
       />
 
+      <PreviewModal
+        visible={showPreview}
+        title={title}
+        htmlContent={editor?.getHTML() ?? ""}
+        textType={textType}
+        genres={genres}
+        onClose={() => setShowPreview(false)}
+      />
+
       {/* ── Header bar ── */}
       <div className="max-w-7xl mx-auto px-6 pt-5">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -573,6 +688,19 @@ setPublishProgress(100);
 
           {/* Header right - controls */}
           <div className="flex items-center justify-end gap-3">
+            {/* Preview button */}
+            <button
+              onClick={() => setShowPreview(true)}
+              className="rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 active:scale-[0.97]"
+              style={{
+                color: C.text,
+                border: `1.5px solid ${C.border}`,
+                background: C.surface,
+              }}
+            >
+              Preview 👁️
+            </button>
+
             {/* Reading mode toggle */}
             <button
               onClick={() => setReadingMode(m => m === "edit" ? "read" : "edit")}
@@ -801,26 +929,46 @@ setPublishProgress(100);
             </div>
 
             {/* right: publish */}
-            <button
-              onClick={() => { setPublishError(null); void handlePublish(); }}
-              disabled={publishing}
-              className="
-                inline-flex items-center gap-2 rounded-full px-8 py-3 text-sm font-semibold
-                transition-all duration-300 active:scale-[0.97]
-                disabled:cursor-not-allowed
-              "
-              style={{
-                background: C.accent,
-                color: "#fff",
-                boxShadow: "0 8px 30px rgba(184,125,75,0.30)",
-                ...(publishing ? { opacity: 0.65 } : {}),
-              }}
-              onMouseEnter={(e) => !publishing && (e.currentTarget.style.background = "#9E6538")}
-              onMouseLeave={(e) => !publishing && (e.currentTarget.style.background = C.accent)}
-            >
-              {publishing ? "Se publică…" : "Publică textul"}
-              <span style={{ opacity: 0.6 }}>↗</span>
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowPreview(true)}
+                disabled={publishing}
+                className="
+                  inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium
+                  transition-all duration-300 active:scale-[0.97]
+                  disabled:cursor-not-allowed
+                "
+                style={{
+                  color: C.text,
+                  border: `1.5px solid ${C.border}`,
+                  background: C.surface,
+                  ...(publishing ? { opacity: 0.65 } : {}),
+                }}
+              >
+                Preview 👁️
+              </button>
+
+              <button
+                onClick={() => { setPublishError(null); void handlePublish(); }}
+                disabled={publishing}
+                className="
+                  inline-flex items-center gap-2 rounded-full px-8 py-3 text-sm font-semibold
+                  transition-all duration-300 active:scale-[0.97]
+                  disabled:cursor-not-allowed
+                "
+                style={{
+                  background: C.accent,
+                  color: "#fff",
+                  boxShadow: "0 8px 30px rgba(184,125,75,0.30)",
+                  ...(publishing ? { opacity: 0.65 } : {}),
+                }}
+                onMouseEnter={(e) => !publishing && (e.currentTarget.style.background = "#9E6538")}
+                onMouseLeave={(e) => !publishing && (e.currentTarget.style.background = C.accent)}
+              >
+                {publishing ? "Se publică…" : "Publică textul"}
+                <span style={{ opacity: 0.6 }}>↗</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
