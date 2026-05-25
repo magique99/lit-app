@@ -9,9 +9,7 @@ import TextAnnotations from "@/components/TextAnnotations";
 import PaginatedContent from "./PaginatedContent";
 
 type Props = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 };
 
 type PostPageData = {

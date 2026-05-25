@@ -66,7 +66,7 @@ function estimateReadingTime(plainText: string): number {
   return Math.max(1, Math.ceil(plainText.length / 1200));
 }
 
-export function excerpt(html: string, max = 180): string {
+function excerpt(html: string, max = 180): string {
   return htmlToPlainTextWithNewlines(html)
     .replace(/\s+/g, " ")
     .slice(0, max);
