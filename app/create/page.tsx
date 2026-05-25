@@ -66,11 +66,7 @@ function estimateReadingTime(plainText: string): number {
   return Math.max(1, Math.ceil(plainText.length / 1200));
 }
 
-function excerpt(html: string, max = 180): string {
-  return htmlToPlainTextWithNewlines(html)
-    .replace(/\s+/g, " ")
-    .slice(0, max);
-}
+
 
 /* =======================================================
    CHIP BUTTON

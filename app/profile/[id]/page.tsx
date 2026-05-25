@@ -1,9 +1,7 @@
 import ViewProfileClient from "@/components/profile/ViewProfileClient";
 
 type Props = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 };
 
 export default async function ProfileByIdPage({ params }: Props) {
