@@ -53,7 +53,7 @@ function Hero({ user }: { user?: User | null }) {
 
         {/* Descriere clară */}
         <p className="mt-6 text-base sm:text-lg md:text-xl font-light italic text-white/80 max-w-xl mx-auto leading-relaxed">
-          Citește proză, poezie și texte simbolice independente. Publică, descoperă și discută literatură contemporană.
+          Publică, citește și descoperă literatură contemporană
         </p>
 
          {/* CTA-uri clare */}
@@ -116,13 +116,10 @@ function Manifest() {
 
         <div className="mt-8 sm:mt-10 space-y-5 text-sm sm:text-base leading-[1.9] sm:leading-[2]" style={{ color: C.muted }}>
           <p>
-            Luna de aur apune. Cuvintele rămân. Între ele, o lume se construiește încet,
-            fără grație, dar cu adevărat.
+           Unele texte apar dintr-o singură frază. Altele se construiesc încet, din rescrieri, tăceri și reveniri. 
           </p>
           <p>
-            Literatura9 este un spațiu pentru scriitorii care înțeleg că un bun text
-            nu se scrie în 10 minute — ci se rafinează în zeci de citiri,
-            în tăceri lungi, în recunoașterea greșelilor și în curajul de a le corecta.
+          Literatura9 este un spațiu pentru cei care scriu, citesc și cred că un text bun merită timp.
           </p>
         </div>
 
@@ -273,19 +270,19 @@ function LatestTexts() {
 const FEATURES = [
   {
     title: "Scrie cu răbdare",
-    body:  "Un editor curat, fără distrageri, unde fiecare paragraf primește timpul și atenția pe care îl merită.",
+    body:  "Unele texte vin repede. Altele au nevoie de timp, liniște și reveniri. Un spațiu curat, fără distrageri, unde fiecare frază are timp să se așeze.",
     link:  "/create",
     linkLabel: "Începe să scrii",
   },
   {
     title: "Citește cu înțelepciune",
-    body:  "O comunitate de cititori care citesc cu ochii critici și inima deschisă, nu cu pixelii agitați.",
+    body:  "O comunitate de cititori care caută texte bune, citite cu răbdare, curiozitate și spirit critic. Aici textele nu se consumă în grabă. Se citesc, se întorc, se înțeleg.",
     link:  null, // va fi adăugat mai jos
     linkLabel: null,
   },
   {
     title: "Fă-te auzit",
-    body:  "Publică pe termen lung. Învețe din reacțiile celorlalți. Crește cu fiecare răspuns.",
+    body:  "Publică, învață din reacțiile celorlalți și evoluează cu fiecare text.",
     link:  null,
     linkLabel: null,
   },

@@ -74,15 +74,103 @@ CREATE POLICY profiles_update_policy ON profiles FOR UPDATE
 
 -- ─── 2: Follows table ──────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS follows (
-  id           TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  follower_id  UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
-  following_id UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
-  created_at   TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(follower_id, following_id)
+   id           TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+   follower_id  UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
+   following_id UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
+   created_at   TIMESTAMPTZ DEFAULT NOW(),
+   UNIQUE(follower_id, following_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_follows_follower_id  ON follows(follower_id);
 CREATE INDEX IF NOT EXISTS idx_follows_following_id ON follows(following_id);
+
+
+-- ─── 2.5: Posts table ──────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS posts (
+   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+   user_id     UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
+   title       TEXT NOT NULL,
+   content     TEXT NOT NULL,
+   text_type   TEXT,
+   genre       TEXT,
+   uses_ai     BOOLEAN DEFAULT FALSE,
+   created_at  TIMESTAMPTZ DEFAULT NOW(),
+   updated_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
+CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at);
+
+
+-- ─── 2.6: Comments table ───────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS comments (
+   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+   post_id     UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+   user_id     UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
+   content     TEXT NOT NULL,
+   created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
+CREATE INDEX IF NOT EXISTS idx_comments_user_id ON comments(user_id);
+CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments(created_at);
+
+
+-- ─── 2.7: Likes table ──────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS likes (
+   id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+   post_id   UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+   user_id   UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
+   created_at TIMESTAMPTZ DEFAULT NOW(),
+   UNIQUE(post_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_likes_post_id ON likes(post_id);
+CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);
+
+
+-- ─── 2.8: Annotations table ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS annotations (
+   id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+   post_id   UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+   user_id   UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
+   content   TEXT NOT NULL,
+   created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_annotations_post_id ON annotations(post_id);
+CREATE INDEX IF NOT EXISTS idx_annotations_user_id ON annotations(user_id);
+
+
+-- ─── 2.9: Followers table (legacy - kept for compatibility) ───────────────
+CREATE TABLE IF NOT EXISTS followers (
+   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+   user_id     UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
+   follower_id UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
+   created_at  TIMESTAMPTZ DEFAULT NOW(),
+   UNIQUE(user_id, follower_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_followers_user_id ON followers(user_id);
+CREATE INDEX IF NOT EXISTS idx_followers_follower_id ON followers(follower_id);
+
+
+-- ─── 2.10: Notifications table ───────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS notifications (
+   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+   user_id     UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
+   actor_id    UUID REFERENCES auth.users,
+   post_id     UUID REFERENCES public.posts,
+   comment_id  UUID REFERENCES public.comments,
+   message     TEXT,
+   read        BOOLEAN DEFAULT false,
+   created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at);
+CREATE INDEX IF NOT EXISTS idx_notifications_post_id ON notifications(post_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_comment_id ON notifications(comment_id);
 
 
 -- ─── 3: Functions ─────────────────────────────────────────────────────────
