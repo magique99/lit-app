@@ -57,7 +57,6 @@ export default function TextePage() {
     {},
   );
   const [latestComments, setLatestComments] = useState<Comment[]>([]);
-  const [topVotedPosts, setTopVotedPosts] = useState<PostWithProfile[]>([]);
   const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
   const [filterType, setFilterType] = useState("");
   const [filterGenre, setFilterGenre] = useState("");
@@ -382,16 +381,13 @@ useEffect(() => {
       commentsCount: Array.isArray(post.comments) ? post.comments.length : 0,
     }));
 
-    const sortedByLikes = [...postsWithCounts].sort(
-      (a, b) => (b.likesCount ?? 0) - (a.likesCount ?? 0),
-    );
+    // Sort by comments for "most viewed" display
     const sortedByComments = [...postsWithCounts].sort(
       (a, b) => (b.commentsCount ?? 0) - (a.commentsCount ?? 0),
     );
 
-    setTopVotedPosts(sortedByLikes.slice(0, 3));
     setTopViewedPosts(sortedByComments.slice(0, 3));
-  }, [ensureProfiles, setTopVotedPosts, setTopViewedPosts]);
+  }, [ensureProfiles]);
 
   useEffect(() => {
     queueMicrotask(() => {

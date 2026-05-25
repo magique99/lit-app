@@ -65,7 +65,7 @@ function VerifyEmailContent() {
     };
 
     void verifyEmail();
-  }, [searchParams, router]);
+  }, [searchParams, router, sent]);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {

@@ -36,11 +36,11 @@ export async function uploadAvatar(file: File, userId: string): Promise<string |
             .getPublicUrl(path);
           return data.publicUrl;
         }
-      } catch (docError) {
+      } catch {
         // Documents bucket also failed
       }
     }
-  } catch (avatarError) {
+  } catch {
     // Avatars bucket had some other error, try documents
     try {
       const { error: docError } = await supabase.storage
@@ -57,7 +57,7 @@ export async function uploadAvatar(file: File, userId: string): Promise<string |
           .getPublicUrl(path);
         return data.publicUrl;
       }
-    } catch (docError) {
+    } catch {
       // Both buckets failed
     }
   }

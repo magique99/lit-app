@@ -10,11 +10,9 @@ export default function ProfilePostsV2() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [savingId, setSavingId] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // Load posts for current user
@@ -25,7 +23,6 @@ export default function ProfilePostsV2() {
         setLoading(false);
         return;
       }
-      setCurrentUserId(user.id);
 
       const { data, error } = await supabase
         .from("posts")
@@ -51,7 +48,6 @@ export default function ProfilePostsV2() {
     }
 
     const prev = posts;
-    setDeletingId(id);
     setError(null);
     setPosts(p => p.filter(x => x.id !== id));
 
@@ -63,13 +59,11 @@ export default function ProfilePostsV2() {
     if (error) {
       setPosts(prev);
       setError("Nu s-a putut șterge textul.");
-      setDeletingId(null);
       setConfirmDeleteId(null);
       return;
     }
 
     setConfirmDeleteId(null);
-    setDeletingId(null);
   }
 
   async function saveEdit(postId: string) {

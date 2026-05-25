@@ -118,23 +118,25 @@ return (
                     active:scale-[0.97] transition
                   "
                 >
-                  {avatarUrl ? (
-                    <Image
-                      src={avatarUrl}
-                      alt={user.email ?? "avatar"}
-                      width={40}
-                      height={40}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <img
-                      src={`https://ui-avatars.com/api/?background=2a241f&color=e8d5c0&name=${encodeURIComponent(
-                        user.email ?? "user"
-                      )}`}
-                      alt={user.email ?? "avatar"}
-                      className="h-full w-full object-cover"
-                    />
-                  )}
+                 {avatarUrl ? (
+                   <Image
+                     src={avatarUrl}
+                     alt={user.email ?? "avatar"}
+                     width={40}
+                     height={40}
+                     className="h-full w-full object-cover"
+                   />
+                 ) : (
+                   <Image
+                     src={`https://ui-avatars.com/api/?background=2a241f&color=e8d5c0&name=${encodeURIComponent(
+                       user.email ?? "user"
+                     )}`}
+                     alt={user.email ?? "avatar"}
+                     width={40}
+                     height={40}
+                     className="h-full w-full object-cover"
+                   />
+                 )}
                 </button>
 
                 {menuOpen && (
