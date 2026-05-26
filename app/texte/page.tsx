@@ -690,7 +690,7 @@ export default function TextePage() {
               </p>
               <div className="rounded-2xl border border-slate-200/60 bg-white/50 p-5">
                 <p className="text-[13px] text-slate-600 leading-relaxed">
-                  "Scrie o pagină despre ultima conversație pe care nu ai putut să o ai."
+                  &ldquo;Scrie o pagină despre ultima conversație pe care nu ai putut să o ai.&rdquo;
                 </p>
                 <Link
                   href="/create"
