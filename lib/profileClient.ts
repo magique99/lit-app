@@ -5,7 +5,7 @@ export async function getProfile(userId: string) {
   return supabase
     .from("profiles")
     .select("*")
-    .eq("id", userId)
+    .eq("user_id", userId)
     .single();
 }
 
@@ -19,5 +19,5 @@ export async function updateProfile(
       ...data,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", userId);
+    .eq("user_id", userId);
 }
