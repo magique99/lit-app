@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
@@ -21,16 +21,8 @@ type PostWithProfile = Post & {
 
 const PAGE_SIZE = 5;
 
-const TEXT_TYPES = ["Toate", "Proză", "Poezie", "Teatru", "Jurnal"];
-const GENRES = [
-  "Toate",
-  "Ficțiune",
-  "Non-ficțiune",
-  "SF",
-  "Thriller",
-  "Polițist",
-  "Romantic",
-];
+const TEXT_TYPES = ["Toate", "Proză", "Poezie", "Teatru", "Jurnal", "Eseu"];
+const GENRES = ["Toate", "Ficțiune", "Non-ficțiune", "SF", "Thriller", "Polițist", "Romantic", "Grotesc", "Simbolic", "Oniric", "Altul"];
 
 const C = {
   bg: "#F7F3EE",
@@ -56,65 +48,26 @@ export default function TextePage() {
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>(
     {},
   );
-  const [latestComments, setLatestComments] = useState<Comment[]>([]);
-  const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
-  const [filterType, setFilterType] = useState("");
-  const [filterGenre, setFilterGenre] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [likeError, setLikeError] = useState<string | null>(null);
-  const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const getRandomOffset = () => Math.floor(Math.random() * 30) + 21;
-  const randomOffset = useState(() => getRandomOffset())[0];
-  const [trendingAuthors, setTrendingAuthors] = useState<Array<{user_id: string, username: string | null}>>([]);
+const [latestComments, setLatestComments] = useState<Comment[]>([]);
+   const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
+   const [filterType, setFilterType] = useState("");
+   const [filterGenre, setFilterGenre] = useState("");
+   const [searchQuery, setSearchQuery] = useState("");
+   const [loading, setLoading] = useState(false);
+   const [error, setError] = useState<string | null>(null);
+   const [likeError, setLikeError] = useState<string | null>(null);
+   const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
+   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
    const [sidebarQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
-  useEffect(() => {
-    // No-op effect since we initialize with useState
-  }, []);
+   const totalLikes = useMemo(
+     () => Object.values(likeCounts).reduce((sum, count) => sum + count, 0),
+     [likeCounts],
+   );
 
-  const observerRef = useRef<HTMLDivElement | null>(null);
-  const loadingRef = useRef(false);
-
-  const totalLikes = useMemo(
-    () => Object.values(likeCounts).reduce((sum, count) => sum + count, 0),
-    [likeCounts],
-  );
-
-  const authorsCount = useMemo(() => {
+const authorsCount = useMemo(() => {
     return new Set(posts.map((p) => p.user_id).filter(Boolean)).size;
   }, [posts]);
-
-  const loadTrendingAuthors = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("posts")
-      .select("user_id")
-      .not("user_id", "is", null)
-      .order("created_at", { ascending: false })
-      .limit(20);
-
-    if (error || !data) return;
-
-    const userIds = Array.from(new Set(data.map(p => p.user_id)));
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("user_id, username")
-      .in("user_id", userIds);
-
-    if (profiles) {
-      setTrendingAuthors(profiles.slice(0, 5));
-    }
-  }, []);
-
-useEffect(() => {
-     queueMicrotask(() => {
-       loadTrendingAuthors();
-     });
-   }, [loadTrendingAuthors]);
 
   async function loadCounts(postIds: string[]) {
     if (postIds.length === 0) return;
@@ -183,20 +136,14 @@ useEffect(() => {
   }, []);
 
   const loadPosts = useCallback(async () => {
-    if (loadingRef.current || !hasMore) return;
-
-    loadingRef.current = true;
     setLoading(true);
     setError(null);
-
-    const from = page * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
 
     let query = supabase
       .from("posts")
       .select("*")
       .order("created_at", { ascending: false })
-      .range(from, to);
+      .limit(PAGE_SIZE);
 
     if (filterType && filterType !== "Toate") {
       query = query.eq("text_type", filterType);
@@ -213,7 +160,6 @@ useEffect(() => {
     if (error) {
       console.error("LOAD POSTS ERROR:", error);
       setError("Nu am putut încărca postările. Încearcă din nou.");
-      loadingRef.current = false;
       setLoading(false);
       return;
     }
@@ -239,8 +185,6 @@ useEffect(() => {
         .select("user_id, username, avatar_url")
         .in("user_id", userIds);
 
-      console.log("PROFILES QUERY - requested:", userIds.length, "got:", profilesData?.length ?? 0);
-
       if (profilesError) {
         console.error("LOAD PROFILES ERROR:", profilesError);
       } else if (profilesData) {
@@ -263,20 +207,7 @@ useEffect(() => {
       profile: post.user_id ? (profileMap[post.user_id] ?? null) : null,
     }));
 
-    if (nextPostsWithProfile.length === 0) {
-      setHasMore(false);
-      loadingRef.current = false;
-      setLoading(false);
-      return;
-    }
-
-    setPosts((prev) => {
-      const existingIds = new Set(prev.map((p) => p.id));
-      const filtered = nextPostsWithProfile.filter(
-        (p) => !existingIds.has(p.id),
-      );
-      return [...prev, ...filtered];
-    });
+    setPosts(nextPostsWithProfile);
 
     try {
       await loadCounts(nextPosts.map((post) => post.id));
@@ -287,9 +218,8 @@ useEffect(() => {
       );
     }
 
-    loadingRef.current = false;
     setLoading(false);
-  }, [ensureProfiles, hasMore, page, filterType, filterGenre, searchQuery]);
+  }, [filterType, filterGenre, searchQuery]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -306,9 +236,7 @@ useEffect(() => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    setPosts([]);
-    setPage(0);
-    setHasMore(true);
+    void loadPosts();
   };
 
   const loadTopPosts = useCallback(async () => {
@@ -654,29 +582,7 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* ── LIVE STATS ── */}
-            <div className="grid grid-cols-4 gap-px rounded-2xl overflow-hidden mb-20 bg-slate-200/60">
-              {[
-                { label: "Texte", value: posts.length },
-                { label: "Comentarii", value: latestComments.length },
-                { label: "Reacții", value: totalLikes },
-                { label: "Autori", value: authorsCount },
-              ].map(({ label, value }) => (
-                <div
-                  key={label}
-                  className="bg-white/40 px-4 py-6 text-center"
-                >
-                  <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-1.5">
-                    {label}
-                  </p>
-                  <p className="text-2xl font-light text-slate-800 tabular-nums">
-                    {value + randomOffset}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* ── ERRORS ── */}
+            {/* Errors */}
             {error && (
               <p className="mb-10 text-sm text-rose-500/80">{error}</p>
             )}
@@ -890,30 +796,8 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Trending Authors */}
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
-                🔥 Autori noi de urmărit
-              </p>
-              <div className="space-y-2">
-                {trendingAuthors.length === 0 ? (
-                  <p className="text-[11px] text-slate-300">Se încarcă…</p>
-                ) : (
-                  trendingAuthors.map((author) => (
-                    <Link
-                      key={author.user_id}
-                      href={`/profile/${author.user_id}`}
-                      className="block text-[13px] text-slate-600 hover:text-slate-900 transition-colors"
-                    >
-                      @{author.username ?? "anonim"}
-                    </Link>
-                  ))
-                )}
-              </div>
-            </div>
-
             {/* Quote */}
-            <div className="rounded-2xl border border-slate-200/60 bg-white/40 p-6 text-center">
+             <div className="rounded-2xl border border-slate-200/60 bg-white/40 p-6 text-center">
               <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400 mb-3">
                 Citat aleatoriu
               </p>
