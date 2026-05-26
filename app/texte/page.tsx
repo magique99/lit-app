@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,8 +12,6 @@ type PostWithProfile = Post & {
   text_type?: string | null;
   genre?: string | null;
   uses_ai?: boolean | null;
-  likes?: { id: string }[] | null;
-  comments?: { id: string }[] | null;
 };
 
 
