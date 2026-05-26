@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Spinner from "@/components/Spinner";
 import type { Profile } from "@/lib/types";
 
 export default function ProfileTabsV4({
@@ -54,9 +55,9 @@ export default function ProfileTabsV4({
       {/* CONTENT */}
       {tab === "about" && (
         <div className="space-y-8">
-          {loading ? (
-            <div className="text-sm text-slate-400">Încărcare…</div>
-          ) : error ? (
+{loading ? (
+             <div className="flex justify-center py-8"><Spinner /></div>
+           ) : error ? (
             <div className="text-sm text-rose-500">{error}</div>
           ) : profile ? (
             <AboutContent profile={profile} />

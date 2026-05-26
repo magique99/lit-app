@@ -8,6 +8,7 @@ import { toProfile } from "@/lib/types";
 import type { Profile } from "@/lib/types";
 import ProfileTabsV4 from "./ProfileTabsV4";
 import ProfilePostsV2 from "./ProfilePostsV2";
+import Spinner from "@/components/Spinner";
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -152,7 +153,7 @@ const p = toProfile(profileData)!;
   };
 
   if (loading) {
-    return <div className="text-center py-12 text-slate-400 text-sm">Încărcare…</div>;
+    return <div className="flex justify-center py-12"><Spinner /></div>;
   }
 
   if (error || !profile) {

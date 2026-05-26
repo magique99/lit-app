@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
+import Spinner from "@/components/Spinner";
 import type { Post } from "@/lib/types";
-import { useRouter } from "next/navigation";
 
 export default function ProfilePostsV2() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -95,9 +95,9 @@ export default function ProfilePostsV2() {
 
   if (loading) {
     return (
-      <p className="text-center text-[13px] text-slate-400 py-10">
-        Încărcare…
-      </p>
+      <div className="flex justify-center py-10">
+        <Spinner />
+      </div>
     );
   }
 

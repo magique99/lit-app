@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import Spinner from "@/components/Spinner";
 import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@/lib/types";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
@@ -190,7 +191,7 @@ function LatestTexts() {
     return (
       <section className="py-28 sm:py-36 md:py-44 px-6" style={{ background: C.surface }}>
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-sm text-center text-slate-400">Încărcare…</p>
+          <div className="text-slate-500"><Spinner /></div>
         </div>
       </section>
     );

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Post, Profile } from "@/lib/types";
 import { supabase } from "@/lib/supabaseClient";
+import Spinner from "@/components/Spinner";
 
 type AuthorWithStats = Profile & {
   postCount: number;
@@ -151,8 +152,10 @@ export default function AutoriPage() {
 
         {/* Authors list */}
         <section>
-          {loading ? (
-            <p className="text-sm text-slate-400 text-center py-20">Încărcare autori…</p>
+{loading ? (
+            <div className="flex justify-center py-20">
+              <Spinner />
+            </div>
           ) : authors.length === 0 ? (
             <p className="text-sm text-slate-400 text-center py-20">Niciun autor găsit.</p>
           ) : (
