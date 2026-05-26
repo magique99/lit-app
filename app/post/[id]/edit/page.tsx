@@ -120,14 +120,6 @@ function Toolbar({
    );
 }
 
-function formatCountdown(ts: number): string {
-  const diff = Math.floor(Date.now() / 1000) - ts;
-  if (diff < 5) return "chiar acum";
-  if (diff < 60) return `acum ${diff} secunde`;
-  if (diff < 3600) return `acum ${Math.floor(diff / 60)} minute`;
-  return `acum ${Math.floor(diff / 3600)} ore`;
-}
-
 function estimateReadingTime(plainText: string): number {
   return Math.max(1, Math.ceil(plainText.length / 1200));
 }
