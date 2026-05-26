@@ -45,7 +45,6 @@ export default function TextePage() {
   const [filterType, setFilterType] = useState("");
   const [filterGenre, setFilterGenre] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [likeError, setLikeError] = useState<string | null>(null);
   const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
@@ -119,7 +118,6 @@ export default function TextePage() {
   }, []);
 
   const loadPosts = useCallback(async () => {
-    setLoading(true);
     setError(null);
 
     let query = supabase
@@ -143,7 +141,6 @@ export default function TextePage() {
     if (error) {
       console.error("LOAD POSTS ERROR:", error);
       setError("Nu am putut încărca postările. Încearcă din nou.");
-      setLoading(false);
       return;
     }
 
@@ -200,9 +197,7 @@ export default function TextePage() {
         "Postările s-au încărcat, dar nu am putut actualiza statisticile.",
       );
     }
-
-    setLoading(false);
-  }, [filterType, filterGenre, searchQuery]);
+  }, [ensureProfiles, filterType, filterGenre, searchQuery]);
 
   useEffect(() => {
     queueMicrotask(() => {
