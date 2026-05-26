@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabaseServer";
 import { toPlainText } from "@/lib/content";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -17,7 +17,7 @@ type PostPageData = {
   title: string;
   content: string;
   created_at: string;
-  user_id: string | null;
+  user_id: string;
 };
 
 type ProfileData = {
@@ -30,6 +30,7 @@ type ProfileData = {
 
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
+  const supabase = await createClient();
 
   let post: PostPageData | null = null;
   let fetchError: unknown = null;
@@ -43,8 +44,13 @@ export default async function PostPage({ params }: Props) {
     
     post = result.data;
     fetchError = result.error;
+    
+    if (result.error) {
+      console.error("Post fetch error:", result.error);
+    }
   } catch (e) {
     fetchError = e;
+    console.error("Post fetch exception:", e);
   }
 
   if (fetchError || !post) {
