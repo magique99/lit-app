@@ -39,6 +39,8 @@ const QUOTES = [
 
 export default function TextePage() {
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
+  const [totalPosts, setTotalPosts] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
@@ -50,6 +52,8 @@ export default function TextePage() {
   const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [sidebarQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+
+  const totalPages = Math.ceil(totalPosts / PAGE_SIZE);
 
   async function loadCounts(postIds: string[]) {
     if (postIds.length === 0) return;
@@ -120,11 +124,28 @@ export default function TextePage() {
   const loadPosts = useCallback(async () => {
     setError(null);
 
+    let countQuery = supabase
+      .from("posts")
+      .select("*", { count: "exact", head: true });
+
+    if (filterType && filterType !== "Toate") {
+      countQuery = countQuery.eq("text_type", filterType);
+    }
+    if (filterGenre && filterGenre !== "Toate") {
+      countQuery = countQuery.eq("genre", filterGenre);
+    }
+    if (searchQuery) {
+      countQuery = countQuery.or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
+    }
+
+    const { count } = await countQuery;
+    setTotalPosts(count ?? 0);
+
     let query = supabase
       .from("posts")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(PAGE_SIZE);
+      .range((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE - 1);
 
     if (filterType && filterType !== "Toate") {
       query = query.eq("text_type", filterType);
@@ -197,7 +218,7 @@ export default function TextePage() {
         "Postările s-au încărcat, dar nu am putut actualiza statisticile.",
       );
     }
-  }, [ensureProfiles, filterType, filterGenre, searchQuery]);
+  }, [ensureProfiles, filterType, filterGenre, searchQuery, currentPage]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -213,7 +234,13 @@ export default function TextePage() {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    void loadPosts();
+    setCurrentPage(1);
+  };
+
+  const goToPage = (page: number) => {
+    if (page < 1) return;
+    if (page > totalPages) return;
+    setCurrentPage(page);
   };
 
   const loadTopPosts = useCallback(async () => {
@@ -452,7 +479,7 @@ export default function TextePage() {
                       key={t}
                       onClick={() => {
                         setFilterType(t === "Toate" ? "" : t);
-                        void loadPosts();
+                        setCurrentPage(1);
                       }}
                       className={`
                         rounded-full px-4 py-[6px] text-[12px] font-medium tracking-wide
@@ -476,7 +503,7 @@ export default function TextePage() {
                   value={filterGenre}
                   onChange={(e) => {
                     setFilterGenre(e.target.value);
-                    void loadPosts();
+                    setCurrentPage(1);
                   }}
                   className="
                     appearance-none
@@ -619,6 +646,41 @@ export default function TextePage() {
                     Conectează-te
                   </Link>
                 </div>
+              )}
+
+              {totalPosts > PAGE_SIZE && (
+                <nav className="mt-16 flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 text-[12px] rounded-full border border-slate-200 text-slate-500 hover:text-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    ‹ Anterior
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => goToPage(page)}
+                      className={`
+                        w-8 h-8 text-[12px] rounded-full flex items-center justify-center
+                        transition-colors
+                        ${currentPage === page
+                          ? "bg-slate-900 text-white"
+                          : "border border-slate-200 text-slate-500 hover:bg-slate-100"
+                        }
+                      `}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1.5 text-[12px] rounded-full border border-slate-200 text-slate-500 hover:text-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Următor ›
+                  </button>
+                </nav>
               )}
             </section>
           </div>
