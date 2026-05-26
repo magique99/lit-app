@@ -67,6 +67,13 @@ export default function OnboardingWizard() {
       return;
     }
 
+    // Check if email is confirmed
+    if (!user.email_confirmed_at) {
+      setLoading(false);
+      router.push("/verify-email?sent=true");
+      return;
+    }
+
     // Handle avatar upload
     let finalAvatarUrl = avatarUrl;
     if (selectedFile) {
@@ -86,10 +93,11 @@ export default function OnboardingWizard() {
       }
     }
 
-    // Update profile with personal info and preferences
+    // Use upsert to handle both new profile creation and updates
     const { error } = await supabase
       .from("profiles")
-      .update({
+      .upsert({
+        user_id: user.id,
         username: username || null,
         first_name: firstName || null,
         last_name: lastName || null,
@@ -103,8 +111,7 @@ export default function OnboardingWizard() {
           writes_types: userRole === "writer" || userRole === "both" ? writesTypes : [],
           reads_types: userRole === "reader" || userRole === "both" ? readsTypes : [],
         },
-      } as never)
-      .eq("user_id", user.id);
+      }, { onConflict: "user_id" });
 
     if (!error) {
       router.push("/");

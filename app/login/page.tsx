@@ -44,7 +44,7 @@ export default function LoginPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Check if profile exists, create if missing
+    // Check if profile exists, create if missing (use upsert for safety)
     const { data: profile } = await supabase
       .from("profiles")
       .select("preferences")
@@ -53,12 +53,13 @@ export default function LoginPage() {
 
     if (!profile) {
       // Create a default profile if it doesn't exist
-      await supabase.from("profiles").insert({
+      await supabase.from("profiles").upsert({
         user_id: user.id,
         username: user.email?.split("@")[0] ?? "user",
         bio: "",
         role: "user",
-      });
+        preferences: {},
+      }, { onConflict: "user_id" });
       router.push("/onboarding");
       return;
     }

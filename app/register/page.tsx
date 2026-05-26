@@ -33,7 +33,8 @@ export default function RegisterPage() {
       setMessage("Cont creat! Verifică email-ul pentru confirmare.");
     } else if (data.session) {
       setMessage("Cont creat cu succes! Vei fi redirecționat...");
-      router.push("/profile");
+      // Profile will be created during onboarding after verification
+      router.push("/onboarding");
     } else {
       setMessage("Check email to confirm account.");
     }

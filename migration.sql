@@ -63,6 +63,7 @@ ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS profiles_select_policy ON profiles;
 DROP POLICY IF EXISTS profiles_insert_policy ON profiles;
 DROP POLICY IF EXISTS profiles_update_policy ON profiles;
+DROP POLICY IF EXISTS profiles_upsert_policy ON profiles;
 
 CREATE POLICY profiles_select_policy ON profiles FOR SELECT
   USING (auth.uid() IS NOT NULL);
@@ -72,6 +73,10 @@ CREATE POLICY profiles_insert_policy ON profiles FOR INSERT
 
 CREATE POLICY profiles_update_policy ON profiles FOR UPDATE
   USING (auth.uid() = user_id);
+
+-- Allow upsert (insert or update) for user's own profile
+CREATE POLICY profiles_upsert_policy ON profiles FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
 
 
 -- ─── 2: Follows table ──────────────────────────────────────────────────────
