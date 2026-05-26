@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
-import type { Comment, Post, Profile, LikeInsert } from "@/lib/types";
+import type { Post, Profile, LikeInsert } from "@/lib/types";
 
 type PostWithProfile = Post & {
   profile?: Pick<Profile, "username" | "avatar_url"> | null;
@@ -13,7 +15,6 @@ type PostWithProfile = Post & {
   genre?: string | null;
   uses_ai?: boolean | null;
 };
-
 
 const PAGE_SIZE = 5;
 
@@ -36,25 +37,20 @@ const QUOTES = [
   "Un text bun e ca o rană curată – ambele au nevoie de răbdare.",
 ];
 
-const TAGS = ["Grotesc", "Simbolic", "Oniric", "Poezie", "Eseu", "Ficțiune"];
-
 export default function TextePage() {
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
-  const [commentCounts, setCommentCounts] = useState<Record<string, number>>(
-    {},
-  );
-const [latestComments, setLatestComments] = useState<Comment[]>([]);
-const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
-    const [filterType, setFilterType] = useState("");
-    const [filterGenre, setFilterGenre] = useState("");
-    const [searchQuery, setSearchQuery] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [likeError, setLikeError] = useState<string | null>(null);
-    const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
-    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const [sidebarQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
+  const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
+  const [filterType, setFilterType] = useState("");
+  const [filterGenre, setFilterGenre] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [likeError, setLikeError] = useState<string | null>(null);
+  const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [sidebarQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
   async function loadCounts(postIds: string[]) {
     if (postIds.length === 0) return;
@@ -220,7 +216,6 @@ const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
     });
   }, []);
 
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     void loadPosts();
@@ -257,13 +252,6 @@ const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
         .select("user_id, username, avatar_url")
         .in("user_id", userIds);
 
-      console.log(
-        "TOP POSTS - PROFILES QUERY - requested:",
-        userIds.length,
-        "got:",
-        profilesData?.length ?? 0,
-      );
-
       if (profilesError) {
         console.error("LOAD TOP POSTS PROFILES ERROR:", profilesError);
       } else if (profilesData) {
@@ -285,18 +273,13 @@ const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
       }
     }
 
-    if (userIds.length > 0 && Object.keys(profileMap).length === 0) {
-      console.warn("No profiles found for userIds:", userIds);
-    }
-
     const postsWithCounts: PostWithProfile[] = (data as PostWithProfile[]).map((post) => ({
       ...post,
       profile: post.user_id ? (profileMap[post.user_id] ?? null) : null,
-      likesCount: Array.isArray(post.likes) ? post.likes.length : 0,
-      commentsCount: Array.isArray(post.comments) ? post.comments.length : 0,
+      likesCount: 0,
+      commentsCount: 0,
     }));
 
-    // Sort by comments for "most viewed" display
     const sortedByComments = [...postsWithCounts].sort(
       (a, b) => (b.commentsCount ?? 0) - (a.commentsCount ?? 0),
     );
@@ -309,26 +292,6 @@ const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
       void loadTopPosts();
     });
   }, [loadTopPosts]);
-
-  useEffect(() => {
-    async function load() {
-      const { data, error } = await supabase
-        .from("comments")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(8);
-
-      if (error) {
-        console.error("LOAD LATEST COMMENTS ERROR:", error);
-        setError("Nu am putut încărca ultimele comentarii.");
-        return;
-      }
-
-      setLatestComments(data ?? []);
-    }
-
-    load();
-  }, []);
 
   useEffect(() => {
     const channel = supabase
@@ -393,13 +356,12 @@ const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
           table: "comments",
         },
         (payload) => {
-          const comment = payload.new as Comment;
+          const comment = payload.new as { post_id: string };
 
           setCommentCounts((prev) => ({
             ...prev,
             [comment.post_id]: (prev[comment.post_id] ?? 0) + 1,
           }));
-          setLatestComments((prev) => [comment, ...prev].slice(0, 8));
         },
       )
       .subscribe();
@@ -409,7 +371,7 @@ const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
     };
   }, []);
 
-async function handleLike(postId: string) {
+  async function handleLike(postId: string) {
     if (!currentUserId) {
       setLikeError("Trebuie să fii conectat pentru a da like.");
       return;
@@ -456,19 +418,14 @@ async function handleLike(postId: string) {
     }
   }
 
-  const getLikes = (postId: string) => {
-    return likeCounts[postId] ?? 0;
-  };
-
+  const getLikes = (postId: string) => likeCounts[postId] ?? 0;
   const getComments = (postId: string) => commentCounts[postId] ?? 0;
 
   return (
     <main className="min-h-screen" style={{ background: C.bg }}>
       <div className="max-w-6xl mx-auto px-5 sm:px-8 pt-14 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Main content */}
           <div className="lg:col-span-2">
-            {/* ── PAGE HEADER ── */}
             <div className="mb-12">
               <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-4">
                 Revistă literară
@@ -481,7 +438,6 @@ async function handleLike(postId: string) {
               </p>
             </div>
 
-            {/* ── SEARCH ── */}
             <div className="mb-14">
               <input
                 type="text"
@@ -492,7 +448,6 @@ async function handleLike(postId: string) {
               />
             </div>
 
-            {/* ── FILTER ROW ── */}
             <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mb-16">
               <div className="flex flex-wrap gap-2">
                 {TEXT_TYPES.map((t) => {
@@ -502,7 +457,7 @@ async function handleLike(postId: string) {
                       key={t}
                       onClick={() => {
                         setFilterType(t === "Toate" ? "" : t);
-                        setPage(0); setPosts([]); setHasMore(true);
+                        void loadPosts();
                       }}
                       className={`
                         rounded-full px-4 py-[6px] text-[12px] font-medium tracking-wide
@@ -526,7 +481,7 @@ async function handleLike(postId: string) {
                   value={filterGenre}
                   onChange={(e) => {
                     setFilterGenre(e.target.value);
-                    setPage(0); setPosts([]); setHasMore(true);
+                    void loadPosts();
                   }}
                   className="
                     appearance-none
@@ -550,7 +505,6 @@ async function handleLike(postId: string) {
               </div>
             </div>
 
-            {/* Errors */}
             {error && (
               <p className="mb-10 text-sm text-rose-500/80">{error}</p>
             )}
@@ -558,7 +512,6 @@ async function handleLike(postId: string) {
               <p className="mb-10 text-sm text-amber-600/80">{likeError}</p>
             )}
 
-            {/* ── POSTS LIST ── */}
             <section className="mb-28">
               <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-10">
                 Ultimele postări
@@ -614,7 +567,6 @@ async function handleLike(postId: string) {
                           {htmlToPlainTextWithNewlines(post.content).length > 220 ? "…" : ""}
                         </p>
 
-                        {/* Metadata row */}
                         <div className="flex items-center gap-4 text-[11px]" style={{ color: C.muted }}>
                           {post.text_type && (
                             <span className="uppercase tracking-wider" style={{ opacity: 0.7 }}>{post.text_type}</span>
@@ -655,15 +607,6 @@ async function handleLike(postId: string) {
                 ))}
               </div>
 
-              <div ref={observerRef} className="h-4" />
-
-              {loading && posts.length > 0 && (
-                <p className="mt-10 text-center text-[12px] text-slate-300 tracking-wider uppercase">
-                  Încărcare…
-                </p>
-              )}
-
-              {/* CTA for anonymous users */}
               {!currentUserId && (
                 <div className="mt-16 rounded-2xl border border-slate-200/60 bg-white/40 p-8 text-center">
                   <p className="text-[13px] text-slate-600 mb-4">
@@ -685,9 +628,7 @@ async function handleLike(postId: string) {
             </section>
           </div>
 
-          {/* Sidebar */}
           <aside className="space-y-12">
-            {/* Header - What is this page */}
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400 mb-3">
                 Revistă literară
@@ -701,7 +642,6 @@ async function handleLike(postId: string) {
               <div className="mt-4 h-px w-12" style={{ background: C.accent }} />
             </div>
 
-            {/* Popular Today */}
             <div>
               <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
                 🔥 Texte populare azi
@@ -723,7 +663,6 @@ async function handleLike(postId: string) {
               </div>
             </div>
 
-            {/* Most Appreciated */}
             <div>
               <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
                 ❤️ Cele mai apreciate
@@ -745,7 +684,6 @@ async function handleLike(postId: string) {
               </div>
             </div>
 
-            {/* Writing Challenge */}
             <div>
               <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
                 ✍️ Provocare de scriere
@@ -764,8 +702,7 @@ async function handleLike(postId: string) {
               </div>
             </div>
 
-            {/* Quote */}
-             <div className="rounded-2xl border border-slate-200/60 bg-white/40 p-6 text-center">
+            <div className="rounded-2xl border border-slate-200/60 bg-white/40 p-6 text-center">
               <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400 mb-3">
                 Citat aleatoriu
               </p>
