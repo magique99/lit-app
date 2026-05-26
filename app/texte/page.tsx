@@ -409,26 +409,7 @@ const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
     };
   }, []);
 
-  useEffect(() => {
-    if (!observerRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !loading && hasMore) {
-          setPage((p) => p + 1);
-        }
-      },
-      {
-        rootMargin: "200px",
-      },
-    );
-
-    observer.observe(observerRef.current);
-
-    return () => observer.disconnect();
-  }, [loading, hasMore]);
-
-  async function handleLike(postId: string) {
+async function handleLike(postId: string) {
     if (!currentUserId) {
       setLikeError("Trebuie să fii conectat pentru a da like.");
       return;
