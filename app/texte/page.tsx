@@ -45,25 +45,16 @@ export default function TextePage() {
     {},
   );
 const [latestComments, setLatestComments] = useState<Comment[]>([]);
-   const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
-   const [filterType, setFilterType] = useState("");
-   const [filterGenre, setFilterGenre] = useState("");
-   const [searchQuery, setSearchQuery] = useState("");
-   const [loading, setLoading] = useState(false);
-   const [error, setError] = useState<string | null>(null);
-   const [likeError, setLikeError] = useState<string | null>(null);
-   const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
-   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-   const [sidebarQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
-
-   const totalLikes = useMemo(
-     () => Object.values(likeCounts).reduce((sum, count) => sum + count, 0),
-     [likeCounts],
-   );
-
-const authorsCount = useMemo(() => {
-    return new Set(posts.map((p) => p.user_id).filter(Boolean)).size;
-  }, [posts]);
+const [topViewedPosts, setTopViewedPosts] = useState<PostWithProfile[]>([]);
+    const [filterType, setFilterType] = useState("");
+    const [filterGenre, setFilterGenre] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [likeError, setLikeError] = useState<string | null>(null);
+    const [likingIds, setLikingIds] = useState<Set<string>>(new Set());
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [sidebarQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
   async function loadCounts(postIds: string[]) {
     if (postIds.length === 0) return;
