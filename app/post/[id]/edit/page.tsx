@@ -205,7 +205,6 @@ const EditPostContent = () => {
   const charCount = editor?.storage.characterCount?.characters() ?? 0;
   const plainText = editor?.getText() ?? "";
   const readTime = estimateReadingTime(plainText);
-  const savedAgo = lastSaved > 0 ? formatCountdown(lastSaved) : "";
 
   const toggleGenre = (g: string) => {
     setGenres((prev) =>
