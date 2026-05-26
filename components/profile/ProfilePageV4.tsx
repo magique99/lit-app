@@ -10,6 +10,7 @@ import ProfileTabsV4 from "./ProfileTabsV4";
 import ProfilePostsV2 from "./ProfilePostsV2";
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [edit, setEdit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,8 +63,9 @@ export default function ProfilePage() {
         }
 
 const p = toProfile(profileData)!;
-        setProfile(p);
-        setUsername(p.username || "");
+         setProfile(p);
+         setUserEmail(userData?.user?.email ?? null);
+         setUsername(p.username || "");
         setFirstName(p.first_name || "");
         setLastName(p.last_name || "");
         setNickname(p.nickname || "");
@@ -338,12 +340,13 @@ const p = toProfile(profileData)!;
       {/* ── SEPARATOR ── */}
       <div className="h-px bg-slate-200/70" />
 
-      {/* ── TABS ── */}
+{/* ── TABS ── */}
       <ProfileTabsV4
         postsSlot={<ProfilePostsV2 />}
         profile={profile}
         loading={loading}
         error={error}
+        userEmail={userEmail}
       />
     </div>
   );

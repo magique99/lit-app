@@ -8,11 +8,13 @@ export default function ProfileTabsV4({
   profile,
   loading,
   error,
+  userEmail,
 }: {
   postsSlot: React.ReactNode;
   profile: Profile;
   loading: boolean;
   error: string | null;
+  userEmail?: string | null;
 }) {
   const [tab, setTab] = useState<
     "about" | "posts" | "settings"
@@ -87,7 +89,7 @@ export default function ProfileTabsV4({
                 Email
               </label>
               <p className="text-[15px] text-slate-500">
-                {profile.user_id}
+                {userEmail || "—"}
               </p>
             </div>
             {/* password change link */}
