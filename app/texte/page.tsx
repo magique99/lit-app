@@ -572,10 +572,18 @@ useEffect(() => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main content */}
           <div className="lg:col-span-2">
-            {/* ── PAGE LABEL ── */}
-            <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-12">
-              Texte
-            </p>
+            {/* ── PAGE HEADER ── */}
+            <div className="mb-12">
+              <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-4">
+                Revistă literară
+              </p>
+              <h1 className="font-serif text-3xl sm:text-4xl font-medium leading-tight" style={{ color: C.text }}>
+                Texte originale
+              </h1>
+              <p className="mt-3 text-[15px] leading-relaxed max-w-2xl" style={{ color: C.muted }}>
+                Poezie, proză scurtă, jurnal, eseuri și experimente din comunitate.
+              </p>
+            </div>
 
             {/* ── SEARCH ── */}
             <div className="mb-14">
@@ -732,6 +740,16 @@ useEffect(() => {
                           {htmlToPlainTextWithNewlines(post.content).length > 220 ? "…" : ""}
                         </p>
 
+                        {/* Metadata row */}
+                        <div className="flex items-center gap-4 text-[11px]" style={{ color: C.muted }}>
+                          {post.text_type && (
+                            <span className="uppercase tracking-wider" style={{ opacity: 0.7 }}>{post.text_type}</span>
+                          )}
+                          <span className="flex items-center gap-1">
+                            <span>⏱</span> {Math.max(1, Math.ceil(htmlToPlainTextWithNewlines(post.content).length / 1200))} min
+                          </span>
+                        </div>
+
                         <div className="flex items-center gap-5 text-[11px]">
                           <button
                             type="button"
@@ -770,25 +788,112 @@ useEffect(() => {
                   Încărcare…
                 </p>
               )}
+
+              {/* CTA for anonymous users */}
+              {!currentUserId && (
+                <div className="mt-16 rounded-2xl border border-slate-200/60 bg-white/40 p-8 text-center">
+                  <p className="text-[13px] text-slate-600 mb-4">
+                    Creează cont pentru a salva texte și a primi recomandări personalizate.
+                  </p>
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-300"
+                    style={{
+                      color: C.text,
+                      border: `1.5px solid ${C.border}`,
+                      background: C.surface,
+                    }}
+                  >
+                    Conectează-te
+                  </Link>
+                </div>
+              )}
             </section>
           </div>
 
           {/* Sidebar */}
           <aside className="space-y-12">
-            {/* Quote */}
-            <div className="rounded-2xl border border-slate-200/60 bg-white/40 p-6 text-center">
+            {/* Header - What is this page */}
+            <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400 mb-3">
-                Citat aleatoriu
+                Revistă literară
               </p>
-              <p className="text-xs italic text-slate-600 leading-relaxed">
-                « {sidebarQuote} »
+              <h3 className="font-serif text-[22px] font-medium mb-2" style={{ color: C.text }}>
+                Texte originale
+              </h3>
+              <p className="text-[13px] leading-relaxed text-slate-500">
+                Poezie, proză scurtă, jurnal, eseuri și experimente din comunitate.
               </p>
+              <div className="mt-4 h-px w-12" style={{ background: C.accent }} />
+            </div>
+
+            {/* Popular Today */}
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
+                🔥 Texte populare azi
+              </p>
+              <div className="space-y-3">
+                {topViewedPosts.length === 0 ? (
+                  <p className="text-[11px] text-slate-300">Se încarcă…</p>
+                ) : (
+                  topViewedPosts.slice(0, 4).map((post, idx) => (
+                    <Link
+                      key={`popular-${post.id}`}
+                      href={`/post/${post.id}`}
+                      className="block text-[13px] text-slate-600 hover:text-slate-900 transition-colors truncate"
+                    >
+                      {idx + 1}. {post.title}
+                    </Link>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Most Appreciated */}
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
+                ❤️ Cele mai apreciate
+              </p>
+              <div className="space-y-3">
+                {topViewedPosts.length === 0 ? (
+                  <p className="text-[11px] text-slate-300">Se încarcă…</p>
+                ) : (
+                  topViewedPosts.slice(0, 3).map((post) => (
+                    <Link
+                      key={`appreciated-${post.id}`}
+                      href={`/post/${post.id}`}
+                      className="block text-[13px] text-slate-600 hover:text-slate-900 transition-colors truncate"
+                    >
+                      {post.title}
+                    </Link>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Writing Challenge */}
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
+                ✍️ Provocare de scriere
+              </p>
+              <div className="rounded-2xl border border-slate-200/60 bg-white/50 p-5">
+                <p className="text-[13px] text-slate-600 leading-relaxed">
+                  "Scrie o pagină despre ultima conversație pe care nu ai putut să o ai."
+                </p>
+                <Link
+                  href="/create"
+                  className="mt-4 inline-block text-[12px] font-medium"
+                  style={{ color: C.accent }}
+                >
+                  Începe →
+                </Link>
+              </div>
             </div>
 
             {/* Trending Authors */}
             <div>
               <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
-                🔥 Trending autori
+                🔥 Autori noi de urmărit
               </p>
               <div className="space-y-2">
                 {trendingAuthors.length === 0 ? (
@@ -807,61 +912,14 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Most Read */}
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
-                📖 Cele mai citite
+            {/* Quote */}
+            <div className="rounded-2xl border border-slate-200/60 bg-white/40 p-6 text-center">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400 mb-3">
+                Citat aleatoriu
               </p>
-              <div className="space-y-2">
-                {topViewedPosts.length === 0 ? (
-                  <p className="text-[11px] text-slate-300">Se încarcă…</p>
-                ) : (
-                  topViewedPosts.slice(0, 3).map((post, idx) => (
-                    <Link
-                      key={post.id}
-                      href={`/post/${post.id}`}
-                      className="block text-[13px] text-slate-600 hover:text-slate-900 transition-colors truncate"
-                    >
-                      {idx + 1}. {post.title}
-                    </Link>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Categories */}
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-1">
-                🏷 Categorii
+              <p className="text-xs italic text-slate-600 leading-relaxed">
+                « {sidebarQuote} »
               </p>
-              <div className="flex flex-wrap gap-2">
-                {TAGS.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-[11px] px-3 py-1 rounded-full bg-slate-100/60 text-slate-500"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Latest comments */}
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-4">
-                Ultimele comentarii
-              </p>
-              <div className="space-y-3">
-                {latestComments.slice(0, 3).map((comment) => (
-                  <Link
-                    key={comment.id}
-                    href={`/post/${comment.post_id}#comment-${comment.id}`}
-                    className="block text-[11px] text-slate-500 hover:text-slate-700 transition-colors line-clamp-2 leading-relaxed"
-                  >
-                    {htmlToPlainTextWithNewlines(comment.content).slice(0, 80)}…
-                  </Link>
-                ))}
-              </div>
             </div>
           </aside>
         </div>
