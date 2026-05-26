@@ -9,7 +9,6 @@ import { CharacterCount } from "@tiptap/extension-character-count";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { Underline } from "@tiptap/extension-underline";
 import { TextAlign } from "@tiptap/extension-text-align";
-import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import RequireEmailVerification from "@/components/RequireEmailVerification";
 
 const C = {
@@ -142,7 +141,6 @@ const EditPostContent = () => {
   const [title, setTitle] = useState("");
   const [textType, setTextType] = useState("");
   const [genres, setGenres] = useState<string[]>([]);
-  const [lastSaved, setLastSaved] = useState<number>(0);
   const [saving, setSaving] = useState(false);
   const editorRef = useRef<ReturnType<typeof useEditor> | null>(null);
   const [focusMode, setFocusMode] = useState(false);

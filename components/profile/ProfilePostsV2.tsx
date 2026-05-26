@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { htmlToPlainTextWithNewlines } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
 import type { Post } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePostsV2() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -209,23 +210,18 @@ export default function ProfilePostsV2() {
                       day: "numeric", month: "short", year: "numeric",
                     })}
                   </span>
-                  <span className="text-slate-200">·</span>
-                  {/* edit btn — visible on hover */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setEditingId(post.id);
-                      setEditText(post.content);
-                    }}
-                    className="
-                      opacity-0 group-hover:opacity-100
-                      transition-opacity duration-200
-                      text-slate-500 hover:text-slate-700
-                    "
-                  >
-                    Editează
-                  </button>
+<span className="text-slate-200">·</span>
+                   {/* edit btn — visible on hover - redirects to edit page */}
+                   <Link
+                     href={`/post/${post.id}/edit`}
+                     className="
+                       opacity-0 group-hover:opacity-100
+                       transition-opacity duration-200
+                       text-slate-500 hover:text-slate-700
+                     "
+                   >
+                     Editează
+                   </Link>
                   {/* delete btn */}
                   <button
                     onClick={(e) => {
